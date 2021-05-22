@@ -1,10 +1,9 @@
 package com.utn.UDEE.repository;
 
-import com.utn.UDEE.models.User;
+import com.utn.UDEE.models.Invoice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-
-public interface userRepository extends JpaRepository<User,Long> {
+public interface InvoiceRepository extends JpaRepository<Invoice,Long> {
 }

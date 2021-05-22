@@ -18,7 +18,7 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 @NoArgsConstructor
 
-public class User {
+public class User extends Person {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idUser;

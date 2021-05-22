@@ -16,22 +16,17 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 
-public class Client {
+public class Client extends Person{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idClient;
-    @NotNull
-    @NotBlank(message = "dni may not be null")
-    private Integer dni;
-    @NotNull(message = "The name must be completed")
-    private String name;
-    @NotNull(message = "The surname must be completed")
-    private String surname;
-    @NotNull(message = "birthdate required")
-    private Date birthdate;
-    private Integer age;
-    @NotNull(message = "The address must be completed")
-    private String address;
+
+    @OneToMany
+    @JoinColumn(name = "address_id")
+    private Address address;
+    private Integer streetNumber;
+    private String floor;
+    private String floorIdentification;
     @NotEmpty
     @OneToOne
     private Meter meter;

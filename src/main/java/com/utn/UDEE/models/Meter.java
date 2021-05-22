@@ -14,11 +14,7 @@ import javax.validation.constraints.NotNull;
 public class Meter {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long serialNumber;
 
-    @NotNull
-    private float consumed;
-
-    /*@OneToOne
-    @JoinColumn(name = )*/
+    private Float consumed;
 }

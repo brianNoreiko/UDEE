@@ -20,11 +20,13 @@ public class Invoice {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idInvoice;
+    @OneToOne
     private Client client;
+    @OneToOne
     private Meter meter;
-    private String tariffType;
+    private TariffType tariffType;
     private Calendar date;
-    private float total;
+    private Float total;
 
     //https://www.oscarblancarteblog.com/2018/12/14/relaciones-onetoone/
 
