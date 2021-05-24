@@ -4,7 +4,7 @@ spring:
       enabled: true
       path: /console
   datasource:
-    url: jdbc:h2:mem:testdb
+    url: jdbc:h2:mem:udeedb
   jpa:
     show-sql: true
 
