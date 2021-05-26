@@ -1,5 +1,6 @@
 package com.utn.UDEE.controller;
 
+import com.utn.UDEE.models.Meter;
 import com.utn.UDEE.models.Person;
 import com.utn.UDEE.service.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,7 @@ public class PersonController {
 
     @GetMapping
     public List<Person> getPersons(){ return personService.getAll();}
+
 
 
 

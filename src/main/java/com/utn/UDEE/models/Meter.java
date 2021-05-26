@@ -17,4 +17,7 @@ public class Meter {
     private Long serialNumber;
 
     private Float consumed;
+
+    @OneToOne
+    private Address address;
 }

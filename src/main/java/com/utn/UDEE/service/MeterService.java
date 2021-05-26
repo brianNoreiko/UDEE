@@ -1,14 +1,11 @@
 package com.utn.UDEE.service;
 
-import com.utn.UDEE.models.Client;
 import com.utn.UDEE.models.Meter;
-import com.utn.UDEE.models.Person;
 import com.utn.UDEE.repository.MeterRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -30,14 +27,7 @@ public class MeterService {
         return meterRepository.findById(id).orElseThrow(()->new HttpClientErrorException(HttpStatus.NOT_FOUND));
     }
 
-    public Meter getMeterByClientId(Long idClient) {
-        Meter meter = null;
-        Person client = personService.getPersonById(idClient);
-        if(!(client instanceof Client)){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-        }else{
-            meter = ((Client) client).getMeter();
-        }
-       return meter;
-    }
+
+
+    public void addMeter(Meter meter) { meterRepository.save(meter); }
 }

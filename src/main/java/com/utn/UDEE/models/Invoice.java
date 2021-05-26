@@ -20,10 +20,6 @@ public class Invoice {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idInvoice;
-    @OneToOne
-    private Client client;
-    @OneToOne
-    private Meter meter;
     private TariffType tariffType;
     private Calendar date;
     private Float total;

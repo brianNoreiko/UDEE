@@ -4,11 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import java.util.Date;
 
 @Entity
 @Table(name = "clients")
@@ -22,13 +20,7 @@ public class Client extends Person{
     private Long idClient;
 
     @OneToMany
-    @JoinColumn(name = "address_id")
-    private Address address;
-    private Integer streetNumber;
-    private String floor;
-    private String floorIdentification;
-    @NotEmpty
-    @OneToOne
-    private Meter meter;
+    @JoinColumn(name = "invoice_id")
+    private List<Invoice> invoiceList;
 
 }

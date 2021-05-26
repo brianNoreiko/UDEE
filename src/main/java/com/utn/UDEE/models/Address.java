@@ -4,10 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Data
@@ -20,10 +17,21 @@ public class Address {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @NotNull
-    private String name;
 
-    //Debería tener atributo Person person? (a quien pertenece la vivienda)
+    @ManyToOne
+    @JoinColumn(name = "street_id")
+    private Street street;
+
+    private Integer streetNumber;
+    private String floor;
+    private String floorIdentification;
+
+    @OneToOne
+    private Meter meter;
+
+    public Meter getMeter(){
+        return this.meter;
+    }
 
 
 }
