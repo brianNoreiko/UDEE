@@ -1,7 +1,7 @@
 package com.utn.UDEE.controller;
 
-import com.utn.UDEE.models.Meter;
 import com.utn.UDEE.models.Person;
+import com.utn.UDEE.models.PostResponse;
 import com.utn.UDEE.service.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -17,8 +17,8 @@ public class PersonController {
     PersonService personService;
 
     @PostMapping
-    public void addPerson(@RequestBody Person person){
-        personService.addPerson(person);
+    public PostResponse addPerson(@RequestBody Person person){
+        return personService.addPerson(person);
     }
 
     @GetMapping("/{id}")
