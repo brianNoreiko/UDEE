@@ -2,7 +2,6 @@ package com.utn.UDEE.service;
 
 import com.utn.UDEE.models.Person;
 import com.utn.UDEE.models.PostResponse;
-import com.utn.UDEE.repository.PersonRepository;
 import com.utn.UDEE.utils.EntityURLBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

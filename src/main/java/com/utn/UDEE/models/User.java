@@ -18,7 +18,7 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 @NoArgsConstructor
 
-public class User extends Person {
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idUser;
@@ -29,4 +29,6 @@ public class User extends Person {
     @NotNull(message = "Password may not be null")
     @Length(min=6, max=30, message = "Password must contain between 6 and 30 characters.")
     private String password;
+
+    private UserType userType;
 }
