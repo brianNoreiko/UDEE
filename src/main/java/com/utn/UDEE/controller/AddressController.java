@@ -13,7 +13,7 @@ public class AddressController {
 
     @Autowired
     AddressService addressService;
-
+/*
     @GetMapping
     public List<Address> getAllAddresses(){ return addressService.getAllAddresses();}
 
@@ -22,6 +22,6 @@ public class AddressController {
 
     @PostMapping
     public void addNewAddress(@RequestBody Address address){ addressService.addNewAddress(address);}
-
+*/
 
 }

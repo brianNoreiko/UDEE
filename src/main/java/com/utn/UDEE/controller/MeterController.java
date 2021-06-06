@@ -2,7 +2,7 @@ package com.utn.UDEE.controller;
 
 import com.utn.UDEE.models.Meter;
 import com.utn.UDEE.service.MeterService;
-import com.utn.UDEE.service.PersonService;
+import com.utn.UDEE.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -14,18 +14,11 @@ import java.util.List;
 public class MeterController {
 
     MeterService meterService;
-    PersonService personService;
 
     @Autowired
-    public MeterController(MeterService meterService, PersonService personService) {
+    public MeterController(MeterService meterService) {
         this.meterService = meterService;
-        this.personService = personService;
     }
 
-    @GetMapping
-    public List<Meter> getAllMeters(){return meterService.getAllMeters();}
-
-    @PostMapping
-    public void addMeter(@RequestBody Meter meter){meterService.addMeter(meter);}
 
 }

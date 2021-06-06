@@ -1,8 +1,5 @@
 package com.utn.UDEE.models;
 
-import com.utn.UDEE.models.Client;
-import com.utn.UDEE.models.Meter;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,8 +16,7 @@ import java.util.Calendar;
 public class Invoice {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idInvoice;
-    private TariffType tariffType;
+    private Integer idInvoice;
     private Calendar date;
     private Float total;
 

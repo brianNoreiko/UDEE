@@ -2,6 +2,7 @@ package com.utn.UDEE.service;
 
 import com.utn.UDEE.models.Meter;
 import com.utn.UDEE.repository.MeterRepository;
+import com.utn.UDEE.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -13,17 +14,17 @@ import java.util.List;
 public class MeterService {
 
     MeterRepository meterRepository;
-    PersonService personService;
+    UserRepository userRepository;
 
     @Autowired
-    public MeterService(MeterRepository meterRepository, PersonService personService) {
+    public MeterService(MeterRepository meterRepository, UserRepository userRepository) {
         this.meterRepository = meterRepository;
-        this.personService = personService;
+        this.userRepository = userRepository;
     }
 
     public List<Meter> getAllMeters() { return meterRepository.findAll(); }
 
-    public Meter getMeterById(Long id) {
+    public Meter getMeterById(Integer id) {
         return meterRepository.findById(id).orElseThrow(()->new HttpClientErrorException(HttpStatus.NOT_FOUND));
     }
 

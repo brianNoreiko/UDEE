@@ -13,7 +13,7 @@ public enum UserType {
 
     public static UserType find (String value){
         for ( UserType u : values()){
-            if(u.toString().equals(value)){
+            if(u.toString().equalsIgnoreCase(value)){
                 return u;
             }
         }

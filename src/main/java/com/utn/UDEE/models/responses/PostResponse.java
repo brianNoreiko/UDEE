@@ -1,4 +1,4 @@
-package com.utn.UDEE.models;
+package com.utn.UDEE.models.responses;
 
 import lombok.Builder;
 import lombok.Data;

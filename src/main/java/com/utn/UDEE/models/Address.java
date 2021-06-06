@@ -16,23 +16,27 @@ public class Address {
 
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-    Integer id;
+    private Integer id;
 
     @Column
-    String street;
+    private String street;
 
     @Column
-    Integer number;
+    private Integer number;
 
     @Column
-    String apartment;
+    private String apartment;
 
     @ManyToOne
-    @JoinColumn(name = "client", nullable = false, updatable = false)
-    Client client;
+    @JoinColumn(name = "id_user", nullable = false, updatable = false)
+    User user;
 
     @OneToOne
     Meter meter;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_rate")
+    private Rate rate;
 
 
 }
