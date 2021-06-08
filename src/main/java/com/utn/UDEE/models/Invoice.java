@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
 import javax.persistence.*;
 import java.util.Calendar;
 
@@ -16,9 +15,9 @@ import java.util.Calendar;
 public class Invoice {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer idInvoice;
+    private Integer id;
     private Calendar date;
-    private Float total;
+    private Double total;
 
     //https://www.oscarblancarteblog.com/2018/12/14/relaciones-onetoone/
 
