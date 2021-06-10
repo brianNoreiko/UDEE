@@ -2,13 +2,15 @@ package com.utn.UDEE.utils;
 
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
+
 public class EntityURLBuilder {
 
-    public static String buildURL(final String entity, final Integer id){
+    public static <T> URI buildURL(final String entity, final T id){
         return ServletUriComponentsBuilder
                 .fromCurrentContextPath()
                 .path(("/{entity}/{id}"))
                 .buildAndExpand(entity,id)
-                .toUriString();
+                .toUri();
     }
 }
