@@ -31,15 +31,16 @@ public class UserUtilsTest {
     }
 
     public static User aUser() {
-        return User.builder()
-                .idUser(1)
-                .name("Jorge")
-                .lastName("Gonzalez")
-                .email("jorgeGonzalez1@hotmail.com")
-                .username("jorgito1")
-                .password("123456")
-                .typeUser(UserType.CLIENT)
-                .addressList(new ArrayList<>()).build();
+        User u = new User();
+        u.setIdUser(1);
+        u.setUsername("Jorge");
+        u.setLastname("Gonzalez");
+        u.setEmail("jorgeGonzalez1@hotmail.com");
+        u.setUsername("jorgito1");
+        u.setPassword("123456");
+        u.setUserType(UserType.CLIENT);
+        u.setAddressList(new ArrayList<>());
+        return u;
     }
 
 }
