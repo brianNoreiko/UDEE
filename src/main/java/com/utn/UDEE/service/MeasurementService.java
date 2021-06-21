@@ -1,6 +1,7 @@
 package com.utn.UDEE.service;
 
 import com.utn.UDEE.exception.ResourceException;
+import com.utn.UDEE.models.Address;
 import com.utn.UDEE.models.Measurement;
 import com.utn.UDEE.models.Meter;
 import com.utn.UDEE.models.User;
@@ -19,16 +20,11 @@ public class MeasurementService {
 
     MeasurementRepository measurementRepository;
     MeterService meterService;
+    AddressService addressService;
 
 
     public Optional<ClientConsuption> getConsumptionByMeterAndBetweenDate(Integer idMeter, LocalDate since, LocalDate until) throws ResourceException {
         Meter meter = meterService.getMeterById(idMeter);
-        User user = meter.getAddress().getUser();
-
-        Double ConsumptionKw = 0.0;
-        Double consumptionCost = 0.0;
-        Integer measurementsCount = 0;
-
         Optional<ClientConsuption> clientConsuption = Optional.of(new ClientConsuption());
 
         LinkedList<Measurement> measurementList = (LinkedList<Measurement>) measurementRepository.findAllByMeterAndDateBetween(meter, since, until);
@@ -51,6 +47,12 @@ public class MeasurementService {
         Meter meter = meterService.getMeterById(idMeter);
 
         return measurementRepository.getAllByMeterAndBetweenDate(meter,since,until, pageable);
+    }
+
+    public Page<Measurement> getMeasurementByAddressBetweenDate(Integer idAddress, LocalDate since, LocalDate until, Pageable pageable) {
+        Address address = addressService.getAddressById(idAddress);
+
+        return measurementRepository.getMeasurementByAddressBetweenDate(address,since,until,pageable);
     }
 }
 

@@ -1,5 +1,6 @@
 package com.utn.UDEE.repository;
 
+import com.utn.UDEE.models.Address;
 import com.utn.UDEE.models.Invoice;
 import com.utn.UDEE.models.User;
 import org.springframework.data.domain.Page;
@@ -14,4 +15,6 @@ public interface InvoiceRepository extends JpaRepository<Invoice,Integer> {
     Page<Invoice> findAllByUserAndDateBetween(User user, LocalDate since, LocalDate until, Pageable pageable);
 
     Page<Invoice> findAllByUserAndPayed(User user, boolean payed, Pageable pageable);
+
+    Page<Invoice> findAllByAddressAndPayed(Address address, boolean b, Pageable pageable);
 }

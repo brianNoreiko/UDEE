@@ -73,7 +73,7 @@ public class AddressService {
         if(isNull(address.getMeter())) {
             addressRepository.deleteById(id);
         } else {
-            throw new DeleteException("Can not delete this address because it depends of another objects");
+            throw new DeleteException("It cannot be deleted because another object depends on it");
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.utn.UDEE.service;
 
+import com.utn.UDEE.models.Address;
 import com.utn.UDEE.models.Invoice;
 import com.utn.UDEE.models.User;
 import com.utn.UDEE.models.responses.Response;
@@ -16,11 +17,17 @@ public class InvoiceService {
 
     InvoiceRepository invoiceRepository;
     UserService userService;
+    AddressService addressService;
+    MeasurementService measurementService;
+    MeterService meterService;
 
     @Autowired
-    public InvoiceService(InvoiceRepository invoiceRepository, UserService userService) {
+    public InvoiceService(InvoiceRepository invoiceRepository, UserService userService, AddressService addressService, MeasurementService measurementService, MeterService meterService) {
         this.invoiceRepository = invoiceRepository;
         this.userService = userService;
+        this.addressService = addressService;
+        this.measurementService = measurementService;
+        this.meterService = meterService;
     }
 
     public Page<Invoice> getInvoiceBetweenDateByUser(Integer idUser, LocalDate since, LocalDate until, Pageable pageable) {
@@ -39,5 +46,10 @@ public class InvoiceService {
 
     public void deleteInvoiceById(Integer idInvoice) {
         invoiceRepository.deleteById(idInvoice);
+    }
+
+    public Page<Invoice> getAllUnpaidByAddress(Integer idAddress, Pageable pageable) {
+        Address address = addressService.getAddressById(idAddress);
+        return invoiceRepository.findAllByAddressAndPayed(address,false,pageable);
     }
 }
