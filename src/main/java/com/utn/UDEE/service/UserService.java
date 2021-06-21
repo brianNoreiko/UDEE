@@ -12,9 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
+
+import java.util.List;
 
 @Service
 public class UserService {
@@ -66,5 +69,14 @@ public class UserService {
         }else{
             throw new UserDoesNotExist(String.format("User with email %s", email," doesn't exist" ));
         }
+    }
+
+    public User getUserById(Integer id) {
+        return userRepository.findById(id).orElseThrow(()->new HttpClientErrorException(HttpStatus.NOT_FOUND));
+    }
+
+    public Page<User> getAllSorted(Integer page, Integer size, List<Sort.Order> orderParams) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(orderParams));
+        return userRepository.findAll(pageable);
     }
 }

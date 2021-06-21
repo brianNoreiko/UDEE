@@ -1,4 +1,4 @@
-package com.utn.UDEE.controller;
+package com.utn.UDEE.controller.backofficeController;
 
 import com.utn.UDEE.models.Meter;
 import com.utn.UDEE.service.MeterService;
@@ -10,13 +10,13 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Controller
-@RequestMapping("/Meter")
-public class MeterController {
+@RequestMapping("/backoffice/meter")
+public class MeterBackOfficeController {
 
     MeterService meterService;
 
     @Autowired
-    public MeterController(MeterService meterService) {
+    public MeterBackOfficeController(MeterService meterService) {
         this.meterService = meterService;
     }
 

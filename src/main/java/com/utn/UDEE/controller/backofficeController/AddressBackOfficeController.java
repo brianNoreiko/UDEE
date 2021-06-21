@@ -1,4 +1,4 @@
-package com.utn.UDEE.controller;
+package com.utn.UDEE.controller.backofficeController;
 
 import com.utn.UDEE.models.Address;
 import com.utn.UDEE.service.AddressService;
@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/Address")
-public class AddressController {
+@RequestMapping("/backoffice/address")
+public class AddressBackOfficeController {
 
     @Autowired
     AddressService addressService;

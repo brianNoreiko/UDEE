@@ -4,14 +4,21 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Calendar;
+import java.util.Date;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class InvoiceDto {
     private Integer id;
-    private Calendar date;
-    private Double total;
+    private AddressDto address;
+    private MeterDto meter;
+    private UserDto userClient;
+    private Date initialMeasurement;
+    private Date finalMeasurement;
+    private Date date;
+    private Double totalConsumption;
+    private Double totalPayable;
+    private Boolean payed;
 
 }
