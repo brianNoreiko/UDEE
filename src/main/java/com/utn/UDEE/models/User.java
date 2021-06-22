@@ -2,6 +2,7 @@ package com.utn.UDEE.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
@@ -13,7 +14,8 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
-@Entity
+@Entity (name = "users")
+@Builder
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -21,39 +23,39 @@ import java.util.List;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonIgnore
-    private Integer idUser;
+    @Column (name = "userId")
+    private Integer id;
 
-    @NotNull
-    @NotBlank
-    @NotEmpty
+    @NotBlank(message = "The first name can not be blank")
+    @Column (name = "name")
     private String name;
 
-    @NotNull
-    @NotBlank
-    @NotEmpty
+    @NotBlank(message = "The last name can not be blank")
+    @Column (name = "last_name")
     private String lastname;
 
-
-    @NotNull
     @NotBlank
+    @Column (name = "email")
     private String email;
 
-    @NotNull
-    @NotEmpty(message = "Username required")
+    @NotBlank(message = "Username required")
     @Length(min = 4, max= 20, message = "Username must contain between 4 and 20 characters")
+    @Column(name = "username")
     private String username;
+
     @NotNull(message = "Password may not be null")
     @Length(min=6, max=30, message = "Password must contain between 6 and 30 characters.")
+    @Column(name = "password")
     private String password;
 
     @AccessType(AccessType.Type.PROPERTY)
+    @Column(name = "type_user")
     private UserType userType;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "userClient")
     private List<Invoice> invoiceList;
 
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "userClient",fetch = FetchType.EAGER)
     private List<Address> addressList;
 
 

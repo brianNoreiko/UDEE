@@ -17,11 +17,13 @@ public class Rate {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_rate")
+    @Column(name = "rateId")
     private Integer id;
 
+    @Column (name = "value")
     private Double value;
 
+    @Column (name = "type_rate")
     private String typeRate;
 
     @OneToMany(mappedBy = "rate", cascade = CascadeType.ALL)

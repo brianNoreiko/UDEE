@@ -6,12 +6,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity(name = "models")
-@Table(name = "models")
 @Builder
 
 public class Model {
@@ -24,7 +24,10 @@ public class Model {
     @Column(name = "name")
     private String name;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "brandId",foreignKey = @ForeignKey(name = "FK_ModelToBrand"))
+    @ManyToOne (fetch = FetchType.EAGER)
+    @JoinColumn(name = "brandId")
     private Brand Brand;
+
+    @OneToMany(mappedBy = "model", fetch = FetchType.LAZY)
+    private List<Meter> meterList;
 }

@@ -40,7 +40,7 @@ public class MeasurementAppController {
     }
 
     //Consulta de consumo por rango de fechas (el usuario va a ingresar un rango de fechas y quiere saber cuánto consumió en ese periodo en Kwh y dinero)
-    @GetMapping("/maters/{idMeter}/consumptions")
+    @GetMapping("/meters/{idMeter}/consumptions")
     public ResponseEntity<Optional<ClientConsuption>> getConsumptionsBetweenDate(@PathVariable Integer idMeter,
                                                                        @RequestParam(value = "since", defaultValue = "2021-01-01") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate since,
                                                                        @RequestParam(value = "until", defaultValue = "#{T(java.time.LocalDateTime).now()}") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate until) throws SinceUntilException, ResourceException {
