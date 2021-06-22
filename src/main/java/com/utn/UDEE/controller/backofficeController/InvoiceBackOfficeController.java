@@ -43,6 +43,14 @@ public class InvoiceBackOfficeController {
                 .body(Response.builder().message("Invoice created successfully").build());
     }
 
+    public ResponseEntity<List<InvoiceDto>> getAllInvoices(@RequestParam(value = "page", defaultValue = "0") Integer page,
+                                                           @RequestParam(value = "size", defaultValue = "10") Integer size){
+        Pageable pageable = PageRequest.of(page,size);
+        Page<Invoice> invoicePage = invoiceService.getAllInvoices(pageable);
+        Page<InvoiceDto> invoiceDtoPage = invoicePage.map(invoice -> conversionService.convert(invoicePage, InvoiceDto.class));
+        return EntityResponse.listResponse(invoiceDtoPage);
+    }
+
     @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @DeleteMapping("/{idInvoice}")
     public ResponseEntity<Object> deleteInvoiceById(Integer idInvoice){

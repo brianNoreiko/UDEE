@@ -34,6 +34,16 @@ public class MeasurementBackOfficeController {
         this.conversionService = conversionService;
     }
 
+    @PreAuthorize(value ="hasAuthority('EMPLOYEE')")
+    @GetMapping("/")
+    public ResponseEntity<List<MeasurementDto>> getAllMeasurements(@RequestParam(value = "page", defaultValue = "0") Integer page,
+                                                                   @RequestParam(value = "size", defaultValue = "10") Integer size){
+        Pageable pageable = PageRequest.of(page,size);
+        Page<Measurement> measurementPage = measurementService.getAllMeasurements(pageable);
+        Page<MeasurementDto> measurementDtoPage = measurementPage.map(measurement -> conversionService.convert(measurementPage, MeasurementDto.class));
+        return EntityResponse.listResponse(measurementDtoPage);
+    }
+
     //Consulta de mediciones de un domicilio por rango de fechas
     @PreAuthorize(value ="hasAuthority('EMPLOYEE')")
     @GetMapping("/addresses/{idAddress}")
@@ -48,4 +58,16 @@ public class MeasurementBackOfficeController {
         Page<MeasurementDto> measurementDtos = measurementPage.map(measurement -> conversionService.convert(measurement, MeasurementDto.class));
         return EntityResponse.listResponse(measurementDtos);
     }
+
+    /*//Consulta 10 clientes más consumidores en un rango de fechas.
+    @PreAuthorize(value ="hasAuthority('EMPLOYEE')")
+    @GetMapping("/topten")
+    public ResponseEntity<List<MeasurementDto>> getTopTenConsumers(@RequestParam(value = "size", defaultValue = "10") Integer size,
+                                                                   @RequestParam Double KwhConsumed) {
+        Sort.Order topten = new Sort.Order(Sort.Direction.DESC, KwhConsumed);
+
+        Page<Measurement> measurementPage = measurementService.getTopTenConsumers(size, topten);
+        Page<MeasurementDto> measurementDtoPage = measurementPage.map(bill -> conversionService.convert(measurementPage,MeasurementDto.class));
+        return EntityResponse.listResponse(measurementDtoPage);
+    }*/
 }

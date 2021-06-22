@@ -7,7 +7,6 @@ import com.utn.UDEE.models.Meter;
 import com.utn.UDEE.models.dto.MeterDto;
 import com.utn.UDEE.models.responses.Response;
 import com.utn.UDEE.service.MeterService;
-import com.utn.UDEE.service.UserService;
 import com.utn.UDEE.utils.EntityResponse;
 import com.utn.UDEE.utils.EntityURLBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,12 +18,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping("/backoffice/meter")
 public class MeterBackOfficeController {
 
@@ -32,8 +30,9 @@ public class MeterBackOfficeController {
     ConversionService conversionService;
 
     @Autowired
-    public MeterBackOfficeController(MeterService meterService) {
+    public MeterBackOfficeController(MeterService meterService, ConversionService conversionService) {
         this.meterService = meterService;
+        this.conversionService = conversionService;
     }
 
     @PreAuthorize(value = "hasAuthority('EMPLOYEE')")

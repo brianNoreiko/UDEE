@@ -7,11 +7,16 @@ import com.utn.UDEE.exception.doesNotExist.AddressDoesNotExist;
 import com.utn.UDEE.exception.doesNotExist.MeterDoesNotExist;
 import com.utn.UDEE.exception.doesNotExist.RateDoesNotExist;
 import com.utn.UDEE.models.Address;
+import com.utn.UDEE.models.dto.AddressDto;
 import com.utn.UDEE.models.responses.Response;
 import com.utn.UDEE.service.AddressService;
 import com.utn.UDEE.utils.EntityResponse;
 import com.utn.UDEE.utils.EntityURLBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -24,8 +29,25 @@ import java.util.List;
 @RequestMapping("/backoffice/address")
 public class AddressBackOfficeController {
 
-    @Autowired
+
     AddressService addressService;
+    ConversionService conversionService;
+
+    @Autowired
+    public AddressBackOfficeController(AddressService addressService, ConversionService conversionService) {
+        this.addressService = addressService;
+        this.conversionService = conversionService;
+    }
+
+    @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
+    @GetMapping("/")
+    public ResponseEntity<List<AddressDto>> getAllAddresses(@RequestParam(value = "page", defaultValue = "0") Integer page,
+                                                            @RequestParam(value = "size", defaultValue = "10") Integer size){
+        Pageable pageable = PageRequest.of(page,size);
+        Page<Address> addressPage = addressService.getAllAddresses(pageable);
+        Page<AddressDto> addressDtoPage = addressPage.map(address -> conversionService.convert(addressPage, AddressDto.class));
+        return EntityResponse.listResponse(addressDtoPage);
+    }
 
     @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @PostMapping("/")

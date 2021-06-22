@@ -93,7 +93,7 @@ public class UserBackOfficeController {
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .location(EntityURLBuilder.buildURL("users", newUser.getIdUser()))
+                .location(EntityURLBuilder.buildURL("users", newUser.getId()))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(EntityResponse.messageResponse("User created successfully"));
     }

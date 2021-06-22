@@ -5,6 +5,7 @@ import com.utn.UDEE.models.Measurement;
 import com.utn.UDEE.models.Meter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -18,4 +19,6 @@ public interface MeasurementRepository extends JpaRepository<Measurement,Integer
     Page<Measurement> getAllByMeterAndBetweenDate(Meter meter, LocalDate since, LocalDate until, Pageable pageable);
 
     Page<Measurement> getMeasurementByAddressBetweenDate(Address address, LocalDate since, LocalDate until, Pageable pageable);
+
+    //Page<Measurement> getTopTenConsumers(Sort.Order topten, Pageable pageable);
 }

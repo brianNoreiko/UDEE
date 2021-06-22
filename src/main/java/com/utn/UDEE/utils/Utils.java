@@ -23,14 +23,4 @@ public class Utils {
         }
     }
 
-    public static void userPermissionCheck(User queryUser, User clientUser) throws UserDoesNotExist, AccessUnauthorizedException {
-        if(queryUser.getIdUser().equals(clientUser.getIdUser()) || queryUser.getUserType().equals(UserType.EMPLOYEE)) {
-            if(!clientUser.getUserType().equals(UserType.CLIENT)) {
-                throw new UserDoesNotExist(String.format("The client with id %s ",clientUser.getIdUser()," do not exists"));
-            }
-        } else {
-            throw new AccessUnauthorizedException("You have not access to this resource");
-        }
-    }
-
 }

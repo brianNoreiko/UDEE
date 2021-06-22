@@ -1,10 +1,8 @@
 package com.utn.UDEE.service;
 
 import com.utn.UDEE.exception.DeleteException;
-import com.utn.UDEE.exception.alreadyExist.AddressAlreadyExist;
 import com.utn.UDEE.exception.alreadyExist.MeterAlreadyExist;
 import com.utn.UDEE.exception.doesNotExist.MeterDoesNotExist;
-import com.utn.UDEE.models.Address;
 import com.utn.UDEE.models.Meter;
 import com.utn.UDEE.repository.MeterRepository;
 import com.utn.UDEE.repository.UserRepository;
@@ -14,8 +12,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
-
-import java.util.List;
 
 import static java.util.Objects.isNull;
 

@@ -2,32 +2,40 @@ package com.utn.UDEE.service;
 
 import com.utn.UDEE.exception.DeleteException;
 import com.utn.UDEE.exception.PrimaryKeyViolationException;
+import com.utn.UDEE.exception.alreadyExist.AddressAlreadyExist;
 import com.utn.UDEE.exception.doesNotExist.AddressDoesNotExist;
 import com.utn.UDEE.exception.doesNotExist.MeterDoesNotExist;
 import com.utn.UDEE.models.Address;
 import com.utn.UDEE.models.Meter;
 import com.utn.UDEE.models.Rate;
 import com.utn.UDEE.repository.AddressRepository;
-import com.utn.UDEE.exception.alreadyExist.AddressAlreadyExist;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
-import java.util.List;
-
 import static java.util.Objects.isNull;
+
 
 @Service
 public class AddressService {
 
-    @Autowired
     AddressRepository addressRepository;
     MeterService meterService;
     RateService rateService;
 
-    //public Page<Address> getAllAddresses(){ return addressRepository.findAll(); }
+    @Autowired
+    public AddressService(AddressRepository addressRepository, MeterService meterService, RateService rateService) {
+        this.addressRepository = addressRepository;
+        this.meterService = meterService;
+        this.rateService = rateService;
+    }
+
+    public Page<Address> getAllAddresses(Pageable pageable){
+        return addressRepository.findAll(pageable);
+    }
 
     public Address getAddressById(Integer id) {
         return addressRepository.findById(id).orElseThrow(()->new HttpClientErrorException(HttpStatus.NOT_FOUND));
@@ -68,8 +76,11 @@ public class AddressService {
         return  addressRepository.save(address);
     }
 
-    public void deleteAddressById(Integer id) throws DeleteException {
+    public void deleteAddressById(Integer id) throws DeleteException, AddressDoesNotExist {
         Address address = getAddressById(id);
+        if(address == null){
+            throw new AddressDoesNotExist("Address doesn't exist");
+        }
         if(isNull(address.getMeter())) {
             addressRepository.deleteById(id);
         } else {

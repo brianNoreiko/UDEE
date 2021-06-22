@@ -1,9 +1,9 @@
 package com.utn.UDEE.service;
 
+import com.utn.UDEE.exception.doesNotExist.UserDoesNotExist;
 import com.utn.UDEE.models.Address;
 import com.utn.UDEE.models.Invoice;
 import com.utn.UDEE.models.User;
-import com.utn.UDEE.models.responses.Response;
 import com.utn.UDEE.repository.InvoiceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -30,11 +30,14 @@ public class InvoiceService {
         this.meterService = meterService;
     }
 
-    public Page<Invoice> getInvoiceBetweenDateByUser(Integer idUser, LocalDate since, LocalDate until, Pageable pageable) {
+    public Page<Invoice> getInvoiceBetweenDateByUser(Integer idUser, LocalDate since, LocalDate until, Pageable pageable) throws UserDoesNotExist {
         User user = userService.getUserById(idUser);
-        return invoiceRepository.findAllByUserAndDateBetween(user, since, until, pageable);
+        if (user == null) {
+            throw new UserDoesNotExist("User doesn't exist");
+        } else {
+            return invoiceRepository.findAllByUserAndDateBetween(user, since, until, pageable);
+        }
     }
-
     public Page<Invoice> getUnpaidByUser(Integer idUser, Pageable pageable) {
         User user = userService.getUserById(idUser);
         return invoiceRepository.findAllByUserAndPayed(user, false, pageable);
@@ -51,5 +54,9 @@ public class InvoiceService {
     public Page<Invoice> getAllUnpaidByAddress(Integer idAddress, Pageable pageable) {
         Address address = addressService.getAddressById(idAddress);
         return invoiceRepository.findAllByAddressAndPayed(address,false,pageable);
+    }
+
+    public Page<Invoice> getAllInvoices(Pageable pageable) {
+        return invoiceRepository.findAll(pageable);
     }
 }
