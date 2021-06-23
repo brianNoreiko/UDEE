@@ -1,6 +1,6 @@
 package com.utn.UDEE.service;
 
-import com.utn.UDEE.exception.alreadyExist.ModelAlreadyExist;
+import com.utn.UDEE.exception.ResourceAlreadyExistException;
 import com.utn.UDEE.models.Model;
 import com.utn.UDEE.repository.ModelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,12 +23,12 @@ public class ModelService {
         return modelRepository.findById(id).orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND));
     }
 
-    public Model addNewModel(Model model) throws ModelAlreadyExist {
+    public Model addNewModel(Model model) throws ResourceAlreadyExistException {
         Model alreadyExist = getModelById(model.getId());
         if(alreadyExist == null){
             return modelRepository.save(model);
         }else {
-            throw new ModelAlreadyExist("Model Already Exist");
+            throw new ResourceAlreadyExistException("Model Already Exist");
         }
     }
 }

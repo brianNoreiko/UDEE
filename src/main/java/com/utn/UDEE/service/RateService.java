@@ -2,8 +2,8 @@ package com.utn.UDEE.service;
 
 import com.utn.UDEE.exception.DeleteException;
 import com.utn.UDEE.exception.PrimaryKeyViolationException;
-import com.utn.UDEE.exception.alreadyExist.RateAlreadyExist;
-import com.utn.UDEE.exception.doesNotExist.RateDoesNotExist;
+import com.utn.UDEE.exception.ResourceAlreadyExistException;
+import com.utn.UDEE.exception.ResourceDoesNotExistException;
 import com.utn.UDEE.models.Rate;
 import com.utn.UDEE.repository.RateRepository;
 import org.springframework.data.domain.Page;
@@ -25,19 +25,19 @@ public class RateService {
         return rateRepository.findAll(pageable);
     }
 
-    public Rate addRate(Rate rate) throws RateAlreadyExist {
+    public Rate addRate(Rate rate) throws ResourceAlreadyExistException {
         Rate alreadyExist = getRateById(rate.getId());
         if(alreadyExist == null){
             return rateRepository.save(rate);
         }else{
-            throw new RateAlreadyExist("Rate already exist");
+            throw new ResourceAlreadyExistException("Rate already exist");
         }
     }
 
-    public void deleteRateById(Integer idRate) throws DeleteException, RateDoesNotExist {
+    public void deleteRateById(Integer idRate) throws DeleteException, ResourceDoesNotExistException {
         Rate rate = getRateById(idRate);
         if(rate == null){
-            throw new RateDoesNotExist("Rate doesn't exist");
+            throw new ResourceDoesNotExistException("Rate doesn't exist");
         }
         if(rate.getAddressList().isEmpty()){
             rateRepository.delete(rate);
@@ -46,16 +46,16 @@ public class RateService {
         }
     }
 
-    public void updateRate(Integer idToUp, Rate newRate) throws RateDoesNotExist, PrimaryKeyViolationException, RateAlreadyExist {
+    public void updateRate(Integer idToUp, Rate newRate) throws ResourceDoesNotExistException, PrimaryKeyViolationException, ResourceAlreadyExistException {
         Rate toUpdate = getRateById(idToUp);
         if(toUpdate == null){
-            throw new RateDoesNotExist("Rate doesn't exist");
+            throw new ResourceDoesNotExistException("Rate doesn't exist");
         }
         if(toUpdate.getId() != newRate.getId()){
             throw new PrimaryKeyViolationException("Primary key cannot be changed");
         }
         if(toUpdate.equals(newRate)){
-            throw new RateAlreadyExist("You are trying to update the same information! Rate already exist");
+            throw new ResourceAlreadyExistException("You are trying to update the same information! Rate already exist");
         }else{
             rateRepository.save(newRate);
         }

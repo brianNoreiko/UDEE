@@ -1,8 +1,8 @@
 package com.utn.UDEE.service;
 
 import com.utn.UDEE.exception.DeleteException;
-import com.utn.UDEE.exception.alreadyExist.MeterAlreadyExist;
-import com.utn.UDEE.exception.doesNotExist.MeterDoesNotExist;
+import com.utn.UDEE.exception.ResourceAlreadyExistException;
+import com.utn.UDEE.exception.ResourceDoesNotExistException;
 import com.utn.UDEE.models.Meter;
 import com.utn.UDEE.repository.MeterRepository;
 import com.utn.UDEE.repository.UserRepository;
@@ -36,19 +36,19 @@ public class MeterService {
     }
 
 
-    public Meter addMeter(Meter meter) throws MeterAlreadyExist {
+    public Meter addMeter(Meter meter) throws ResourceAlreadyExistException {
         Meter alreadyExist = getMeterById(meter.getSerialNumber());
         if (isNull(alreadyExist)) {
             return meterRepository.save(meter);
         } else {
-            throw new MeterAlreadyExist("Address already exists");
+            throw new ResourceAlreadyExistException("Address already exists");
         }
     }
 
-    public void deleteMeterById(Integer id) throws DeleteException, MeterDoesNotExist {
+    public void deleteMeterById(Integer id) throws DeleteException, ResourceDoesNotExistException {
         Meter meter = getMeterById(id);
         if (meter == null){
-            throw new MeterDoesNotExist("Meter doesn't exist");
+            throw new ResourceDoesNotExistException("Meter doesn't exist");
         }
         if(isNull(meter.getAddress())) {
             meterRepository.deleteById(id);

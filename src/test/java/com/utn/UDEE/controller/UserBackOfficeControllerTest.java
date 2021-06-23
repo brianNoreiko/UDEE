@@ -44,11 +44,6 @@ public class UserBackOfficeControllerTest extends AbstractController {
         assertEquals(HttpStatus.CREATED.value(), resultActions.andReturn().getResponse().getStatus());
     }
 
-    /*@Test
-    public void addAddressToClient() throws Exception{
-        when(userService.addAddressToClient(1,1)).thenReturn(aUser());
-        ResponseEntity<Response> responseEntity = userBackOfficeControllerTest.addAddressToClient(1,1);
-        assertEquals(HttpStatus.ACCEPTED.value(), responseEntity.getStatusCode().value());
-    }*/
+
 
 }

@@ -1,7 +1,7 @@
 package com.utn.UDEE.controller.androidAppController;
 
+import com.utn.UDEE.exception.ResourceDoesNotExistException;
 import com.utn.UDEE.exception.SinceUntilException;
-import com.utn.UDEE.exception.doesNotExist.UserDoesNotExist;
 import com.utn.UDEE.models.Invoice;
 import com.utn.UDEE.models.dto.InvoiceDto;
 import com.utn.UDEE.service.InvoiceService;
@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -40,12 +41,28 @@ public class InvoiceAppController {
                                                                   @RequestParam(value = "size", defaultValue = "10") Integer size,
                                                                   @RequestParam(value = "since", defaultValue = "2021-01-01") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate since,
                                                                   @RequestParam(value = "until", defaultValue = "#{T(java.time.LocalDateTime).now()}") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate until)
-            throws UserDoesNotExist, SinceUntilException {
+            throws ResourceDoesNotExistException, SinceUntilException {
         checkSinceUntil(since, until);
         Pageable pageable = PageRequest.of(page, size);
         Page<Invoice> invoicePage = invoiceService.getInvoiceBetweenDateByUser(idUser, since, until, pageable);
         Page<InvoiceDto> invoiceDtoPage = invoicePage.map(invoice -> conversionService.convert(invoice, InvoiceDto.class));
         return EntityResponse.listResponse(invoiceDtoPage);
+    }
+
+    @GetMapping("/")
+    public ResponseEntity<List<InvoiceDto>> getAllInvoicesByUser(@PathVariable Integer idUser,
+                                                                 @RequestParam(value = "page", defaultValue = "0") Integer page,
+                                                                 @RequestParam(value = "size", defaultValue = "10") Integer size){
+        Pageable pageable = PageRequest.of(page,size);
+        Page<Invoice> invoicePage = invoiceService.getAllInvoicesByUser(idUser, pageable);
+        Page<InvoiceDto> invoiceDtoPage = invoicePage.map(invoice -> conversionService.convert(invoice, InvoiceDto.class));
+        return EntityResponse.listResponse(invoiceDtoPage);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<InvoiceDto> getInvoiceById(@PathVariable Integer id) throws HttpClientErrorException {
+        InvoiceDto invoiceDto = conversionService.convert(invoiceService.getInvoiceById(id), InvoiceDto.class);
+        return ResponseEntity.ok(invoiceDto);
     }
 
     //Consulta de deuda (Facturas impagas)

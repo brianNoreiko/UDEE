@@ -1,8 +1,8 @@
 package com.utn.UDEE.controller.backofficeController;
 
 import com.utn.UDEE.exception.DeleteException;
-import com.utn.UDEE.exception.alreadyExist.MeterAlreadyExist;
-import com.utn.UDEE.exception.doesNotExist.MeterDoesNotExist;
+import com.utn.UDEE.exception.ResourceAlreadyExistException;
+import com.utn.UDEE.exception.ResourceDoesNotExistException;
 import com.utn.UDEE.models.Meter;
 import com.utn.UDEE.models.dto.MeterDto;
 import com.utn.UDEE.models.responses.Response;
@@ -19,6 +19,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.List;
 
@@ -37,7 +38,7 @@ public class MeterBackOfficeController {
 
     @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @PostMapping("/")
-    public ResponseEntity<Response> addMeter(@RequestBody Meter meter) throws MeterAlreadyExist {
+    public ResponseEntity<Response> addMeter(@RequestBody Meter meter) throws ResourceAlreadyExistException {
         Meter meterAdded = meterService.addMeter(meter);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -58,14 +59,14 @@ public class MeterBackOfficeController {
 
     @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @GetMapping("/{id}")
-    public ResponseEntity<MeterDto> getMeterById(@PathVariable Integer id) {
+    public ResponseEntity<MeterDto> getMeterById(@PathVariable Integer id) throws HttpClientErrorException {
         MeterDto meterDto = conversionService.convert(meterService.getMeterById(id), MeterDto.class);
         return ResponseEntity.ok(meterDto);
     }
 
     @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deleteMeterById(@PathVariable Integer id) throws DeleteException, MeterDoesNotExist {
+    public ResponseEntity<Object> deleteMeterById(@PathVariable Integer id) throws DeleteException, ResourceDoesNotExistException {
         meterService.deleteMeterById(id);
         return ResponseEntity.accepted().build();
     }

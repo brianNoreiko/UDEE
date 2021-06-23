@@ -1,7 +1,7 @@
 package com.utn.UDEE.service;
 
-import com.utn.UDEE.exception.alreadyExist.UserAlreadyExist;
-import com.utn.UDEE.exception.doesNotExist.UserDoesNotExist;
+import com.utn.UDEE.exception.ResourceAlreadyExistException;
+import com.utn.UDEE.exception.ResourceDoesNotExistException;
 import com.utn.UDEE.models.Address;
 import com.utn.UDEE.models.User;
 import com.utn.UDEE.models.UserType;
@@ -40,17 +40,17 @@ public class UserService {
                 ,userPage.getTotalElements());
     }
 
-    public User addUser(User user) throws UserAlreadyExist {
+    public User addUser(User user) throws ResourceAlreadyExistException {
         User alreadyExist = userRepository.findByUsernameOrEmail(user.getUsername(), user.getEmail());
 
         if(alreadyExist == null) {
             return userRepository.save(user);
         }else{
-            throw new UserAlreadyExist("Already exist an user with this username/email");
+            throw new ResourceAlreadyExistException("Already exist an user with this username/email");
         }
     }
 
-    public User addAddressToClient(Integer idUser, Integer idAddress) throws UserDoesNotExist {
+    public User addAddressToClient(Integer idUser, Integer idAddress) throws ResourceDoesNotExistException {
         User user  = userRepository.findById(idUser).orElseThrow(()->new HttpClientErrorException(HttpStatus.NOT_FOUND));
         Address address = addressRepository.findById(idAddress).orElseThrow(()-> new HttpClientErrorException(HttpStatus.NOT_FOUND));
 
@@ -58,16 +58,16 @@ public class UserService {
             user.getAddressList().add(address);
                 return userRepository.save(user);
             }else{
-                throw new UserDoesNotExist(String.format("User with id %i", idUser," doesn't exist" ));
+                throw new ResourceDoesNotExistException(String.format("User with id %i", idUser," doesn't exist" ));
             }
         }
 
-    public User findByEmail(String email) throws UserDoesNotExist {
+    public User findByEmail(String email) throws ResourceDoesNotExistException {
         User user = userRepository.findByEmail(email);
         if(user != null){
             return (user);
         }else{
-            throw new UserDoesNotExist(String.format("User with email %s", email," doesn't exist" ));
+            throw new ResourceDoesNotExistException(String.format("User with email %s", email," doesn't exist" ));
         }
     }
 
@@ -79,4 +79,9 @@ public class UserService {
         Pageable pageable = PageRequest.of(page, size, Sort.by(orderParams));
         return userRepository.findAll(pageable);
     }
+    /*public Page<User> getTopTenConsumers(Integer size, Sort.Order topten) {
+        Pageable pageable = PageRequest.of(0,size);
+        return userRepository.getTopTenConsumers(topten,pageable);
+    }*/
+
 }

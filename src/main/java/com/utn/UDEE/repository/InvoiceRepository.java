@@ -17,4 +17,6 @@ public interface InvoiceRepository extends JpaRepository<Invoice,Integer> {
     Page<Invoice> findAllByUserAndPayed(User user, boolean payed, Pageable pageable);
 
     Page<Invoice> findAllByAddressAndPayed(Address address, boolean b, Pageable pageable);
+
+    Page<Invoice> findAllByUser(User user, Pageable pageable);
 }

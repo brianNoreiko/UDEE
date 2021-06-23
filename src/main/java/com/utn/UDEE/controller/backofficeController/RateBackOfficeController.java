@@ -2,8 +2,8 @@ package com.utn.UDEE.controller.backofficeController;
 
 import com.utn.UDEE.exception.DeleteException;
 import com.utn.UDEE.exception.PrimaryKeyViolationException;
-import com.utn.UDEE.exception.alreadyExist.RateAlreadyExist;
-import com.utn.UDEE.exception.doesNotExist.RateDoesNotExist;
+import com.utn.UDEE.exception.ResourceAlreadyExistException;
+import com.utn.UDEE.exception.ResourceDoesNotExistException;
 import com.utn.UDEE.models.Rate;
 import com.utn.UDEE.models.dto.RateDto;
 import com.utn.UDEE.models.responses.Response;
@@ -20,6 +20,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.List;
 
@@ -48,7 +49,7 @@ public class RateBackOfficeController {
 
     @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @GetMapping("/{id}")
-    public ResponseEntity<RateDto> getRateById(@PathVariable Integer idRate){
+    public ResponseEntity<RateDto> getRateById(@PathVariable Integer idRate) throws HttpClientErrorException {
         Rate rate = rateService.getRateById(idRate);
         RateDto rateDto = conversionService.convert(rate, RateDto.class);
         return ResponseEntity.ok(rateDto);
@@ -57,7 +58,7 @@ public class RateBackOfficeController {
 
     @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @PostMapping("/")
-    public ResponseEntity<Response> addRate(@RequestBody Rate rate) throws RateAlreadyExist {
+    public ResponseEntity<Response> addRate(@RequestBody Rate rate) throws ResourceAlreadyExistException {
         Rate rateAdded = rateService.addRate(rate);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -69,14 +70,14 @@ public class RateBackOfficeController {
     @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @PutMapping("/{id}")
     public ResponseEntity<Response> updateRate(@PathVariable Integer idToUp,
-                                               @RequestBody Rate newRate) throws RateDoesNotExist, RateAlreadyExist, PrimaryKeyViolationException {
+                                               @RequestBody Rate newRate) throws ResourceDoesNotExistException, ResourceAlreadyExistException, PrimaryKeyViolationException {
         rateService.updateRate(idToUp, newRate);
         return ResponseEntity.accepted().build();
     }
 
     @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Response> deleteRateById(@PathVariable Integer idRate) throws RateDoesNotExist, DeleteException {
+    public ResponseEntity<Response> deleteRateById(@PathVariable Integer idRate) throws ResourceDoesNotExistException, DeleteException {
         rateService.deleteRateById(idRate);
         return ResponseEntity.accepted().build();
     }

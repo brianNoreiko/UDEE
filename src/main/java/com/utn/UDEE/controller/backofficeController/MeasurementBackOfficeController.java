@@ -1,19 +1,26 @@
 package com.utn.UDEE.controller.backofficeController;
 
+import com.utn.UDEE.exception.ResourceAlreadyExistException;
 import com.utn.UDEE.exception.SinceUntilException;
 import com.utn.UDEE.models.Measurement;
 import com.utn.UDEE.models.dto.MeasurementDto;
+import com.utn.UDEE.models.dto.MeterDto;
+import com.utn.UDEE.models.responses.Response;
 import com.utn.UDEE.service.MeasurementService;
 import com.utn.UDEE.utils.EntityResponse;
+import com.utn.UDEE.utils.EntityURLBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -32,6 +39,24 @@ public class MeasurementBackOfficeController {
     public MeasurementBackOfficeController(MeasurementService measurementService, ConversionService conversionService) {
         this.measurementService = measurementService;
         this.conversionService = conversionService;
+    }
+
+    @PreAuthorize(value ="hasAuthority('EMPLOYEE')")
+    @PostMapping("/")
+    public ResponseEntity<Response> addMeasurement(@RequestBody Measurement measurement) throws ResourceAlreadyExistException {
+        Measurement measurementAdded = measurementService.addMeasurement(measurement);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .location(EntityURLBuilder.buildURL("measurements",measurementAdded.getId()))
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Response.builder().message("Measurement created successfully").build());
+    }
+
+    @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
+    @GetMapping("/{id}")
+    public ResponseEntity<MeasurementDto> getMeasurementById(@PathVariable Integer id) throws HttpClientErrorException {
+        MeasurementDto measurementDto = conversionService.convert(measurementService.getMeasurementById(id), MeasurementDto.class);
+        return ResponseEntity.ok(measurementDto);
     }
 
     @PreAuthorize(value ="hasAuthority('EMPLOYEE')")
@@ -59,15 +84,5 @@ public class MeasurementBackOfficeController {
         return EntityResponse.listResponse(measurementDtos);
     }
 
-    /*//Consulta 10 clientes más consumidores en un rango de fechas.
-    @PreAuthorize(value ="hasAuthority('EMPLOYEE')")
-    @GetMapping("/topten")
-    public ResponseEntity<List<MeasurementDto>> getTopTenConsumers(@RequestParam(value = "size", defaultValue = "10") Integer size,
-                                                                   @RequestParam Double KwhConsumed) {
-        Sort.Order topten = new Sort.Order(Sort.Direction.DESC, KwhConsumed);
 
-        Page<Measurement> measurementPage = measurementService.getTopTenConsumers(size, topten);
-        Page<MeasurementDto> measurementDtoPage = measurementPage.map(bill -> conversionService.convert(measurementPage,MeasurementDto.class));
-        return EntityResponse.listResponse(measurementDtoPage);
-    }*/
 }

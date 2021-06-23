@@ -2,9 +2,8 @@ package com.utn.UDEE.service;
 
 import com.utn.UDEE.exception.DeleteException;
 import com.utn.UDEE.exception.PrimaryKeyViolationException;
-import com.utn.UDEE.exception.alreadyExist.AddressAlreadyExist;
-import com.utn.UDEE.exception.doesNotExist.AddressDoesNotExist;
-import com.utn.UDEE.exception.doesNotExist.MeterDoesNotExist;
+import com.utn.UDEE.exception.ResourceAlreadyExistException;
+import com.utn.UDEE.exception.ResourceDoesNotExistException;
 import com.utn.UDEE.models.Address;
 import com.utn.UDEE.models.Meter;
 import com.utn.UDEE.models.Rate;
@@ -41,20 +40,20 @@ public class AddressService {
         return addressRepository.findById(id).orElseThrow(()->new HttpClientErrorException(HttpStatus.NOT_FOUND));
     }
 
-    public Address addNewAddress(Address address) throws AddressAlreadyExist{
+    public Address addNewAddress(Address address) throws ResourceAlreadyExistException{
         Address addressExists = getAddressById(address.getId());
         if(isNull(addressExists)){
             return addressRepository.save(address);
         }else{
-            throw new AddressAlreadyExist("Address already exists");
+            throw new ResourceAlreadyExistException("Address already exists");
         }
     }
 
 
-    public Address updateAddress(Integer idToUp, Address address) throws AddressAlreadyExist, PrimaryKeyViolationException {
+    public Address updateAddress(Integer idToUp, Address address) throws ResourceAlreadyExistException, PrimaryKeyViolationException {
         Address addressToUpdate = getAddressById(idToUp);
         if(addressToUpdate.equals(address)){
-            throw new AddressAlreadyExist("Nothing to update. The address already exist");
+            throw new ResourceAlreadyExistException("Nothing to update. The address already exist");
         }
         if(address.getId() != addressToUpdate.getId()){
             throw new PrimaryKeyViolationException("Primary key (id) cannot be changed");
@@ -62,7 +61,7 @@ public class AddressService {
         return addressRepository.save(address);
     }
 
-    public Address addMeterToAddress(Integer id, Integer idMeter) throws MeterDoesNotExist, AddressDoesNotExist {
+    public Address addMeterToAddress(Integer id, Integer idMeter) throws ResourceDoesNotExistException {
         Address address = getAddressById(id);
         Meter meter = meterService.getMeterById(idMeter);
         address.setMeter(meter);
@@ -76,10 +75,10 @@ public class AddressService {
         return  addressRepository.save(address);
     }
 
-    public void deleteAddressById(Integer id) throws DeleteException, AddressDoesNotExist {
+    public void deleteAddressById(Integer id) throws DeleteException, ResourceDoesNotExistException {
         Address address = getAddressById(id);
         if(address == null){
-            throw new AddressDoesNotExist("Address doesn't exist");
+            throw new ResourceDoesNotExistException("Address doesn't exist");
         }
         if(isNull(address.getMeter())) {
             addressRepository.deleteById(id);

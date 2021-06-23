@@ -2,9 +2,9 @@ package com.utn.UDEE.controller.backofficeController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.utn.UDEE.exception.ResourceAlreadyExistException;
+import com.utn.UDEE.exception.ResourceDoesNotExistException;
 import com.utn.UDEE.exception.WrongCredentialsException;
-import com.utn.UDEE.exception.alreadyExist.UserAlreadyExist;
-import com.utn.UDEE.exception.doesNotExist.UserDoesNotExist;
 import com.utn.UDEE.models.User;
 import com.utn.UDEE.models.dto.LoginDto;
 import com.utn.UDEE.models.dto.LoginResponse;
@@ -71,6 +71,7 @@ public class UserBackOfficeController {
 
     @GetMapping("/{id}")
     public ResponseEntity<UserDto> getUserById(@PathVariable Integer id) throws HttpClientErrorException {
+        User user = userService.getUserById(id);
         UserDto userDto = conversionService.convert(userService.getUserById(id),UserDto.class);
         return ResponseEntity.ok(userDto);
     }
@@ -88,7 +89,7 @@ public class UserBackOfficeController {
     }
 
     @PostMapping("")
-    public ResponseEntity<Response> addUser(@RequestBody User user) throws UserAlreadyExist {
+    public ResponseEntity<Response> addUser(@RequestBody User user) throws ResourceAlreadyExistException {
         User newUser = userService.addUser(user);
 
         return ResponseEntity
@@ -100,45 +101,22 @@ public class UserBackOfficeController {
 
     @PutMapping("/{id}/addresses/{id}")
     public ResponseEntity<Response> addAddressToClient(@PathVariable Integer idUser,
-                                                        @PathVariable Integer idAddress) throws UserDoesNotExist {
+                                                        @PathVariable Integer idAddress) throws ResourceDoesNotExistException {
         userService.addAddressToClient(idUser, idAddress);
         return ResponseEntity
                 .status(HttpStatus.ACCEPTED)
                 .body(EntityResponse.messageResponse("Address added to user"));
     }
 
+     /*//Consulta 10 clientes más consumidores en un rango de fechas.
+    @PreAuthorize(value ="hasAuthority('EMPLOYEE')")
+    @GetMapping("/topten")
+    public ResponseEntity<List<UserDto>> getTopTenConsumers(@RequestParam(value = "size", defaultValue = "10") Integer size,
+                                                            @RequestParam Double KwhConsumed) {
+        Sort.Order topten = new Sort.Order(Sort.Direction.DESC, KwhConsumed);
 
-    //Login de empleados
-    @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
-    @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody LoginDto userDto) throws WrongCredentialsException {
-        User user = null;
-        try {
-            user = userService.findByEmail(userDto.getEmail());
-        } catch (UserDoesNotExist userDoesNotExist) {
-            userDoesNotExist.printStackTrace();
-        }
-        if (user == null || (user.getUserType().getDescription() != "Empleado") || !(passwordEncoder.matches(userDto.getPassword().trim(), user.getPassword()))){
-            throw new WrongCredentialsException("Bad credentials for employee login");
-        }
-        UserDto dto = modelMapper.map(user, UserDto.class);
-        return ResponseEntity.ok(new LoginResponse(this.generateToken(dto, user.getUserType().getDescription())));
-    }
-
-    public String generateToken(UserDto userDto, String authority) {
-        try {
-            List<GrantedAuthority> grantedAuthorities = AuthorityUtils.commaSeparatedStringToAuthorityList(authority);
-            return Jwts
-                    .builder()
-                    .setId("JWT")
-                    .setSubject(userDto.getEmail())
-                    .claim("user", objectMapper.writeValueAsString(userDto))
-                    .claim("authorities", grantedAuthorities.stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
-                    .setIssuedAt(new Date(System.currentTimeMillis()))
-                    .setExpiration(new Date(System.currentTimeMillis() + 1000000000))
-                    .signWith(SignatureAlgorithm.HS512, JWT_SECRET.getBytes()).compact();
-        } catch (JsonProcessingException e) {
-            return "fail";
-        }
-    }
+        Page<User> userPage = userService.getTopTenConsumers(size, topten);
+        Page<UserDto> userDtoPage = userPage.map(user -> conversionService.convert(userPage,UserDto.class));
+        return EntityResponse.listResponse(userDtoPage);
+    }*/
 }

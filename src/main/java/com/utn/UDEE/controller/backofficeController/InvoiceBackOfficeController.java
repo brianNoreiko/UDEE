@@ -1,5 +1,8 @@
 package com.utn.UDEE.controller.backofficeController;
 
+import com.utn.UDEE.exception.DeleteException;
+import com.utn.UDEE.exception.ResourceAlreadyExistException;
+import com.utn.UDEE.exception.ResourceDoesNotExistException;
 import com.utn.UDEE.models.Invoice;
 import com.utn.UDEE.models.dto.InvoiceDto;
 import com.utn.UDEE.models.responses.Response;
@@ -16,6 +19,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.List;
 
@@ -34,13 +38,20 @@ public class InvoiceBackOfficeController {
 
     @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @PostMapping("/")
-    public ResponseEntity<Response> addInvoice(@RequestBody Invoice invoice){
+    public ResponseEntity<Response> addInvoice(@RequestBody Invoice invoice) throws ResourceAlreadyExistException {
         Invoice invoiceAdded = invoiceService.addNewInvoice(invoice);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .contentType(MediaType.APPLICATION_JSON)
                 .location(EntityURLBuilder.buildURL("invoices",invoiceAdded.getId()))
                 .body(Response.builder().message("Invoice created successfully").build());
+    }
+
+    @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
+    @GetMapping("/{id}")
+    public ResponseEntity<InvoiceDto> getInvoiceById(@PathVariable Integer id) throws HttpClientErrorException {
+        InvoiceDto invoiceDto = conversionService.convert(invoiceService.getInvoiceById(id), InvoiceDto.class);
+        return ResponseEntity.ok(invoiceDto);
     }
 
     public ResponseEntity<List<InvoiceDto>> getAllInvoices(@RequestParam(value = "page", defaultValue = "0") Integer page,
@@ -53,7 +64,7 @@ public class InvoiceBackOfficeController {
 
     @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @DeleteMapping("/{idInvoice}")
-    public ResponseEntity<Object> deleteInvoiceById(Integer idInvoice){
+    public ResponseEntity<Object> deleteInvoiceById(Integer idInvoice) throws ResourceDoesNotExistException, DeleteException {
         invoiceService.deleteInvoiceById(idInvoice);
         return ResponseEntity.accepted().build();
     }

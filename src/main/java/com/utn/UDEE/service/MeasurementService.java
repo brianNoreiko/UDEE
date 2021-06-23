@@ -1,18 +1,25 @@
 package com.utn.UDEE.service;
 
-import com.utn.UDEE.exception.ResourceException;
+import com.utn.UDEE.exception.ResourceAlreadyExistException;
+import com.utn.UDEE.exception.ResourceDoesNotExistException;
 import com.utn.UDEE.models.Address;
 import com.utn.UDEE.models.Measurement;
 import com.utn.UDEE.models.Meter;
+import com.utn.UDEE.models.User;
 import com.utn.UDEE.models.responses.ClientConsuption;
 import com.utn.UDEE.repository.MeasurementRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.Optional;
+
+import static java.util.Objects.isNull;
 
 @Service
 public class MeasurementService {
@@ -20,9 +27,17 @@ public class MeasurementService {
     MeasurementRepository measurementRepository;
     MeterService meterService;
     AddressService addressService;
+    UserService userService;
 
+    @Autowired
+    public MeasurementService(MeasurementRepository measurementRepository, MeterService meterService, AddressService addressService, UserService userService) {
+        this.measurementRepository = measurementRepository;
+        this.meterService = meterService;
+        this.addressService = addressService;
+        this.userService = userService;
+    }
 
-    public Optional<ClientConsuption> getConsumptionByMeterAndBetweenDate(Integer idMeter, LocalDate since, LocalDate until) throws ResourceException {
+    public Optional<ClientConsuption> getConsumptionByMeterAndBetweenDate(Integer idMeter, LocalDate since, LocalDate until) throws ResourceDoesNotExistException {
         Meter meter = meterService.getMeterById(idMeter);
         Optional<ClientConsuption> clientConsuption = Optional.of(new ClientConsuption());
 
@@ -35,7 +50,7 @@ public class MeasurementService {
             clientConsuption.get().setConsumptionCost(measurementList.getLast().getKwhPrice() - measurementList.getFirst().getKwhPrice());
 
         } else{
-            throw new ResourceException("Inexistent resource");
+            throw new ResourceDoesNotExistException("Inexistent resource");
         }
 
 
@@ -58,9 +73,24 @@ public class MeasurementService {
         return measurementRepository.findAll(pageable);
     }
 
-    /*public Page<Measurement> getTopTenConsumers(Integer size, Sort.Order topten) {
-        Pageable pageable = PageRequest.of(0,size);
-        return measurementRepository.getTopTenConsumers(topten,pageable);
-    }*/
+    public Measurement addMeasurement(Measurement measurement) throws ResourceAlreadyExistException {
+        Measurement measurementExist = getMeasurementById(measurement.getId());
+        if(isNull(measurementExist)){
+            return measurementRepository.save(measurement);
+        }else{
+            throw new ResourceAlreadyExistException("Measurement already exists");
+        }
+    }
+
+    public Measurement getMeasurementById(Integer id) {
+        return measurementRepository.findById(id).orElseThrow(()->new HttpClientErrorException(HttpStatus.NOT_FOUND));
+    }
+
+
+    public Page<Measurement> getAllMeasurementsByUser(Integer idUser, Pageable pageable) {
+        User user = userService.getUserById(idUser);
+
+        return measurementRepository.findAllMeasurementsByUser(user, pageable);
+    }
 }
 
