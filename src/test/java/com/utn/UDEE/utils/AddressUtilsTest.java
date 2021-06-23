@@ -19,7 +19,12 @@ public class AddressUtilsTest {
     }
 
     public static AddressDto aAddressDto(){
-        return new AddressDto();
+        AddressDto addressDto = new AddressDto();
+        addressDto.setId(1);
+        addressDto.setStreet("San Lorenzo");
+        addressDto.setNumber(2371);
+        addressDto.setApartment("1° A");
+        return addressDto;
     }
 
     public static Page<Address> aAddressPage() {

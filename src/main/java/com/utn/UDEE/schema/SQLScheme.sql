@@ -305,14 +305,13 @@ CREATE INDEX measurement_info ON measurements(measurementId,date,quantity_kw,pri
 CREATE INDEX user_profile on users (username,name,last_name) Using btree;
 
 #Creacion de procedimiento
-DROP PROCEDURE IF EXISTS p_consult_User_measurements_byDates;
 DELIMITER //
-CREATE PROCEDURE p_consult_User_measurements_byDates(IN pUsername varchar(30), IN pFrom DATETIME, IN pTo DATETIME)
+CREATE PROCEDURE p_consult_User_measurements_byDates(IN pUsername varchar(30), IN pSince DATETIME, IN pUntil DATETIME)
 BEGIN
     DECLARE vFound INT DEFAULT 0;
     SELECT COUNT(*) INTO vFound FROM users WHERE username = pUsername;
     IF(vFound = 1) THEN
-        IF(pFrom > pTo) THEN
+        IF(pSince > pUntil) THEN
             SIGNAL SQLSTATE '10001'
             SET MESSAGE_TEXT = 'The initial date must be lower than the objective date',
             MYSQL_ERRNO = 2.2;
@@ -320,7 +319,7 @@ BEGIN
             SELECT * FROM measurements_report_by_date_user_view
             WHERE Usuario = pUsername
             and Fecha_medición
-            BETWEEN pFrom AND pTo;
+            BETWEEN pSince AND pUntil;
         END IF;
     ELSE
         SIGNAL SQLSTATE '45000'
