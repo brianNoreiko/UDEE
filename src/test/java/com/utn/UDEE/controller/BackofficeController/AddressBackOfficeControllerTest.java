@@ -1,12 +1,9 @@
 package com.utn.UDEE.controller.BackofficeController;
 
 import com.utn.UDEE.AbstractController;
-import com.utn.UDEE.controller.androidAppController.InvoiceAppController;
 import com.utn.UDEE.controller.backofficeController.AddressBackOfficeController;
 import com.utn.UDEE.models.dto.AddressDto;
-import com.utn.UDEE.models.dto.InvoiceDto;
 import com.utn.UDEE.service.AddressService;
-import com.utn.UDEE.service.InvoiceService;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -16,14 +13,12 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.web.servlet.MockMvc;
+
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import static com.utn.UDEE.utils.AddressUtilsTest.aAddress;
 import static com.utn.UDEE.utils.AddressUtilsTest.aAddressDto;
-import static com.utn.UDEE.utils.InvoiceUtilsTest.aInvoice;
-import static com.utn.UDEE.utils.InvoiceUtilsTest.aInvoiceDto;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -59,11 +54,13 @@ public class AddressBackOfficeControllerTest extends AbstractController {
 
     @Test
     public void getAddressById() throws Exception{
+        when(addressService.getAddressById(1)).thenReturn(aAddress());
         when(conversionService.convert(aAddress(), AddressDto.class)).thenReturn(aAddressDto());
 
         ResponseEntity<AddressDto> responseEntity = addressBackOfficeController.getAddressById(1);
 
-        Assert.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertEquals(aAddressDto(), responseEntity.getBody());
     }
 
 }
