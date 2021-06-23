@@ -15,7 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.Optional;
 
@@ -37,7 +37,7 @@ public class MeasurementService {
         this.userService = userService;
     }
 
-    public Optional<ClientConsuption> getConsumptionByMeterAndBetweenDate(Integer idMeter, LocalDate since, LocalDate until) throws ResourceDoesNotExistException {
+    public Optional<ClientConsuption> getConsumptionByMeterAndBetweenDate(Integer idMeter, LocalDateTime since, LocalDateTime until) throws ResourceDoesNotExistException {
         Meter meter = meterService.getMeterById(idMeter);
         Optional<ClientConsuption> clientConsuption = Optional.of(new ClientConsuption());
 
@@ -57,13 +57,13 @@ public class MeasurementService {
         return clientConsuption;
     }
 
-    public Page<Measurement> getAllByMeterAndBetweenDate(Integer idMeter, LocalDate since, LocalDate until, Pageable pageable) {
+    public Page<Measurement> getAllByMeterAndBetweenDate(Integer idMeter, LocalDateTime since, LocalDateTime until, Pageable pageable) {
         Meter meter = meterService.getMeterById(idMeter);
 
         return measurementRepository.getAllByMeterAndBetweenDate(meter,since,until, pageable);
     }
 
-    public Page<Measurement> getMeasurementByAddressBetweenDate(Integer idAddress, LocalDate since, LocalDate until, Pageable pageable) {
+    public Page<Measurement> getMeasurementByAddressBetweenDate(Integer idAddress, LocalDateTime since, LocalDateTime until, Pageable pageable) {
         Address address = addressService.getAddressById(idAddress);
 
         return measurementRepository.getMeasurementByAddressBetweenDate(address,since,until,pageable);

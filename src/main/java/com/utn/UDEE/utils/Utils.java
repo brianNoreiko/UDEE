@@ -1,17 +1,12 @@
 package com.utn.UDEE.utils;
 
-import com.utn.UDEE.exception.AccessUnauthorizedException;
 import com.utn.UDEE.exception.SinceUntilException;
-import com.utn.UDEE.exception.ResourceDoesNotExistException;
-import com.utn.UDEE.models.User;
-import com.utn.UDEE.models.UserType;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class Utils {
 
-    public static void checkSinceUntil(LocalDate since, LocalDate until) throws SinceUntilException {
+    public static void checkSinceUntil(LocalDateTime since, LocalDateTime until) throws SinceUntilException {
         if(since.isAfter(until)) {
             throw new SinceUntilException("'Since' cannot be higher than 'Until'");
         }

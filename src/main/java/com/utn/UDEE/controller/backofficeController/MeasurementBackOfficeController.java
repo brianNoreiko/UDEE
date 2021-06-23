@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.utn.UDEE.utils.Utils.checkSinceUntil;
@@ -75,8 +76,8 @@ public class MeasurementBackOfficeController {
     public ResponseEntity<List<MeasurementDto>> getMeasurementByAddressBetweenDate(@PathVariable Integer idAddress,
                                                                                    @RequestParam(value = "page", defaultValue = "0") Integer page,
                                                                                    @RequestParam(value = "size", defaultValue = "10") Integer size,
-                                                                                   @RequestParam(value = "since", defaultValue = "2021-01-01") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate since,
-                                                                                   @RequestParam(value = "until", defaultValue = "#{T(java.time.LocalDateTime).now()}") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate until) throws SinceUntilException {
+                                                                                   @RequestParam(value = "since", defaultValue = "2021-01-01") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime since,
+                                                                                   @RequestParam(value = "until", defaultValue = "#{T(java.time.LocalDateTime).now()}") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime until) throws SinceUntilException {
         checkSinceUntil(since,until);
         Pageable pageable = PageRequest.of(page,size);
         Page<Measurement> measurementPage =  measurementService.getMeasurementByAddressBetweenDate(idAddress,since,until,pageable);

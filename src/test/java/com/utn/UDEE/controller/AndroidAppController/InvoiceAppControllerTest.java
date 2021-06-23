@@ -12,7 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
@@ -39,11 +39,11 @@ public class InvoiceAppControllerTest {
     @Test
     public void getInvoiceBetweenDateHP() throws Exception{  //HP = Happy Path
         Pageable pageable = PageRequest.of(0,10);
-        when(invoiceService.getInvoiceBetweenDateByUser(1,LocalDate.of(2021, 01, 01), LocalDate.of(2021,02,01), pageable)).thenReturn(aInvoicePage());
+        when(invoiceService.getInvoiceBetweenDateByUser(1,LocalDateTime.of(2021, 01, 01,0,0,0), LocalDateTime.of(2021,02,01,0,0,0), pageable)).thenReturn(aInvoicePage());
         when(conversionService.convert(aInvoice(), InvoiceDto.class)).thenReturn(aInvoiceDto());
         try {
-            LocalDate since = LocalDate.parse("2021-01-01", DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-            LocalDate until = LocalDate.parse("2021-02-01", DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            LocalDateTime since = LocalDateTime.parse("2021-01-01", DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            LocalDateTime until = LocalDateTime.parse("2021-02-01", DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
             ResponseEntity<List<InvoiceDto>> response = invoiceAppController.getInvoiceBetweenDate(1, 0,1, since, until);
 
@@ -59,11 +59,11 @@ public class InvoiceAppControllerTest {
     @Test
     public void getInvoiceBetweenDateNC() throws Exception{  //NC = No Content
         Pageable pageable = PageRequest.of(0,1);
-        when(invoiceService.getInvoiceBetweenDateByUser(1,LocalDate.of(2021, 01, 01), LocalDate.of(2021,02,01), pageable)).thenReturn(aInvoicePage());
+        when(invoiceService.getInvoiceBetweenDateByUser(1, LocalDateTime.of(2021, 01, 01,0,0,0), LocalDateTime.of(2021,02,01,0,0,0), pageable)).thenReturn(aInvoicePage());
         when(conversionService.convert(aInvoice(), InvoiceDto.class)).thenReturn(aInvoiceDto());
         try {
-            LocalDate since = LocalDate.parse("2021-01-01", DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-            LocalDate until = LocalDate.parse("2021-02-01", DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            LocalDateTime since = LocalDateTime.parse("2021-01-01", DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            LocalDateTime until = LocalDateTime.parse("2021-02-01", DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
             ResponseEntity<List<InvoiceDto>> responseEntity = invoiceAppController.getInvoiceBetweenDate(1, 1, 1, since, until);
 
