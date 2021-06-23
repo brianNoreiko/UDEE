@@ -32,7 +32,7 @@ public class UserUtilsTest {
 
     public static User aUser() {
         User u = new User();
-        u.setIdUser(1);
+        u.setId(1);
         u.setUsername("Jorge");
         u.setLastname("Gonzalez");
         u.setEmail("jorgeGonzalez1@hotmail.com");

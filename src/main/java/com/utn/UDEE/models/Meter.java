@@ -1,7 +1,6 @@
 package com.utn.UDEE.models;
 
 
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,7 +10,6 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor
-@Builder
 @Entity (name = "meters")
 
 public class Meter {

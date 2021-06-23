@@ -1,4 +1,4 @@
-package com.utn.UDEE.controller;
+package com.utn.UDEE.controller.BackofficeController;
 
 import com.utn.UDEE.AbstractController;
 import com.utn.UDEE.controller.backofficeController.UserBackOfficeController;

@@ -2,7 +2,7 @@ package com.utn.UDEE.utils;
 
 import com.utn.UDEE.exception.AccessUnauthorizedException;
 import com.utn.UDEE.exception.SinceUntilException;
-import com.utn.UDEE.exception.doesNotExist.UserDoesNotExist;
+import com.utn.UDEE.exception.ResourceDoesNotExistException;
 import com.utn.UDEE.models.User;
 import com.utn.UDEE.models.UserType;
 
