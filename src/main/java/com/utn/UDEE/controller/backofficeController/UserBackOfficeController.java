@@ -1,23 +1,16 @@
 package com.utn.UDEE.controller.backofficeController;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.utn.UDEE.exception.ResourceAlreadyExistException;
 import com.utn.UDEE.exception.ResourceDoesNotExistException;
-import com.utn.UDEE.exception.WrongCredentialsException;
 import com.utn.UDEE.models.User;
-import com.utn.UDEE.models.dto.LoginDto;
-import com.utn.UDEE.models.dto.LoginResponse;
 import com.utn.UDEE.models.dto.UserDto;
 import com.utn.UDEE.models.responses.PaginationResponse;
 import com.utn.UDEE.models.responses.Response;
 import com.utn.UDEE.service.UserService;
 import com.utn.UDEE.utils.EntityResponse;
 import com.utn.UDEE.utils.EntityURLBuilder;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Page;
@@ -26,19 +19,12 @@ import org.springframework.data.domain.Sort.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
-
-import static com.utn.UDEE.utils.Constants.JWT_SECRET;
 
 @Slf4j
 @RestController
@@ -49,15 +35,13 @@ public class UserBackOfficeController {
 
     ConversionService conversionService;
     UserService userService;
-    ModelMapper modelMapper;
     ObjectMapper objectMapper;
     PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserBackOfficeController(ConversionService conversionService, UserService userService, ModelMapper modelMapper, ObjectMapper objectMapper, PasswordEncoder passwordEncoder) {
+    public UserBackOfficeController(ConversionService conversionService, UserService userService, ObjectMapper objectMapper, PasswordEncoder passwordEncoder) {
         this.conversionService = conversionService;
         this.userService = userService;
-        this.modelMapper = modelMapper;
         this.objectMapper = objectMapper;
         this.passwordEncoder = passwordEncoder;
     }
@@ -72,7 +56,7 @@ public class UserBackOfficeController {
     @GetMapping("/{id}")
     public ResponseEntity<UserDto> getUserById(@PathVariable Integer id) throws HttpClientErrorException {
         User user = userService.getUserById(id);
-        UserDto userDto = conversionService.convert(userService.getUserById(id),UserDto.class);
+        UserDto userDto = conversionService.convert(user,UserDto.class);
         return ResponseEntity.ok(userDto);
     }
 
