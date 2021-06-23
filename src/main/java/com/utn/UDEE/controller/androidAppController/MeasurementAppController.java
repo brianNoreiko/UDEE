@@ -43,8 +43,8 @@ public class MeasurementAppController {
 
     @GetMapping("/")
     public ResponseEntity<List<MeasurementDto>> getAllMeasurementsByUser(@PathVariable Integer idUser,
-                                                                 @RequestParam(value = "page", defaultValue = "0") Integer page,
-                                                                 @RequestParam(value = "size", defaultValue = "10") Integer size){
+                                                                         @RequestParam(value = "page", defaultValue = "0") Integer page,
+                                                                         @RequestParam(value = "size", defaultValue = "10") Integer size){
         Pageable pageable = PageRequest.of(page,size);
         Page<Measurement> measurementPage  = measurementService.getAllMeasurementsByUser(idUser, pageable);
         Page<MeasurementDto> measurementDtoPage = measurementPage.map(measurement -> conversionService.convert(measurement, MeasurementDto.class));
@@ -54,8 +54,9 @@ public class MeasurementAppController {
     //Consulta de consumo por rango de fechas (el usuario va a ingresar un rango de fechas y quiere saber cuánto consumió en ese periodo en Kwh y dinero)
     @GetMapping("/meters/{idMeter}/consumptions")
     public ResponseEntity<Optional<ClientConsuption>> getConsumptionsBetweenDate(@PathVariable Integer idMeter,
-                                                                       @RequestParam(value = "since", defaultValue = "2021-01-01") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate since,
-                                                                       @RequestParam(value = "until", defaultValue = "#{T(java.time.LocalDateTime).now()}") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate until) throws SinceUntilException, ResourceDoesNotExistException {
+                                                                                 @RequestParam(value = "since", defaultValue = "2021-01-01") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate since,
+                                                                                 @RequestParam(value = "until", defaultValue = "#{T(java.time.LocalDateTime).now()}") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate until)
+            throws SinceUntilException, ResourceDoesNotExistException {
         checkSinceUntil(since, until);
         System.out.println(since);
         System.out.println(until);

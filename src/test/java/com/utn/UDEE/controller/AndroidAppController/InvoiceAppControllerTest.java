@@ -3,13 +3,6 @@ package com.utn.UDEE.controller.AndroidAppController;
 import com.utn.UDEE.controller.androidAppController.InvoiceAppController;
 import com.utn.UDEE.models.dto.InvoiceDto;
 import com.utn.UDEE.service.InvoiceService;
-import org.junit.jupiter.api.BeforeAll;
-
-import static com.utn.UDEE.utils.InvoiceUtilsTest.*;
-import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -20,11 +13,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
 import java.util.List;
+
+import static com.utn.UDEE.utils.InvoiceUtilsTest.*;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class InvoiceAppControllerTest {
 
@@ -48,7 +45,7 @@ public class InvoiceAppControllerTest {
             LocalDate since = LocalDate.parse("2021-01-01", DateTimeFormatter.ofPattern("yyyy-MM-dd"));
             LocalDate until = LocalDate.parse("2021-02-01", DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
-            ResponseEntity<List<InvoiceDto>> response = invoiceAppController.getInvoiceBetweenDate(1, 1,1, since, until);
+            ResponseEntity<List<InvoiceDto>> response = invoiceAppController.getInvoiceBetweenDate(1, 0,1, since, until);
 
             Assert.assertEquals(aInvoiceDtoPage().getContent().size(),response.getBody().size());
             Assert.assertEquals(HttpStatus.OK, response.getStatusCode());
