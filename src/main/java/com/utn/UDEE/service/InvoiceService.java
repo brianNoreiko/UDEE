@@ -14,7 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import static java.util.Objects.isNull;
 
@@ -36,7 +36,7 @@ public class InvoiceService {
         this.meterService = meterService;
     }
 
-    public Page<Invoice> getInvoiceBetweenDateByUser(Integer idUser, LocalDate since, LocalDate until, Pageable pageable) throws ResourceDoesNotExistException {
+    public Page<Invoice> getInvoiceBetweenDateByUser(Integer idUser, LocalDateTime since, LocalDateTime until, Pageable pageable) throws ResourceDoesNotExistException {
         User user = userService.getUserById(idUser);
         if (user == null) {
             throw new ResourceDoesNotExistException("User doesn't exist");

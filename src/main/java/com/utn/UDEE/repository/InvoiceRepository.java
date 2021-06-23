@@ -9,10 +9,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Repository
 public interface InvoiceRepository extends JpaRepository<Invoice,Integer> {
-    Page<Invoice> findAllByUserAndDateBetween(User user, LocalDate since, LocalDate until, Pageable pageable);
+    Page<Invoice> findAllByUserAndDateBetween(User user, LocalDateTime since, LocalDateTime until, Pageable pageable);
 
     Page<Invoice> findAllByUserAndPayed(User user, boolean payed, Pageable pageable);
 

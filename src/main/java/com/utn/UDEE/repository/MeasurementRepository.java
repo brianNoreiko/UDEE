@@ -11,15 +11,16 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
 public interface MeasurementRepository extends JpaRepository<Measurement,Integer> {
-    List<Measurement> findAllByMeterAndDateBetween(Meter meter, LocalDate since, LocalDate until);
+    List<Measurement> findAllByMeterAndDateBetween(Meter meter, LocalDateTime since, LocalDateTime until);
 
-    Page<Measurement> getAllByMeterAndBetweenDate(Meter meter, LocalDate since, LocalDate until, Pageable pageable);
+    Page<Measurement> getAllByMeterAndBetweenDate(Meter meter, LocalDateTime since, LocalDateTime until, Pageable pageable);
 
-    Page<Measurement> getMeasurementByAddressBetweenDate(Address address, LocalDate since, LocalDate until, Pageable pageable);
+    Page<Measurement> getMeasurementByAddressBetweenDate(Address address, LocalDateTime since, LocalDateTime until, Pageable pageable);
 
     Page<Measurement> findAllMeasurementsByUser(User user, Pageable pageable);
 }

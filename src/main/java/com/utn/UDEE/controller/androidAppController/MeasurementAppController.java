@@ -21,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -54,8 +55,8 @@ public class MeasurementAppController {
     //Consulta de consumo por rango de fechas (el usuario va a ingresar un rango de fechas y quiere saber cuánto consumió en ese periodo en Kwh y dinero)
     @GetMapping("/meters/{idMeter}/consumptions")
     public ResponseEntity<Optional<ClientConsuption>> getConsumptionsBetweenDate(@PathVariable Integer idMeter,
-                                                                                 @RequestParam(value = "since", defaultValue = "2021-01-01") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate since,
-                                                                                 @RequestParam(value = "until", defaultValue = "#{T(java.time.LocalDateTime).now()}") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate until)
+                                                                                 @RequestParam(value = "since", defaultValue = "2021-01-01") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime since,
+                                                                                 @RequestParam(value = "until", defaultValue = "#{T(java.time.LocalDateTime).now()}") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime until)
             throws SinceUntilException, ResourceDoesNotExistException {
         checkSinceUntil(since, until);
         System.out.println(since);
@@ -70,8 +71,8 @@ public class MeasurementAppController {
     public ResponseEntity<List<MeasurementDto>> getMeasurementsBetweenDate(@PathVariable Integer idMeter,
                                                                            @RequestParam(value = "size", defaultValue = "10") Integer size,
                                                                            @RequestParam(value = "page", defaultValue = "0") Integer page,
-                                                                           @RequestParam(value = "since", defaultValue = "2021-01-01") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate since,
-                                                                           @RequestParam(value = "until", defaultValue = "#{T(java.time.LocalDateTime).now()}") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate until) throws SinceUntilException{
+                                                                           @RequestParam(value = "since", defaultValue = "2021-01-01") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime since,
+                                                                           @RequestParam(value = "until", defaultValue = "#{T(java.time.LocalDateTime).now()}") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime until) throws SinceUntilException{
         checkSinceUntil(since,until);
         Pageable pageable = PageRequest.of(page, size);
         Page<Measurement> measurementPage = measurementService.getAllByMeterAndBetweenDate(idMeter,since,until, pageable);
