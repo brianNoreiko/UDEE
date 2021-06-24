@@ -39,8 +39,8 @@ public class AddressService {
     }
 
     public Address addNewAddress(Address address) throws ResourceAlreadyExistException, ResourceDoesNotExistException {
-        Address addressExists = getAddressById(address.getId());
-        if(isNull(addressExists)){
+        boolean addressExists = addressRepository.existsById(address.getId());
+        if(addressExists==false){
             return addressRepository.save(address);
         }else{
             throw new ResourceAlreadyExistException("Address already exists");
@@ -51,7 +51,7 @@ public class AddressService {
     public Address updateAddress(Integer idToUp, Address address) throws ResourceAlreadyExistException, PrimaryKeyViolationException, ResourceDoesNotExistException {
         Address addressToUpdate = getAddressById(idToUp);
         if(addressToUpdate.equals(address)){
-            throw new ResourceAlreadyExistException("Nothing to update. The address already exist");
+            throw new ResourceDoesNotExistException("Nothing to update. The address already exist");
         }
         if(address.getId() != addressToUpdate.getId()){
             throw new PrimaryKeyViolationException("Primary key (id) cannot be changed");

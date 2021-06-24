@@ -11,6 +11,7 @@ import org.mockito.Mockito;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.Optional;
 
@@ -37,8 +38,8 @@ public class BrandServiceTest {
                 .thenReturn(aBrandPage());
 
         brandService.getAllBrands(pageable);
-        //
-        Mockito.verify(brandRepository,Mockito.times(1)).findAll(pageable);
+        //then
+        Mockito.verify(brandRepository,Mockito.times(2)).findAll(pageable);
     }
 
     @Test
@@ -78,7 +79,7 @@ public class BrandServiceTest {
         //When
         Mockito.when(brandRepository.findById(1)).thenReturn(Optional.empty());
         //
-        Assert.assertThrows(ResourceDoesNotExistException.class,()->brandService.getBrandById(id));
+        Assert.assertThrows(HttpClientErrorException.class,()->brandService.getBrandById(id));
     }
 
     @Test

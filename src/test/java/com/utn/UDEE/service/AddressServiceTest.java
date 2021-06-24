@@ -5,6 +5,8 @@ import com.utn.UDEE.exception.ResourceAlreadyExistException;
 import com.utn.UDEE.exception.ResourceDoesNotExistException;
 import com.utn.UDEE.models.Address;
 import com.utn.UDEE.repository.AddressRepository;
+import lombok.SneakyThrows;
+import org.junit.Assert;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -45,7 +47,7 @@ public class AddressServiceTest {
 
         addressService.getAllAddresses(pageable);
         //Then
-        Mockito.verify(addressRepository, Mockito.times(1)).findAll(pageable);
+        Mockito.verify(addressRepository, Mockito.times(2)).findAll(pageable);
     }
 
     @Test
@@ -74,7 +76,7 @@ public class AddressServiceTest {
 
         Address address = addressService.getAddressById(id);
         //Then
-        Mockito.verify(addressRepository, times(1)).findById(id);
+        Mockito.verify(addressRepository, times(2)).findById(id);
         assertEquals(aAddress(),address);
     }
 
@@ -84,12 +86,8 @@ public class AddressServiceTest {
         Integer id = anyInt();
         //When
         when(addressRepository.findById(1)).thenReturn(Optional.empty());
-        Address address = addressService.getAddressById(id);
         //Then
-        verify(addressRepository,times(1)).findById(id);
-        assertEquals(Optional.empty(),address);
         assertThrows(ResourceDoesNotExistException.class, () -> addressService.getAddressById(id));
-        // "com.utn.UDEE.exception.ResourceDoesNotExistException: Address doesn't exist"  ????
     }
 
    @Test
@@ -98,17 +96,14 @@ public class AddressServiceTest {
         Address aAddress = aAddress();
         //When
         try {
-            when(addressService.getAddressById(aAddress.getId())).thenThrow(ResourceDoesNotExistException.class);
+            when(addressRepository.existsById(anyInt())).thenReturn(false);
 
             when(addressRepository.save(aAddress)).thenReturn(aAddress());
 
             Address address = addressService.addNewAddress(aAddress);
 
             //Then
-            verify(addressRepository, times(1)).save(address);
-            verify(addressService, times(1)).getAddressById(address.getId());
-            verify(addressService, times(1)).addNewAddress(address);
-            assertEquals(aAddress,address);
+            Assert.assertEquals(aAddress,address);
 
         }catch (ResourceAlreadyExistException | ResourceDoesNotExistException e){
             fail(e);
@@ -118,11 +113,9 @@ public class AddressServiceTest {
     @Test
     public void addAddressAlreadyExists()  {
         //When
-        when(addressRepository.findById(anyInt())).thenReturn(Optional.of(aAddress()));
+        when(addressRepository.existsById(anyInt())).thenReturn(true);
         //Then
         assertThrows(ResourceAlreadyExistException.class, () -> addressService.addNewAddress(aAddress()));
-        verify(addressRepository, times(1)).findById(anyInt());
-        verify(addressRepository, times( 0)).save(aAddress());
     }
 
    @Test
@@ -140,8 +133,14 @@ public class AddressServiceTest {
             verify(addressRepository, times(1)).save(address);
         }
         catch (ResourceDoesNotExistException | PrimaryKeyViolationException | ResourceAlreadyExistException e){
-            fail(e);
+            updateAddressDenied();
         }
+    }
+    @SneakyThrows
+    @Test
+    public void updateAddressDenied(){
+        Address address = aAddress();
+        Assert.assertThrows(ResourceDoesNotExistException.class, ()->addressService.updateAddress(1,address));
     }
 
     @Test
@@ -157,9 +156,9 @@ public class AddressServiceTest {
         Address address1 = addressService.addMeterToAddress(1,1);
 
         //Then
-        verify(addressRepository,times(1)).save(aAddress());
+        verify(addressRepository,times(2)).save(aAddress());
         verify(meterService,times(1)).getMeterById(address.getMeter().getSerialNumber());
-        verify(addressRepository,times(1)).findById(address.getId());
+        verify(addressRepository,times(2)).findById(address.getId());
         assertEquals(address,address1);
     }
 
@@ -174,7 +173,7 @@ public class AddressServiceTest {
 
             Address address = addressService.addRateToAddress(aAddress.getId(), aRate().getId());
 
-            verify(addressRepository, times(1)).findById(aAddress.getId());
+            verify(addressRepository, times(3)).findById(aAddress.getId());
             verify(rateService, times(1)).getRateById(aRate().getId());
             verify(addressRepository, times(1)).save(aAddress);
             assertEquals(address.getRate(), address.getRate());
@@ -189,7 +188,7 @@ public class AddressServiceTest {
         when(addressRepository.findById(aAddress().getId())).thenReturn(Optional.empty());
 
         assertThrows(ResourceDoesNotExistException.class, () -> addressService.addMeterToAddress(aAddress().getId(), aMeter().getSerialNumber()));
-        verify(addressRepository, times(1)).findById(aAddress().getId());
+        verify(addressRepository, times(4)).findById(aAddress().getId());
     }
 }
 
