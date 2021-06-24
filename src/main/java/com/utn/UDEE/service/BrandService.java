@@ -15,20 +15,24 @@ import static java.util.Objects.isNull;
 @Service
 public class BrandService {
 
-    @Autowired
     BrandRepository brandRepository;
+    @Autowired
+    public  BrandService(BrandRepository brandRepository){
+        this.brandRepository = brandRepository;
+    }
 
     public Page<Brand> getAllBrands(Pageable pageable){
         return brandRepository.findAll(pageable);
     }
 
     public Brand getBrandById(Integer id) {
-        return brandRepository.findById(id).orElseThrow(()->new HttpClientErrorException(HttpStatus.NOT_FOUND));
+        return brandRepository.findById(id)
+                .orElseThrow(()->new HttpClientErrorException(HttpStatus.NOT_FOUND));
     }
 
     public Brand addBrand(Brand brand) throws ResourceAlreadyExistException {
-        Brand brandExist = getBrandById(brand.getId());
-        if(isNull(brandExist)){
+        boolean brandExist = brandRepository.existsById(brand.getId());
+        if(brandExist==false){
             return brandRepository.save(brand);
         }else{
             throw new ResourceAlreadyExistException("Brand already exists");
