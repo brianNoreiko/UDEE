@@ -1,10 +1,8 @@
 package com.utn.UDEE.controller.BackofficeController;
 
 import com.utn.UDEE.AbstractController;
-import com.utn.UDEE.controller.backofficeController.AddressBackOfficeController;
 import com.utn.UDEE.controller.backofficeController.UserBackOfficeController;
 import com.utn.UDEE.models.dto.UserDto;
-import com.utn.UDEE.service.AddressService;
 import com.utn.UDEE.service.UserService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -17,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import static com.utn.UDEE.utils.AddressUtilsTest.aAddressDto;
 import static com.utn.UDEE.utils.UserUtilsTest.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;

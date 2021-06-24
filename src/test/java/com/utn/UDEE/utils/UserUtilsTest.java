@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.utn.UDEE.models.User;
 import com.utn.UDEE.models.UserType;
+import com.utn.UDEE.models.dto.LoginDto;
 import com.utn.UDEE.models.dto.UserDto;
 import com.utn.UDEE.utils.localdate.LocalDateDeserializer;
 import com.utn.UDEE.utils.localdate.LocalDateSerializer;
@@ -41,6 +42,13 @@ public class UserUtilsTest {
         u.setUserType(UserType.CLIENT);
         u.setAddressList(new ArrayList<>());
         return u;
+    }
+
+    public static LoginDto aLoginDto(){
+        LoginDto loginDto = new LoginDto();
+        loginDto.setEmail("brian_mn24@hotmail.com");
+        loginDto.setPassword("123456");
+        return loginDto;
     }
 
 }

@@ -5,9 +5,9 @@ import com.utn.UDEE.models.dto.InvoiceDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.ArrayList;
 
 import static com.utn.UDEE.utils.AddressUtilsTest.aAddress;
 import static com.utn.UDEE.utils.MeterUtilsTest.aMeter;
@@ -34,12 +34,12 @@ public class InvoiceUtilsTest {
 
 
     public static Page<Invoice> aInvoiceEmptyPage() {
-        List<Invoice> billList = Collections.emptyList();
-        return new PageImpl<>(billList);
+        List<Invoice> invoiceList = Collections.emptyList();
+        return new PageImpl<>(invoiceList);
     }
 
     public static Page<InvoiceDto> aInvoiceDtoEmptyPage() {
-        List<InvoiceDto> billDtoList = Collections.emptyList();
-        return new PageImpl<>(billDtoList);
+        List<InvoiceDto> invoiceDtoList = Collections.emptyList();
+        return new PageImpl<>(invoiceDtoList);
     }
 }

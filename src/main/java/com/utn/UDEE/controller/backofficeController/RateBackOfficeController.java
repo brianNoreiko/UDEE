@@ -72,7 +72,10 @@ public class RateBackOfficeController {
     public ResponseEntity<Response> updateRate(@PathVariable Integer idToUp,
                                                @RequestBody Rate newRate) throws ResourceDoesNotExistException, ResourceAlreadyExistException, PrimaryKeyViolationException {
         rateService.updateRate(idToUp, newRate);
-        return ResponseEntity.accepted().build();
+        return ResponseEntity
+                .status(HttpStatus.ACCEPTED)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(EntityResponse.messageResponse("Rate updated successfully"));
     }
 
     @PreAuthorize(value = "hasAuthority('EMPLOYEE')")

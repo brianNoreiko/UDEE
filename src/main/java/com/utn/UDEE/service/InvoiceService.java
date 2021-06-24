@@ -77,7 +77,7 @@ public class InvoiceService {
     }
 
 
-    public Page<Invoice> getAllUnpaidByAddress(Integer idAddress, Pageable pageable) {
+    public Page<Invoice> getAllUnpaidByAddress(Integer idAddress, Pageable pageable) throws ResourceDoesNotExistException {
         Address address = addressService.getAddressById(idAddress);
         return invoiceRepository.findAllByAddressAndPayed(address,false,pageable);
     }

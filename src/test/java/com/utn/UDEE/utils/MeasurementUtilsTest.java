@@ -6,9 +6,10 @@ import com.utn.UDEE.models.dto.MeasurementDto;
 import com.utn.UDEE.models.responses.ClientConsuption;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import java.util.List;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
 
 import static com.utn.UDEE.utils.InvoiceUtilsTest.aInvoice;
 import static com.utn.UDEE.utils.MeterUtilsTest.aMeter;
@@ -49,6 +50,11 @@ public class MeasurementUtilsTest {
 
     public static Page<MeasurementDto> aMeasurementDtoPage(){
         return new PageImpl<>(List.of(aMeasurementDto()));
+    }
+
+    public static Page<Measurement> aMeasurementEmptyPage() {
+        List<Measurement> measurementList = Collections.emptyList();
+        return new PageImpl<>(measurementList);
     }
 
     public static ClientConsuption aClientConsumption(){

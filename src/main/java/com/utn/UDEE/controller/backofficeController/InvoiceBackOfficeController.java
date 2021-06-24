@@ -74,7 +74,7 @@ public class InvoiceBackOfficeController {
     @GetMapping("/addresses/{idAddress}/unpaid")
     public ResponseEntity<List<InvoiceDto>> getAllUnpaidByAddress(@PathVariable Integer idAddress,
                                                                   @RequestParam(value = "page", defaultValue = "0") Integer page,
-                                                                  @RequestParam(value = "size", defaultValue = "10") Integer size){
+                                                                  @RequestParam(value = "size", defaultValue = "10") Integer size) throws ResourceDoesNotExistException {
         Pageable pageable = PageRequest.of(page,size);
         Page<Invoice> invoicePage = invoiceService.getAllUnpaidByAddress(idAddress,pageable);
         Page<InvoiceDto> invoiceDtoPage = invoicePage.map(invoice -> conversionService.convert(invoice, InvoiceDto.class));

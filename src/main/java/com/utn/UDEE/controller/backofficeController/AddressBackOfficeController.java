@@ -50,14 +50,14 @@ public class AddressBackOfficeController {
 
     @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @GetMapping("/{id}")
-    public ResponseEntity<AddressDto> getAddressById(@PathVariable Integer id) throws HttpClientErrorException {
+    public ResponseEntity<AddressDto> getAddressById(@PathVariable Integer id) throws HttpClientErrorException, ResourceDoesNotExistException {
         AddressDto addressDto = conversionService.convert(addressService.getAddressById(id), AddressDto.class);
         return ResponseEntity.ok(addressDto);
     }
 
     @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @PostMapping("/")
-    public ResponseEntity<Response> addNewAddress(@RequestBody Address address) throws ResourceAlreadyExistException{
+    public ResponseEntity<Response> addNewAddress(@RequestBody Address address) throws ResourceAlreadyExistException, ResourceDoesNotExistException {
         Address addressAdded = addressService.addNewAddress(address);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -69,7 +69,7 @@ public class AddressBackOfficeController {
     @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @PutMapping("/{id}")
     public ResponseEntity<Response> updateAddress(@PathVariable Integer idToUp,
-                                                  @RequestBody Address address) throws PrimaryKeyViolationException, ResourceAlreadyExistException {
+                                                  @RequestBody Address address) throws PrimaryKeyViolationException, ResourceAlreadyExistException, ResourceDoesNotExistException {
         addressService.updateAddress(idToUp,address);
         return ResponseEntity
                 .status(HttpStatus.ACCEPTED)
@@ -81,14 +81,14 @@ public class AddressBackOfficeController {
     @PutMapping("/{id}/meters/{idMeter}")
     public ResponseEntity<Response> addMeterToAddress(@PathVariable Integer id, @PathVariable Integer idMeter) throws ResourceAlreadyExistException, ResourceDoesNotExistException {
         addressService.addMeterToAddress(id, idMeter);
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(EntityResponse.messageResponse("The address has been modified"));
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(EntityResponse.messageResponse("The meter has been added"));
     }
 
     @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @PutMapping("/{id}/rates/{idRate}")
     public ResponseEntity<Response> addRateToAddress(@PathVariable Integer id, @PathVariable Integer idRate) throws ResourceAlreadyExistException, ResourceDoesNotExistException {
         addressService.addRateToAddress(id, idRate);
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(EntityResponse.messageResponse("The address has been modified"));
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(EntityResponse.messageResponse("The rate has been added"));
     }
 
     @PreAuthorize(value = "hasAuthority('EMPLOYEE')")

@@ -63,7 +63,7 @@ public class MeasurementService {
         return measurementRepository.getAllByMeterAndBetweenDate(meter,since,until, pageable);
     }
 
-    public Page<Measurement> getMeasurementByAddressBetweenDate(Integer idAddress, LocalDateTime since, LocalDateTime until, Pageable pageable) {
+    public Page<Measurement> getMeasurementByAddressBetweenDate(Integer idAddress, LocalDateTime since, LocalDateTime until, Pageable pageable) throws ResourceDoesNotExistException {
         Address address = addressService.getAddressById(idAddress);
 
         return measurementRepository.getMeasurementByAddressBetweenDate(address,since,until,pageable);
