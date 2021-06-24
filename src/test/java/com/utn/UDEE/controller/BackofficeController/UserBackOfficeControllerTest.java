@@ -37,7 +37,7 @@ public class UserBackOfficeControllerTest extends AbstractController {
     }
 
     @Test
-    public void getAllUsers() throws Exception {
+    public void getAllUsersOK() throws Exception {
 
         final ResultActions resultActions = givenController().perform(MockMvcRequestBuilders
                 .get("/user")
@@ -48,7 +48,7 @@ public class UserBackOfficeControllerTest extends AbstractController {
     }
 
     @Test
-    public void addUser() throws Exception{
+    public void addUserOK() throws Exception{
         final ResultActions resultActions = givenController().perform(MockMvcRequestBuilders
         .post("/user")
         .contentType(MediaType.APPLICATION_JSON)
@@ -59,7 +59,7 @@ public class UserBackOfficeControllerTest extends AbstractController {
     }
 
     @Test
-    public void getUsersById() throws Exception{
+    public void getUsersByIdOK() throws Exception{
         when(userService.getUserById(1)).thenReturn(aUser());
         when(conversionService.convert(aUser(), UserDto.class)).thenReturn(aUserDto());
 

@@ -1,25 +1,21 @@
 package com.utn.UDEE.service;
 
-import com.mysql.cj.x.protobuf.Mysqlx;
 import com.utn.UDEE.exception.ResourceAlreadyExistException;
 import com.utn.UDEE.exception.ResourceDoesNotExistException;
 import com.utn.UDEE.models.Brand;
 import com.utn.UDEE.repository.BrandRepository;
-import org.hibernate.annotations.NotFound;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.mockito.exceptions.misusing.InvalidUseOfMatchersException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.Optional;
 
 import static com.utn.UDEE.utils.BrandUtilsTest.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 public class BrandServiceTest {

@@ -2,9 +2,7 @@ package com.utn.UDEE.controller.androidAppController;
 
 import com.utn.UDEE.exception.ResourceDoesNotExistException;
 import com.utn.UDEE.exception.SinceUntilException;
-import com.utn.UDEE.models.Invoice;
 import com.utn.UDEE.models.Measurement;
-import com.utn.UDEE.models.dto.InvoiceDto;
 import com.utn.UDEE.models.dto.MeasurementDto;
 import com.utn.UDEE.models.responses.ClientConsuption;
 import com.utn.UDEE.service.InvoiceService;
@@ -20,7 +18,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;

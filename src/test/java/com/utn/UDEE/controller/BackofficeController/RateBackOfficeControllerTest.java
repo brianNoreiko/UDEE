@@ -25,7 +25,6 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import java.util.List;
 
 import static com.utn.UDEE.utils.RateUtilsTest.*;
-import static com.utn.UDEE.utils.RateUtilsTest.aRate;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 

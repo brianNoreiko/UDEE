@@ -2,9 +2,9 @@ package com.utn.UDEE.models.responses;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import java.util.List;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
