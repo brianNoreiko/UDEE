@@ -4,6 +4,7 @@ import com.utn.UDEE.AbstractController;
 import com.utn.UDEE.controller.backofficeController.AddressBackOfficeController;
 import com.utn.UDEE.exception.PrimaryKeyViolationException;
 import com.utn.UDEE.exception.ResourceAlreadyExistException;
+import com.utn.UDEE.exception.ResourceDoesNotExistException;
 import com.utn.UDEE.models.Address;
 import com.utn.UDEE.models.dto.AddressDto;
 import com.utn.UDEE.models.responses.Response;
@@ -51,7 +52,7 @@ public class AddressBackOfficeControllerTest extends AbstractController {
     }
 
     @Test
-    public void getAddressByIdOK(){
+    public void getAddressByIdOK() throws ResourceDoesNotExistException {
         when(addressService.getAddressById(1)).thenReturn(aAddress());
         when(conversionService.convert(aAddress(), AddressDto.class)).thenReturn(aAddressDto());
 
@@ -73,7 +74,7 @@ public class AddressBackOfficeControllerTest extends AbstractController {
             Assert.assertEquals(EntityURLBuilder.buildURL("addresses", aAddress().getId()).toString(),responseEntity.getHeaders().get("Location").get(0));
             Assert.assertEquals(HttpStatus.CREATED.value(),responseEntity.getStatusCode().value());
         }
-        catch (ResourceAlreadyExistException e) {
+        catch (ResourceAlreadyExistException | ResourceDoesNotExistException e) {
             e.printStackTrace();
         }
     }
@@ -114,7 +115,7 @@ public class AddressBackOfficeControllerTest extends AbstractController {
             Assert.assertEquals(messageResponse("Address updated successfully"),responseEntity.getBody());
 
         }
-        catch (ResourceAlreadyExistException | PrimaryKeyViolationException e) {
+        catch (ResourceAlreadyExistException | PrimaryKeyViolationException | ResourceDoesNotExistException e) {
             fail(e);
         }
     }

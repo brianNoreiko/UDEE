@@ -2,6 +2,7 @@ package com.utn.UDEE.controller.BackofficeController;
 
 import com.utn.UDEE.controller.backofficeController.MeasurementBackOfficeController;
 import com.utn.UDEE.exception.ResourceAlreadyExistException;
+import com.utn.UDEE.exception.ResourceDoesNotExistException;
 import com.utn.UDEE.exception.SinceUntilException;
 import com.utn.UDEE.models.Measurement;
 import com.utn.UDEE.models.dto.MeasurementDto;
@@ -24,7 +25,6 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.List;
 
 import static com.utn.UDEE.utils.InvoiceUtilsTest.aInvoiceDtoPage;
@@ -98,7 +98,7 @@ public class MeasurementBackOfficeControllerTest {
         Assert.assertEquals(0,responseEntity.getBody().size());
     }
     @Test
-    public void getMeasurementByAddressBetweenDate(){
+    public void getMeasurementByAddressBetweenDate() throws ResourceDoesNotExistException {
         LocalDateTime since = LocalDateTime.parse("2021-06-01 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         LocalDateTime until = LocalDateTime.parse("2020-06-23 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         Pageable pageable = PageRequest.of(0, 1);
@@ -110,7 +110,7 @@ public class MeasurementBackOfficeControllerTest {
 
             Assert.assertEquals(aMeasurementDtoPage().getContent().size(),responseEntity.getBody().size());
             Assert.assertEquals(HttpStatus.OK,responseEntity.getStatusCode());
-        }catch (SinceUntilException e){
+        }catch (SinceUntilException | ResourceDoesNotExistException e){
             fail(e);
         }
     }

@@ -11,9 +11,7 @@ import com.utn.UDEE.repository.AddressRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 
 import static java.util.Objects.isNull;
 
@@ -36,11 +34,11 @@ public class AddressService {
         return addressRepository.findAll(pageable);
     }
 
-    public Address getAddressById(Integer id) {
-        return addressRepository.findById(id).orElseThrow(()->new HttpClientErrorException(HttpStatus.NOT_FOUND));
+    public Address getAddressById(Integer id) throws ResourceDoesNotExistException {
+        return addressRepository.findById(id).orElseThrow(()->new ResourceDoesNotExistException("Address doesn't exist"));
     }
 
-    public Address addNewAddress(Address address) throws ResourceAlreadyExistException{
+    public Address addNewAddress(Address address) throws ResourceAlreadyExistException, ResourceDoesNotExistException {
         Address addressExists = getAddressById(address.getId());
         if(isNull(addressExists)){
             return addressRepository.save(address);
@@ -50,7 +48,7 @@ public class AddressService {
     }
 
 
-    public Address updateAddress(Integer idToUp, Address address) throws ResourceAlreadyExistException, PrimaryKeyViolationException {
+    public Address updateAddress(Integer idToUp, Address address) throws ResourceAlreadyExistException, PrimaryKeyViolationException, ResourceDoesNotExistException {
         Address addressToUpdate = getAddressById(idToUp);
         if(addressToUpdate.equals(address)){
             throw new ResourceAlreadyExistException("Nothing to update. The address already exist");
@@ -68,7 +66,7 @@ public class AddressService {
         return addressRepository.save(address);
     }
 
-    public Address addRateToAddress(Integer id, Integer idRate) {
+    public Address addRateToAddress(Integer id, Integer idRate) throws ResourceDoesNotExistException {
         Address address = getAddressById(id);
         Rate rate = rateService.getRateById(idRate);
         address.setRate(rate);

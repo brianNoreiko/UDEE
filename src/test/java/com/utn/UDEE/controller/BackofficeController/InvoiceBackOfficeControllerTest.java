@@ -123,7 +123,7 @@ public class InvoiceBackOfficeControllerTest {
     }
 
     @Test
-    public void getAllUnpaidByAddress(){
+    public void getAllUnpaidByAddress() throws ResourceDoesNotExistException {
         Pageable pageable = PageRequest.of(1,1);
         when(invoiceService.getAllUnpaidByAddress(1,pageable)).thenReturn(aInvoicePage());
         when(conversionService.convert(aInvoice(), InvoiceDto.class)).thenReturn((InvoiceDto) aInvoiceDtoPage());

@@ -1,16 +1,10 @@
 package com.utn.UDEE.controller.BackofficeController;
 
-import com.utn.UDEE.controller.backofficeController.AddressBackOfficeController;
 import com.utn.UDEE.controller.backofficeController.RateBackOfficeController;
-import com.utn.UDEE.exception.PrimaryKeyViolationException;
 import com.utn.UDEE.exception.ResourceAlreadyExistException;
-import com.utn.UDEE.exception.ResourceDoesNotExistException;
-import com.utn.UDEE.models.Address;
 import com.utn.UDEE.models.Rate;
-import com.utn.UDEE.models.dto.AddressDto;
 import com.utn.UDEE.models.dto.RateDto;
 import com.utn.UDEE.models.responses.Response;
-import com.utn.UDEE.service.AddressService;
 import com.utn.UDEE.service.RateService;
 import com.utn.UDEE.utils.EntityURLBuilder;
 import org.junit.Assert;
@@ -30,11 +24,8 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.List;
 
-import static com.utn.UDEE.utils.AddressUtilsTest.*;
-import static com.utn.UDEE.utils.EntityResponse.messageResponse;
 import static com.utn.UDEE.utils.RateUtilsTest.*;
-import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.ArgumentMatchers.any;
+import static com.utn.UDEE.utils.RateUtilsTest.aRate;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -105,7 +96,7 @@ public class RateBackOfficeControllerTest {
     }
 
     /*@Test
-    public void updateAddress() {
+    public void updateRate() {
         try {
             Mockito.when(rateService.updateRate(any(),any())).thenReturn(aRate());
 

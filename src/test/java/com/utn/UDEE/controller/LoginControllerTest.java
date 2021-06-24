@@ -44,14 +44,12 @@ public class LoginControllerTest {
 
     @Test
     public void loginOk() throws WrongCredentialsException {
-        when(userService.login("brian_mn24@hotmail.com", "123456")).thenReturn(aUser());
+        when(userService.login("brian_mn24@gmail.com", "123456")).thenReturn(aUser());
         when(conversionService.convert(aUser(), UserDto.class)).thenReturn(aUserDto());
-        String token = loginController.generateToken(aUserDto());
-        LoginResponseDto loginResponseDto = LoginResponseDto.builder().token(token).build();
 
-        ResponseEntity<LoginResponseDto> response = loginController.login(aLoginDto());
+        ResponseEntity<LoginResponseDto> responseEntity = loginController.login(aLoginDto());
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
     }
 
 
@@ -67,11 +65,11 @@ public class LoginControllerTest {
 
     @Test
     public void generateToken() {
-        String role = aUserDto().getUserType().toString();
+        String userType = aUserDto().getUserType().toString();
         try {
             ObjectMapper objectMapper = new ObjectMapper();
 
-            List<GrantedAuthority> grantedAuthorities = AuthorityUtils.commaSeparatedStringToAuthorityList(role);
+            List<GrantedAuthority> grantedAuthorities = AuthorityUtils.commaSeparatedStringToAuthorityList(userType);
 
             String token = Jwts
                     .builder()
@@ -80,7 +78,7 @@ public class LoginControllerTest {
                     .claim("user", objectMapper.writeValueAsString(aUserDto()))
                     .claim("authorities", grantedAuthorities.stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
                     .setIssuedAt(new Date(System.currentTimeMillis()))
-                    .setExpiration(new Date(System.currentTimeMillis() + 1000000))
+                    .setExpiration(new Date(System.currentTimeMillis() + 100000000))
                     .signWith(SignatureAlgorithm.HS512, JWT_SECRET.getBytes()).compact();
 
             String tokenReturn = loginController.generateToken(aUserDto());
