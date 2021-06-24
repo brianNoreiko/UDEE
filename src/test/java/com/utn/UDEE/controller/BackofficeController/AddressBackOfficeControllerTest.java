@@ -63,7 +63,6 @@ public class AddressBackOfficeControllerTest extends AbstractController {
 
     @Test
     public void addNewAddressCreated() {
-
         try {
             MockHttpServletRequest request = new MockHttpServletRequest();
             RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));

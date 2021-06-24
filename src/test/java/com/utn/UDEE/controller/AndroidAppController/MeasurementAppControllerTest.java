@@ -71,12 +71,12 @@ public class MeasurementAppControllerTest {
         LocalDateTime until = LocalDateTime.parse("2020-06-23 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         Pageable pageable = PageRequest.of(0, 1);
         when(measurementService.getMeasurementByAddressBetweenDate(1,since,until,pageable)).thenReturn(aMeasurementPage());
-        when(conversionService.convert(aMeasurement(), MeasurementDto.class)).thenReturn(aMeasurementDto()).thenReturn(aMeasurementDto());
+        when(conversionService.convert(aMeasurement(), MeasurementDto.class)).thenReturn(aMeasurementDto());
 
         try{
             ResponseEntity<List<MeasurementDto>> responseEntity = measurementAppController.getMeasurementsBetweenDate(1,1,1,since,until);
 
-            Assert.assertEquals(0,responseEntity.getBody().size());
+            Assert.assertEquals(aMeasurementDtoPage().getContent().size(),responseEntity.getBody().size());
             Assert.assertEquals(HttpStatus.OK,responseEntity.getStatusCode());
         }catch (DateTimeParseException e){
             fail(e);

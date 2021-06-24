@@ -3,14 +3,15 @@ package com.utn.UDEE.utils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.utn.UDEE.models.Meter;
-import com.utn.UDEE.models.Model;
 import com.utn.UDEE.models.dto.MeterDto;
 import com.utn.UDEE.utils.localdate.LocalDateDeserializer;
 import com.utn.UDEE.utils.localdate.LocalDateSerializer;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import java.util.List;
+
 import java.time.LocalDate;
+import java.util.Collections;
+import java.util.List;
 
 import static com.utn.UDEE.utils.ModelUtilsTest.aModel;
 
@@ -38,8 +39,9 @@ public class MeterUtilsTest {
             return new PageImpl<>(List.of(aMeter()));
         }
 
-        public static Page<Meter> aMeterPageWithSpecifications() {
-            return new PageImpl<>(List.of(aMeter()));
+        public static Page<Meter> aMeterEmptyPage() {
+            List<Meter> meterList = Collections.emptyList();
+            return new PageImpl<>(meterList);
         }
 
         public static MeterDto aMeterDto() {

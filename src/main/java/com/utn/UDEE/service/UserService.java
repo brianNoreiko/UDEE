@@ -31,6 +31,10 @@ public class UserService {
         this.addressRepository = addressRepository;
     }
 
+    public User login(String email, String password) {
+        return userRepository.findByEmailAndPassword(email,password);
+    }
+
     public PaginationResponse<User> getAllUsers(Integer page , Integer size){
         Pageable pageable = PageRequest.of(page, size);
         Page<User> userPage = userRepository.getAllUsers();
