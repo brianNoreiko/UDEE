@@ -54,8 +54,8 @@ public class LoginController {
             userDoesNotExist.printStackTrace();
         }
         if(user.getEmail().equalsIgnoreCase(loginDto.getEmail()) && (user.getPassword().equals(loginDto.getPassword()))){
-        UserDto dto = modelMapper.map(user, UserDto.class);
-        return ResponseEntity.ok(new LoginResponse(this.generateToken(dto, user.getUserType().getDescription())));
+            UserDto dto = modelMapper.map(user, UserDto.class);
+            return ResponseEntity.ok(new LoginResponse(this.generateToken(dto, user.getUserType().getDescription())));
         }else {
             throw new WrongCredentialsException("Bad credentials for login");
         }

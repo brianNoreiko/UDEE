@@ -50,10 +50,10 @@ public class User {
     @Column(name = "type_user")
     private UserType userType;
 
-    @OneToMany(mappedBy = "userClient")
+    @OneToMany(mappedBy = "user")
     private List<Invoice> invoiceList;
 
-    @OneToMany(mappedBy = "userClient",fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "user",fetch = FetchType.EAGER)
     private List<Address> addressList;
 
 
