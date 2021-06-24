@@ -31,7 +31,7 @@ public class AddressUtilsTest {
         return new PageImpl<>(List.of(aAddress()));
     }
 
-    public static Page<Address> aAddressPageEmpty() {
+    public static Page<Address> aAddressEmptyPage() {
         List<Address> addressList = Collections.emptyList();
         return new PageImpl<>(addressList);
     }

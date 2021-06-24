@@ -81,14 +81,14 @@ public class AddressBackOfficeController {
     @PutMapping("/{id}/meters/{idMeter}")
     public ResponseEntity<Response> addMeterToAddress(@PathVariable Integer id, @PathVariable Integer idMeter) throws ResourceAlreadyExistException, ResourceDoesNotExistException {
         addressService.addMeterToAddress(id, idMeter);
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(EntityResponse.messageResponse("The address has been modified"));
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(EntityResponse.messageResponse("The meter has been added"));
     }
 
     @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @PutMapping("/{id}/rates/{idRate}")
     public ResponseEntity<Response> addRateToAddress(@PathVariable Integer id, @PathVariable Integer idRate) throws ResourceAlreadyExistException, ResourceDoesNotExistException {
         addressService.addRateToAddress(id, idRate);
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(EntityResponse.messageResponse("The address has been modified"));
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(EntityResponse.messageResponse("The rate has been added"));
     }
 
     @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
