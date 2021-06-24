@@ -210,7 +210,7 @@ tarifa*/
 
 #TRIGGERS
 delimiter //
-create trigger	TRI_add_price_measurement before insert on measurements for each row
+create trigger	tbi_add_price_measurement before insert on measurements for each row
 begin
 	declare vValueRate float default null;
     declare vlastDate datetime default null;
@@ -228,7 +228,7 @@ begin
 End;
 //
 
-create trigger TRI_update_price_measurements after update on rates for each row
+create trigger tau_update_price_measurements after update on rates for each row
 begin
 	update measurements set price_measurement = (price_measurement / old.value) * new.value where measurementId in
 																					(select m.measurementId	from measurements ms

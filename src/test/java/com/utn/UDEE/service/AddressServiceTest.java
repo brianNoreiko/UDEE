@@ -92,7 +92,7 @@ public class AddressServiceTest {
         // "com.utn.UDEE.exception.ResourceDoesNotExistException: Address doesn't exist"  ????
     }
 
-   /* @Test
+   @Test
     public void addNewAddressOK(){
         //Given
         Address aAddress = aAddress();
@@ -113,7 +113,7 @@ public class AddressServiceTest {
         }catch (ResourceAlreadyExistException | ResourceDoesNotExistException e){
             fail(e);
         }
-    }*/
+    }
 
     @Test
     public void addAddressAlreadyExists()  {

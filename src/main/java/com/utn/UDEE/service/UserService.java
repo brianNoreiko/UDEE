@@ -37,7 +37,7 @@ public class UserService {
 
     public PaginationResponse<User> getAllUsers(Integer page , Integer size){
         Pageable pageable = PageRequest.of(page, size);
-        Page<User> userPage = userRepository.getAllUsers();
+        Page<User> userPage = userRepository.getAllUsers(pageable);
 
         return new PaginationResponse<>(userPage.getContent()
                 ,userPage.getTotalPages()

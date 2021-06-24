@@ -10,9 +10,12 @@ import com.utn.UDEE.models.dto.UserDto;
 import com.utn.UDEE.utils.localdate.LocalDateDeserializer;
 import com.utn.UDEE.utils.localdate.LocalDateSerializer;
 import lombok.Builder;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 
 @Builder
 
@@ -42,6 +45,9 @@ public class UserUtilsTest {
         u.setUserType(UserType.CLIENT);
         u.setAddressList(new ArrayList<>());
         return u;
+    }
+    public static Page<User> aUserPage() {
+        return new PageImpl<>(List.of(aUser()));
     }
 
     public static LoginDto aLoginDto(){
