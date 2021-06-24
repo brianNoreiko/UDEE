@@ -16,6 +16,7 @@ import java.util.Optional;
 
 import static com.utn.UDEE.utils.AddressUtilsTest.*;
 import static com.utn.UDEE.utils.MeterUtilsTest.aMeter;
+import static com.utn.UDEE.utils.RateUtilsTest.aRate;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
@@ -91,13 +92,14 @@ public class AddressServiceTest {
         // "com.utn.UDEE.exception.ResourceDoesNotExistException: Address doesn't exist"  ????
     }
 
-    @Test
+   /* @Test
     public void addNewAddressOK(){
         //Given
         Address aAddress = aAddress();
         //When
         try {
-            when(addressService.getAddressById(aAddress.getId())).thenReturn(null);
+            when(addressService.getAddressById(aAddress.getId())).thenThrow(ResourceDoesNotExistException.class);
+
             when(addressRepository.save(aAddress)).thenReturn(aAddress());
 
             Address address = addressService.addNewAddress(aAddress);
@@ -106,11 +108,12 @@ public class AddressServiceTest {
             verify(addressRepository, times(1)).save(address);
             verify(addressService, times(1)).getAddressById(address.getId());
             verify(addressService, times(1)).addNewAddress(address);
+            assertEquals(aAddress,address);
 
         }catch (ResourceAlreadyExistException | ResourceDoesNotExistException e){
             fail(e);
         }
-    }
+    }*/
 
     @Test
     public void addAddressAlreadyExists()  {
@@ -122,7 +125,7 @@ public class AddressServiceTest {
         verify(addressRepository, times( 0)).save(aAddress());
     }
 
-    @Test
+   /* @Test
     public void updateAddressAcepted() {
         Address aAddress = aAddress();
         try {
@@ -138,18 +141,40 @@ public class AddressServiceTest {
         catch (ResourceDoesNotExistException | PrimaryKeyViolationException | ResourceAlreadyExistException e){
             fail(e);
         }
-    }
+    }*/
 
     @Test
     public void addMeterToAddressOK() throws ResourceDoesNotExistException {
         //Given
-        Integer id = anyInt();
-        Integer idMeter = anyInt();
+        Integer id = 1;
+        Integer idMeter = 1;
         Address address = aAddress();
         //When
         when(addressService.getAddressById(id)).thenReturn(aAddress());
         when(meterService.getMeterById(idMeter)).thenReturn(aMeter());
-        address.setMeter(aMeter());
+        aAddress().setMeter(aMeter());
+        when(addressRepository.save(aAddress())).thenReturn(aAddress());
 
+        //Then
+        verify(addressRepository,times(1)).save(aAddress());
+        verify(meterService,times(1)).getMeterById(idMeter);
+        verify(addressService,times(1)).getAddressById(id);
+        assertEquals(aAddress(),address);
+    }
+
+    @Test
+    public void addRateToAddress() throws  ResourceDoesNotExistException{
+        when(addressRepository.findById(aAddress().getId())).thenReturn(Optional.of(aAddress()));
+
+        
+    }
+
+    @Test
+    public void addRateToAddressError() {
+        when(addressRepository.findById(aAddress().getId())).thenReturn(Optional.empty());
+
+        assertThrows(ResourceDoesNotExistException.class, () -> addressService.addMeterToAddress(aAddress().getId(), aMeter().getSerialNumber()));
+        verify(addressRepository, times(1)).findById(aAddress().getId());
     }
 }
+

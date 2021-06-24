@@ -6,8 +6,8 @@ import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.utn.UDEE.exception.WrongCredentialsException;
+import com.utn.UDEE.models.dto.LoginResponseDto;
 import com.utn.UDEE.models.dto.UserDto;
-import com.utn.UDEE.models.responses.LoginResponseDto;
 import com.utn.UDEE.service.UserService;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -38,7 +38,7 @@ public class LoginControllerTest {
     public static void setUp() {
         userService = mock(UserService.class);
         conversionService = mock(ConversionService.class);
-        loginController = new LoginController(userService, conversionService);
+        loginController = new LoginController(userService,conversionService);
     }
 
 
@@ -57,9 +57,9 @@ public class LoginControllerTest {
     public void loginUnauthorized() throws WrongCredentialsException {
         when(userService.login("messirve@gmail.com", "123456")).thenReturn(null);
 
-        ResponseEntity<LoginResponseDto> response = loginController.login(aLoginDto());
+        ResponseEntity<LoginResponseDto> responseEntity = loginController.login(aLoginDto());
 
-        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        assertEquals(HttpStatus.UNAUTHORIZED, responseEntity.getStatusCode());
     }
 
 
