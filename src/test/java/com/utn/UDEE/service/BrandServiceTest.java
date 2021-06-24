@@ -38,7 +38,7 @@ public class BrandServiceTest {
                 .thenReturn(aBrandPage());
 
         brandService.getAllBrands(pageable);
-        //
+        //then
         Mockito.verify(brandRepository,Mockito.times(2)).findAll(pageable);
     }
 
