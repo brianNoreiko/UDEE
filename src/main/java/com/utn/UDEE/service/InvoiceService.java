@@ -44,15 +44,19 @@ public class InvoiceService {
             return invoiceRepository.findAllByUserAndDateBetween(user, since, until, pageable);
         }
     }
-    public Page<Invoice> getUnpaidByUser(Integer idUser, Pageable pageable) {
+    public Page<Invoice> getUnpaidByUser(Integer idUser, Pageable pageable) throws ResourceDoesNotExistException {
         User user = userService.getUserById(idUser);
-        return invoiceRepository.findAllByUserAndPayed(user, false, pageable);
+        if(user == null){
+            throw new ResourceDoesNotExistException("User doesn't exist");
+        }else{
+            return invoiceRepository.findAllByUserAndPayed(user, false, pageable);
+        }
     }
 
     public Invoice addNewInvoice(Invoice invoice) throws ResourceAlreadyExistException {
 
-        Invoice invoiceExist = getInvoiceById(invoice.getId());
-        if(isNull(invoiceExist)){
+        boolean invoiceExist = invoiceRepository.existsById(invoice.getId());
+        if(invoiceExist == false){
             return invoiceRepository.save(invoice);
         }else{
             throw new ResourceAlreadyExistException("Invoice already exists");
@@ -72,23 +76,31 @@ public class InvoiceService {
         }
     }
 
-    public Invoice getInvoiceById(Integer idInvoice) {
-        return invoiceRepository.findById(idInvoice).orElseThrow(()->new HttpClientErrorException(HttpStatus.NOT_FOUND));
+    public Invoice getInvoiceById(Integer idInvoice) throws ResourceDoesNotExistException {
+        return invoiceRepository.findById(idInvoice).orElseThrow(()->new ResourceDoesNotExistException("Invoice doesn't exist"));
     }
 
 
     public Page<Invoice> getAllUnpaidByAddress(Integer idAddress, Pageable pageable) throws ResourceDoesNotExistException {
         Address address = addressService.getAddressById(idAddress);
-        return invoiceRepository.findAllByAddressAndPayed(address,false,pageable);
+        if(address == null){
+            throw new ResourceDoesNotExistException("Address doesn't exist");
+        }else {
+            return invoiceRepository.findAllByAddressAndPayed(address,false,pageable);
+        }
+
     }
 
     public Page<Invoice> getAllInvoices(Pageable pageable) {
         return invoiceRepository.findAll(pageable);
     }
 
-    public Page<Invoice> getAllInvoicesByUser(Integer idUser, Pageable pageable) {
+    public Page<Invoice> getAllInvoicesByUser(Integer idUser, Pageable pageable) throws ResourceDoesNotExistException {
         User user = userService.getUserById(idUser);
-
-        return invoiceRepository.findAllByUser(user, pageable);
+        if(user == null){
+            throw new ResourceDoesNotExistException("User doesn't exist");
+        }else{
+            return invoiceRepository.findAllByUser(user, pageable);
+        }
     }
 }

@@ -52,7 +52,7 @@ public class InvoiceAppController {
     @GetMapping("/")
     public ResponseEntity<List<InvoiceDto>> getAllInvoicesByUser(@PathVariable Integer idUser,
                                                                  @RequestParam(value = "page", defaultValue = "0") Integer page,
-                                                                 @RequestParam(value = "size", defaultValue = "10") Integer size){
+                                                                 @RequestParam(value = "size", defaultValue = "10") Integer size) throws ResourceDoesNotExistException {
         Pageable pageable = PageRequest.of(page,size);
         Page<Invoice> invoicePage = invoiceService.getAllInvoicesByUser(idUser, pageable);
         Page<InvoiceDto> invoiceDtoPage = invoicePage.map(invoice -> conversionService.convert(invoice, InvoiceDto.class));
@@ -60,7 +60,7 @@ public class InvoiceAppController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<InvoiceDto> getInvoiceById(@PathVariable Integer id) throws HttpClientErrorException {
+    public ResponseEntity<InvoiceDto> getInvoiceById(@PathVariable Integer id) throws HttpClientErrorException, ResourceDoesNotExistException {
         InvoiceDto invoiceDto = conversionService.convert(invoiceService.getInvoiceById(id), InvoiceDto.class);
         return ResponseEntity.ok(invoiceDto);
     }
@@ -69,7 +69,7 @@ public class InvoiceAppController {
     @GetMapping("/users/{idClient}/unpaid")
     public ResponseEntity<List<InvoiceDto>> getUnpaidByUser(@PathVariable Integer idUser,
                                                             @RequestParam(value = "page", defaultValue = "0") Integer page,
-                                                            @RequestParam(value = "size", defaultValue = "10") Integer size){
+                                                            @RequestParam(value = "size", defaultValue = "10") Integer size) throws ResourceDoesNotExistException {
         Pageable pageable = PageRequest.of(page, size);
         Page<Invoice> invoicePage = invoiceService.getUnpaidByUser(idUser, pageable);
         Page<InvoiceDto> invoiceDtoPage = invoicePage.map(invoice -> conversionService.convert(invoice,InvoiceDto.class));

@@ -60,7 +60,7 @@ public class InvoiceBackOfficeControllerTest {
     }
 
     @Test
-    public void getInvoiceByIdOK() {
+    public void getInvoiceByIdOK() throws ResourceDoesNotExistException {
         when(invoiceService.getInvoiceById(anyInt())).thenReturn(aInvoice());
         when(conversionService.convert(aInvoice(), InvoiceDto.class)).thenReturn(aInvoiceDto());
 

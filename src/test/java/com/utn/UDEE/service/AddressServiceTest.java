@@ -7,6 +7,7 @@ import com.utn.UDEE.models.Address;
 import com.utn.UDEE.repository.AddressRepository;
 import lombok.SneakyThrows;
 import org.junit.Assert;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -35,6 +36,13 @@ public class AddressServiceTest {
         meterService = mock(MeterService.class);
         rateService = mock(RateService.class);
         addressService = new AddressService(addressRepository,meterService,rateService);
+    }
+
+    @AfterEach
+    public void after(){
+        reset(addressRepository);
+        reset(meterService);
+        reset(rateService);
     }
 
     @Test
