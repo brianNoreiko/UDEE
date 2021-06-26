@@ -45,7 +45,7 @@ public class MeasurementBackOfficeController {
 
     @PreAuthorize(value ="hasAuthority('EMPLOYEE')")
     @PostMapping("/")
-    public ResponseEntity<Response> addMeasurement(@RequestBody Measurement measurement) throws ResourceAlreadyExistException {
+    public ResponseEntity<Response> addMeasurement(@RequestBody Measurement measurement) throws ResourceAlreadyExistException, ResourceDoesNotExistException {
         Measurement measurementAdded = measurementService.addMeasurement(measurement);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -56,7 +56,7 @@ public class MeasurementBackOfficeController {
 
     @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @GetMapping("/{id}")
-    public ResponseEntity<MeasurementDto> getMeasurementById(@PathVariable Integer id) throws HttpClientErrorException {
+    public ResponseEntity<MeasurementDto> getMeasurementById(@PathVariable Integer id) throws ResourceDoesNotExistException {
         MeasurementDto measurementDto = conversionService.convert(measurementService.getMeasurementById(id), MeasurementDto.class);
         return ResponseEntity.ok(measurementDto);
     }

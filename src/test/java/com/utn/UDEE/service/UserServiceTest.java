@@ -6,31 +6,42 @@ import com.utn.UDEE.models.responses.PaginationResponse;
 import com.utn.UDEE.repository.AddressRepository;
 import com.utn.UDEE.repository.UserRepository;
 import com.utn.UDEE.models.*;
+import lombok.SneakyThrows;
+import org.junit.Assert;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import java.util.Optional;
 
 import static com.utn.UDEE.utils.AddressUtilsTest.aAddress;
-import static com.utn.UDEE.utils.UserUtilsTest.aUser;
-import static com.utn.UDEE.utils.UserUtilsTest.aUserPage;
+import static com.utn.UDEE.utils.MeterUtilsTest.aMeter;
+import static com.utn.UDEE.utils.UserUtilsTest.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 public class UserServiceTest {
     private static UserRepository userRepository;
-    private static AddressRepository addressRepository;
+    private static AddressService addressService;
     private static UserService userService;
 
     @BeforeAll
     public static void setUp(){
         userRepository = mock(UserRepository.class);
-        addressRepository = mock(AddressRepository.class);
-        userService = new UserService(userRepository,addressRepository);
+        addressService = mock(AddressService.class);
+        userService = new UserService(userRepository,addressService);
+    }
+
+    @AfterEach
+    public void after(){
+        reset(userRepository);
+        reset(addressService);
     }
 
     @Test
@@ -41,84 +52,125 @@ public class UserServiceTest {
         //When
         Mockito.when(userRepository.findByEmailAndPassword(email,password)).thenReturn(aUser());
 
-        User user = userService.login(aUser().getEmail(),aUser().getPassword());
+        User user = userService.login(email,password);
         //Then
         assertEquals(aUser(), user);
+        verify(userRepository,times(1)).findByEmailAndPassword(email,password);
     }
 
     @Test
     public void getAllUsersOK(){
         //Given
-        Pageable pageable = PageRequest.of(1,1);
+        Integer page = 1;
+        Integer size = 1;
+        Pageable pageable = PageRequest.of(page,size);
         //When
         when(userRepository.getAllUsers(pageable)).thenReturn(aUserPage());
-
-        PaginationResponse<User> userPage = userService.getAllUsers(1,1);
+        Page<User> userPage = userService.getAllUsers(page,size);
         //Then
-        assertEquals(aUserPage().getTotalElements(),userPage.getTotalElements());
-        assertEquals(aUserPage().getTotalPages(), userPage.getTotalPages());
+        assertEquals(aUserPage(),userPage);
+        verify(userRepository,times(1)).getAllUsers(pageable);
+    }
+
+    @Test
+    public void getAllUsersNC(){ //NC == No Content
+        //Given
+        Integer page = 1;
+        Integer size = 1;
+        Pageable pageable = PageRequest.of(page,size);
+        //When
+        when(userRepository.getAllUsers(pageable)).thenReturn(aUserEmptyPage());
+        Page<User> userPage = userService.getAllUsers(page,size);
+        //Then
+        assertEquals(aUserEmptyPage(),userPage);
         verify(userRepository,times(1)).getAllUsers(pageable);
     }
 
     @Test
     public void addUserOK(){
+        //Given
+        User aUser = aUser();
         try {
             //When
-            when(userRepository.findByUsernameOrEmail(aUser().getUsername(), aUser().getEmail())).thenReturn(null);
-            when(userRepository.save(aUser())).thenReturn(aUser());
-            User user = userService.addUser(aUser());
+            when(userRepository.existsById(aUser.getId())).thenReturn(false);
+            when(userRepository.save(aUser)).thenReturn(aUser);
+            User user = userService.addUser(aUser);
 
             //Then
             assertEquals(aUser(),user);
 
-            verify(userRepository,Mockito.times(1)).findByUsernameOrEmail(aUser().getUsername(),aUser().getEmail());
-            verify(userRepository,Mockito.times(1)).save(user);
+            verify(userRepository, times(1)).existsById(aUser.getId());
+            verify(userRepository, times(1)).save(user);
         }
-        catch (ResourceAlreadyExistException ex) {
-            fail(ex);
+        catch (ResourceAlreadyExistException e) {
+            fail(e);
         }
     }
 
     @Test
     public void addUserError() {
         //Given
-        User user = aUser();
+        User aUser = aUser();
         //When
-        when(userRepository.findByUsernameOrEmail(user.getUsername(),user.getEmail())).thenReturn(user);
+        when(userRepository.existsById(aUser.getId())).thenReturn(true);
 
         //Then
-        assertThrows(ResourceAlreadyExistException.class, () -> userService.addUser(user));
+        assertThrows(ResourceAlreadyExistException.class, () -> userService.addUser(aUser));
 
-        verify(userRepository, times(1)).findByUsernameOrEmail(user.getUsername(),user.getEmail());
-        verify(userRepository, times(0)).save(user);
+        verify(userRepository, times(1)).existsById(aUser.getId());
+        verify(userRepository, times(0)).save(aUser);
     }
 
     @Test
-    public void addAddressToClient(){
+    public void addAddressToClientOK(){
+        //Given
+        Integer idUser = 1;
+        Integer idAddress = 1;
         try {
-            User user = aUser();
-            Address aAddress = aAddress();
-            user.getAddressList().add(aAddress);
-            //When
-            when(userRepository.findById(user.getId())).thenReturn(Optional.of(aUser()));
-            when(addressRepository.findById(aAddress.getId())).thenReturn(Optional.of(aAddress()));
-            when(userRepository.save(user)).thenReturn(user);
 
-            User userReturned = userService.addAddressToClient(user.getId(),aAddress.getId());
+            //When
+            when(userService.getUserById(idUser)).thenReturn(aUser());
+            when(addressService.getAddressById(idAddress)).thenReturn(aAddress());
+            when(userRepository.save(aUser())).thenReturn(aUser());
+
+            User user = userService.addAddressToClient(idUser,idAddress);
 
             //Then
-            verify(userRepository,times(1)).findById(user.getId());
-            verify(addressRepository, times(1)).findById(aAddress.getId());
-            verify(userRepository, times(1)).save(user);
-            assertEquals(user, userReturned);
+            verify(userService,times(1)).getUserById(idUser);
+            verify(addressService, times(1)).getAddressById(idAddress);
+            verify(userRepository, times(1)).save(aUser());
+            assertEquals(aUser(), user);
         }
         catch (ResourceDoesNotExistException e) {
-            fail(e);
+            addressToClientDenied();
         }
     }
 
-   /* @Test
-    public void addAddressToClientException(){
+    @Test
+    public void addAddressToClientFail() throws ResourceDoesNotExistException {
+        //Given
+        Integer idUser = 1;
+        Integer idAddress = 1;
+        try {
 
-    }*/
+            //When
+            when(userService.getUserById(idUser)).thenReturn(null);
+            when(addressService.getAddressById(idAddress)).thenReturn(null);
+            //Then
+            assertThrows(ResourceDoesNotExistException.class,() -> userService.addAddressToClient(idUser,idAddress));
+            verify(userService,times(1)).getUserById(idUser);
+            verify(addressService,times(1)).getAddressById(idAddress);
+            verify(userRepository,times(0)).save(aUser());
+        }catch (ResourceDoesNotExistException e){
+            addressToClientDenied();
+        }
+    }
+
+    @SneakyThrows
+    @Test
+    public void addressToClientDenied(){
+        User user = aUser();
+        Address address = aAddress();
+        Assert.assertThrows(ResourceDoesNotExistException.class, ()->userService.addAddressToClient(user.getId(),address.getId()));
+    }
 }

@@ -1,6 +1,7 @@
 package com.utn.UDEE.controller.AndroidAppController;
 
 import com.utn.UDEE.controller.androidAppController.MeasurementAppController;
+import com.utn.UDEE.exception.ResourceDoesNotExistException;
 import com.utn.UDEE.models.dto.MeasurementDto;
 import com.utn.UDEE.models.responses.ClientConsuption;
 import com.utn.UDEE.service.InvoiceService;
@@ -41,7 +42,7 @@ public class MeasurementAppControllerTest {
     }
 
     @Test
-    public void getAllMeasurementsByUser() {
+    public void getAllMeasurementsByUser() throws ResourceDoesNotExistException {
         Pageable pageable = PageRequest.of(1, 1);
         when(measurementService.getAllMeasurementsByUser(1, pageable)).thenReturn(aMeasurementPage());
         when(conversionService.convert(aMeasurement(), MeasurementDto.class)).thenReturn(aMeasurementDto());

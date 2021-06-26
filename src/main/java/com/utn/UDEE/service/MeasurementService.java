@@ -73,7 +73,7 @@ public class MeasurementService {
         return measurementRepository.findAll(pageable);
     }
 
-    public Measurement addMeasurement(Measurement measurement) throws ResourceAlreadyExistException {
+    public Measurement addMeasurement(Measurement measurement) throws ResourceAlreadyExistException, ResourceDoesNotExistException {
         Measurement measurementExist = getMeasurementById(measurement.getId());
         if(isNull(measurementExist)){
             return measurementRepository.save(measurement);
@@ -82,12 +82,12 @@ public class MeasurementService {
         }
     }
 
-    public Measurement getMeasurementById(Integer id) {
-        return measurementRepository.findById(id).orElseThrow(()->new HttpClientErrorException(HttpStatus.NOT_FOUND));
+    public Measurement getMeasurementById(Integer id) throws ResourceDoesNotExistException {
+        return measurementRepository.findById(id).orElseThrow(()->new ResourceDoesNotExistException("Measurement doesn't exist"));
     }
 
 
-    public Page<Measurement> getAllMeasurementsByUser(Integer idUser, Pageable pageable) {
+    public Page<Measurement> getAllMeasurementsByUser(Integer idUser, Pageable pageable) throws ResourceDoesNotExistException {
         User user = userService.getUserById(idUser);
 
         return measurementRepository.findAllMeasurementsByUser(user, pageable);

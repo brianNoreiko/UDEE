@@ -3,6 +3,7 @@ package com.utn.UDEE.utils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.utn.UDEE.models.Invoice;
 import com.utn.UDEE.models.User;
 import com.utn.UDEE.models.UserType;
 import com.utn.UDEE.models.dto.LoginDto;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.PageImpl;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Builder
@@ -48,6 +50,11 @@ public class UserUtilsTest {
     }
     public static Page<User> aUserPage() {
         return new PageImpl<>(List.of(aUser()));
+    }
+
+    public static Page<User> aUserEmptyPage() {
+        List<User> userList = Collections.emptyList();
+        return new PageImpl<>(userList);
     }
 
     public static LoginDto aLoginDto(){

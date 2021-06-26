@@ -42,7 +42,7 @@ public class MeasurementAppController {
     @GetMapping("/")
     public ResponseEntity<List<MeasurementDto>> getAllMeasurementsByUser(@PathVariable Integer idUser,
                                                                          @RequestParam(value = "page", defaultValue = "0") Integer page,
-                                                                         @RequestParam(value = "size", defaultValue = "10") Integer size){
+                                                                         @RequestParam(value = "size", defaultValue = "10") Integer size) throws ResourceDoesNotExistException {
         Pageable pageable = PageRequest.of(page,size);
         Page<Measurement> measurementPage  = measurementService.getAllMeasurementsByUser(idUser, pageable);
         Page<MeasurementDto> measurementDtoPage = measurementPage.map(measurement -> conversionService.convert(measurement, MeasurementDto.class));

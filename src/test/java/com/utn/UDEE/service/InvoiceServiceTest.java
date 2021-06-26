@@ -99,7 +99,7 @@ public class InvoiceServiceTest {
     }
 
     @Test
-    public void getInvoiceBetweenDateByUserFail(){
+    public void getInvoiceBetweenDateByUserFail() throws ResourceDoesNotExistException {
         //Given
         Integer idUser = anyInt();
         LocalDateTime since = LocalDateTime.parse("2021-06-01 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));

@@ -5,8 +5,6 @@ import com.utn.UDEE.exception.ResourceDoesNotExistException;
 import com.utn.UDEE.models.Address;
 import com.utn.UDEE.models.User;
 import com.utn.UDEE.models.UserType;
-import com.utn.UDEE.models.responses.PaginationResponse;
-import com.utn.UDEE.repository.AddressRepository;
 import com.utn.UDEE.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -23,31 +21,34 @@ import java.util.List;
 public class UserService {
 
     private UserRepository userRepository;
-    private AddressRepository addressRepository;
+    private AddressService addressService;
 
     @Autowired
-    public UserService(UserRepository userRepository, AddressRepository addressRepository) {
+    public UserService(UserRepository userRepository, AddressService addressService) {
         this.userRepository = userRepository;
-        this.addressRepository = addressRepository;
+        this.addressService = addressService;
+
     }
 
     public User login(String email, String password) {
         return userRepository.findByEmailAndPassword(email,password);
     }
 
-    public PaginationResponse<User> getAllUsers(Integer page , Integer size){
+    public User getUserById(Integer idUser) throws ResourceDoesNotExistException {
+        return userRepository.findById(idUser).orElseThrow(() -> new ResourceDoesNotExistException("User doesn't exist"));
+    }
+
+    public Page<User> getAllUsers(Integer page , Integer size){
         Pageable pageable = PageRequest.of(page, size);
         Page<User> userPage = userRepository.getAllUsers(pageable);
 
-        return new PaginationResponse<>(userPage.getContent()
-                ,userPage.getTotalPages()
-                ,userPage.getTotalElements());
+        return userPage;
     }
 
     public User addUser(User user) throws ResourceAlreadyExistException {
-        User alreadyExist = userRepository.findByUsernameOrEmail(user.getUsername(), user.getEmail());
+        Boolean alreadyExist = userRepository.existsById(user.getId());
 
-        if(alreadyExist == null) {
+        if(alreadyExist == false) {
             return userRepository.save(user);
         }else{
             throw new ResourceAlreadyExistException("Already exist an user with this username/email");
@@ -55,28 +56,19 @@ public class UserService {
     }
 
     public User addAddressToClient(Integer idUser, Integer idAddress) throws ResourceDoesNotExistException {
-        User user  = userRepository.findById(idUser).orElseThrow(()->new HttpClientErrorException(HttpStatus.NOT_FOUND));
-        Address address = addressRepository.findById(idAddress).orElseThrow(()-> new HttpClientErrorException(HttpStatus.NOT_FOUND));
 
-        if(user.getUserType() == UserType.CLIENT){
+        User user = null;
+
+        user = getUserById(idUser);
+        Address address = addressService.getAddressById(idAddress);
+        if (user == null || address == null) {
+            throw new ResourceDoesNotExistException("User or address doesn't exist");
+        }
+        if (user.getUserType() == UserType.CLIENT) {
             user.getAddressList().add(address);
-                return userRepository.save(user);
-            }else{
-                throw new ResourceDoesNotExistException(String.format("User with id %i", idUser," doesn't exist" ));
-            }
+            user = userRepository.save(user);
         }
-
-    public User findByEmail(String email) throws ResourceDoesNotExistException {
-        User user = userRepository.findByEmail(email);
-        if(user != null){
-            return (user);
-        }else{
-            throw new ResourceDoesNotExistException(String.format("User with email %s", email," doesn't exist" ));
-        }
-    }
-
-    public User getUserById(Integer id) {
-        return userRepository.findById(id).orElseThrow(()->new HttpClientErrorException(HttpStatus.NOT_FOUND));
+        return user;
     }
 
     public Page<User> getAllSorted(Integer page, Integer size, List<Sort.Order> orderParams) {

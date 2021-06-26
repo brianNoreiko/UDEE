@@ -59,13 +59,13 @@ public class MeasurementBackOfficeControllerTest {
             Assert.assertEquals(EntityURLBuilder.buildURL("measurements", aMeasurement().getId()).toString(),responseEntity.getHeaders().get("Location").get(0));
             Assert.assertEquals(HttpStatus.CREATED.value(),responseEntity.getStatusCode().value());
         }
-        catch (ResourceAlreadyExistException e) {
+        catch (ResourceAlreadyExistException | ResourceDoesNotExistException e) {
             e.printStackTrace();
         }
     }
 
     @Test
-    public void getMeasurementByIdOK(){
+    public void getMeasurementByIdOK() throws ResourceDoesNotExistException {
         when(measurementService.getMeasurementById(anyInt())).thenReturn(aMeasurement());
         when(conversionService.convert(aMeasurement(), MeasurementDto.class)).thenReturn(aMeasurementDto());
 

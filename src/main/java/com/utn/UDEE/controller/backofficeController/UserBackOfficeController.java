@@ -47,14 +47,14 @@ public class UserBackOfficeController {
     }
 
     @GetMapping
-    public PaginationResponse<User> getAllUsers(@RequestParam(value = "size", defaultValue = "10" ) Integer size,
-                                                @RequestParam(value = "page", defaultValue = "0") Integer page){
+    public Page<User> getAllUsers(@RequestParam(value = "size", defaultValue = "10" ) Integer size,
+                                  @RequestParam(value = "page", defaultValue = "0") Integer page){
 
         return userService.getAllUsers(page,size);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserDto> getUserById(@PathVariable Integer id) throws HttpClientErrorException {
+    public ResponseEntity<UserDto> getUserById(@PathVariable Integer id) throws ResourceDoesNotExistException {
         User user = userService.getUserById(id);
         UserDto userDto = conversionService.convert(user,UserDto.class);
         return ResponseEntity.ok(userDto);
