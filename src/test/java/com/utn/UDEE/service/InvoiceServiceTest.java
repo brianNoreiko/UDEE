@@ -3,9 +3,12 @@ package com.utn.UDEE.service;
 import com.utn.UDEE.exception.DeleteException;
 import com.utn.UDEE.exception.ResourceAlreadyExistException;
 import com.utn.UDEE.exception.ResourceDoesNotExistException;
+import com.utn.UDEE.models.Address;
 import com.utn.UDEE.models.Invoice;
 import com.utn.UDEE.repository.InvoiceRepository;
+import lombok.SneakyThrows;
 import net.kaczmarzyk.spring.data.jpa.domain.In;
+import org.junit.Assert;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -183,7 +186,7 @@ public class InvoiceServiceTest {
         verify(invoiceRepository,times(0)).save(invoice);
     }
 
-   /* @Test
+   @Test
     public void deleteInvoiceByIdOK() throws ResourceDoesNotExistException, DeleteException {
         //Given
         Integer idInvoice = anyInt();
@@ -198,7 +201,7 @@ public class InvoiceServiceTest {
         verify(invoiceService,times(1)).getInvoiceById(idInvoice);
         verify(invoiceRepository,times(1)).deleteById(idInvoice);
         }catch (ResourceDoesNotExistException | DeleteException e){
-            fail(e);
+            deleteInvoiceDenied();
         }
     }
 
@@ -214,9 +217,17 @@ public class InvoiceServiceTest {
             verify(invoiceService,times(1)).getInvoiceById(idInvoice);
             verify(invoiceRepository,times(0)).deleteById(idInvoice);
         }catch (ResourceDoesNotExistException e){
-            fail(e);
+            deleteInvoiceDenied();
         }
-    }*/
+    }
+
+
+   @SneakyThrows
+   @Test
+   public void deleteInvoiceDenied(){
+       Integer idInvoice = anyInt();
+       Assert.assertThrows(ResourceDoesNotExistException.class, ()->invoiceService.deleteInvoiceById(idInvoice));
+   }
 
     @Test
     public void getInvoiceByIdOK() throws ResourceDoesNotExistException{

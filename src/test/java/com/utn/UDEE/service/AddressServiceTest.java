@@ -1,9 +1,12 @@
 package com.utn.UDEE.service;
 
+import com.utn.UDEE.exception.DeleteException;
 import com.utn.UDEE.exception.PrimaryKeyViolationException;
 import com.utn.UDEE.exception.ResourceAlreadyExistException;
 import com.utn.UDEE.exception.ResourceDoesNotExistException;
 import com.utn.UDEE.models.Address;
+import com.utn.UDEE.models.Meter;
+import com.utn.UDEE.models.Rate;
 import com.utn.UDEE.repository.AddressRepository;
 import lombok.SneakyThrows;
 import org.junit.Assert;
@@ -18,6 +21,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.Optional;
 
 import static com.utn.UDEE.utils.AddressUtilsTest.*;
+import static com.utn.UDEE.utils.InvoiceUtilsTest.aInvoice;
 import static com.utn.UDEE.utils.MeterUtilsTest.aMeter;
 import static com.utn.UDEE.utils.RateUtilsTest.aRate;
 import static org.junit.jupiter.api.Assertions.*;
@@ -50,12 +54,11 @@ public class AddressServiceTest {
         //Given
         Pageable pageable = PageRequest.of(1,1);
         //When
-        Mockito.when(addressRepository.findAll(pageable))
-                .thenReturn(aAddressPage());
-
-        addressService.getAllAddresses(pageable);
+        when(addressRepository.findAll(pageable)).thenReturn(aAddressPage());
+        Page <Address> addressPage = addressService.getAllAddresses(pageable);
         //Then
-        Mockito.verify(addressRepository, Mockito.times(2)).findAll(pageable);
+        assertEquals(aAddressPage(),addressPage);
+        verify(addressRepository, times(1)).findAll(pageable);
     }
 
     @Test
@@ -63,15 +66,13 @@ public class AddressServiceTest {
         //Given
         Pageable pageable = PageRequest.of(1,1);
         //When
-        Mockito.when(addressRepository.findAll(pageable))
+        when(addressRepository.findAll(pageable))
                 .thenReturn(aAddressEmptyPage());
 
         Page<Address> addressPage = addressService.getAllAddresses(pageable);
         //Then
-        Mockito.verify(addressRepository, Mockito.times(1)).findAll(pageable);
-        assertEquals(aAddressEmptyPage().getContent().size(),addressPage.getContent().size() );
-        assertEquals(aAddressEmptyPage().getTotalPages(), addressPage.getTotalPages());
-        assertEquals(aAddressEmptyPage().getTotalElements(),addressPage.getTotalElements());
+        verify(addressRepository, times(1)).findAll(pageable);
+        assertEquals(aAddressEmptyPage(), addressPage);
     }
 
     @Test
@@ -79,12 +80,12 @@ public class AddressServiceTest {
         //Given
         Integer id = anyInt();
         //When
-        Mockito.when(addressRepository.findById(id))
+        when(addressRepository.findById(id))
                 .thenReturn(Optional.of(aAddress()));
 
         Address address = addressService.getAddressById(id);
         //Then
-        Mockito.verify(addressRepository, times(2)).findById(id);
+        verify(addressRepository, times(1)).findById(id);
         assertEquals(aAddress(),address);
     }
 
@@ -96,6 +97,7 @@ public class AddressServiceTest {
         when(addressRepository.findById(1)).thenReturn(Optional.empty());
         //Then
         assertThrows(ResourceDoesNotExistException.class, () -> addressService.getAddressById(id));
+        verify(addressRepository,times(1)).findById(id);
     }
 
    @Test
@@ -104,15 +106,16 @@ public class AddressServiceTest {
         Address aAddress = aAddress();
         //When
         try {
-            when(addressRepository.existsById(anyInt())).thenReturn(false);
+            when(addressRepository.existsById(aAddress.getId())).thenReturn(false);
 
-            when(addressRepository.save(aAddress)).thenReturn(aAddress());
+            when(addressRepository.save(aAddress)).thenReturn(aAddress);
 
             Address address = addressService.addNewAddress(aAddress);
 
             //Then
-            Assert.assertEquals(aAddress,address);
-
+            Assert.assertEquals(aAddress(),address);
+            verify(addressRepository,times(1)).existsById(aAddress.getId());
+            verify(addressRepository,times(1)).save(aAddress);
         }catch (ResourceAlreadyExistException | ResourceDoesNotExistException e){
             fail(e);
         }
@@ -120,30 +123,163 @@ public class AddressServiceTest {
 
     @Test
     public void addAddressAlreadyExists()  {
+        //Given
+        Address aAddress = aAddress();
         //When
-        when(addressRepository.existsById(anyInt())).thenReturn(true);
+        when(addressRepository.existsById(aAddress.getId())).thenReturn(true);
         //Then
         assertThrows(ResourceAlreadyExistException.class, () -> addressService.addNewAddress(aAddress()));
+        verify(addressRepository,times(1)).existsById(aAddress.getId());
+        verify(addressRepository,times(0)).save(aAddress);
     }
 
    @Test
-    public void updateAddressAcepted() {
-         Address address = aAddress();
+    public void updateAddressOK() {
+        //Given
+         Integer idAddressToUp = anyInt();
+         Address aAddress = aAddress();
+         //When
         try {
-            when(addressRepository.findById(anyInt())).thenReturn(Optional.of(aAddress()));
-            when(addressRepository.save(address)).thenReturn(address);
+            when(addressService.getAddressById(idAddressToUp)).thenReturn(aAddress());
+            when(addressRepository.save(aAddress)).thenReturn(aAddress);
 
-            Address address1 = addressService.updateAddress(1,address);
-
-            assertEquals(address,address1);
-
-            verify(addressRepository, times(1)).findById(anyInt());
+            Address address = addressService.updateAddress(idAddressToUp,aAddress);
+            //Then
+            assertEquals(aAddress(),address);
+            verify(addressService, times(1)).getAddressById(idAddressToUp);
             verify(addressRepository, times(1)).save(address);
         }
         catch (ResourceDoesNotExistException | PrimaryKeyViolationException | ResourceAlreadyExistException e){
             updateAddressDenied();
         }
     }
+
+    @Test
+    public void addMeterToAddressOK() throws ResourceDoesNotExistException {
+        //Given
+        Integer idMeter = 1;
+        Integer idAddress = 1;
+        //When
+        try {
+            when(addressService.getAddressById(idAddress)).thenReturn(aAddress());
+            when(meterService.getMeterById(idMeter)).thenReturn(aMeter());
+            when(addressRepository.save(aAddress())).thenReturn(aAddress());
+
+            Address address = addressService.addMeterToAddress(idAddress, idMeter);
+
+            //Then
+            verify(addressRepository, times(1)).save(aAddress());
+            verify(meterService, times(1)).getMeterById(idMeter);
+            verify(addressService, times(1)).getAddressById(idAddress);
+            assertEquals(aAddress(), address);
+        }catch (ResourceDoesNotExistException e){
+            meterToAddressDenied();
+        }
+    }
+
+    @Test
+    public void addMeterToAddressNotExist() throws ResourceDoesNotExistException {
+        //Given
+        Integer idMeter = 1;
+        Integer idAddress = 1;
+        //When
+        try {
+            when(addressService.getAddressById(idAddress)).thenReturn(null);
+            when(meterService.getMeterById(idMeter)).thenReturn(null);
+            //Then
+            assertThrows(ResourceDoesNotExistException.class, () -> addressService.addMeterToAddress(idAddress, idMeter));
+            verify(addressService, times(1)).getAddressById(idAddress);
+            verify(meterService, times(1)).getMeterById(idMeter);
+            verify(addressRepository, times(0)).save(aAddress());
+        }catch (ResourceDoesNotExistException e){
+            meterToAddressDenied();
+        }
+    }
+
+    @Test
+    public void addRateToAddressOk(){
+        //Given
+        Integer idAddress = 1;
+        Integer idRate = 1;
+        //When
+        try {
+            when(addressService.getAddressById(idAddress)).thenReturn(aAddress());
+            when(rateService.getRateById(idRate)).thenReturn(aRate());
+            when(addressRepository.save(aAddress())).thenReturn(aAddress());
+
+            Address address = addressService.addRateToAddress(idAddress,idRate);
+            //Then
+            verify(addressService, times(1)).getAddressById(idAddress);
+            verify(rateService, times(1)).getRateById(idRate);
+            verify(addressRepository, times(1)).save(aAddress());
+            assertEquals(aAddress(),address);
+        }
+        catch (ResourceDoesNotExistException e){
+            rateToAddressDenied();
+        }
+    }
+
+    @Test
+    public void addRateToAddressNotExist() throws ResourceDoesNotExistException {
+        //Given
+        Integer idAddress = 1;
+        Integer idRate = 1;
+        //When
+        try {
+            when(addressService.getAddressById(idAddress)).thenReturn(null);
+            when(rateService.getRateById(idRate)).thenReturn(null);
+            //Then
+            verify(addressService, times(1)).getAddressById(idAddress);
+            verify(rateService, times(1)).getRateById(idRate);
+            verify(addressRepository, times(0)).save(aAddress());
+            assertThrows(ResourceDoesNotExistException.class, () -> addressService.addRateToAddress(idAddress, idRate));
+        }catch (ResourceDoesNotExistException e){
+            rateToAddressDenied();
+        }
+    }
+
+    @Test
+    public void deleteAddressByIdOK() throws ResourceDoesNotExistException, DeleteException {
+        //Given
+        Integer idAddress = anyInt();
+        //When
+        try {
+            when(addressService.getAddressById(idAddress)).thenReturn(aAddress());
+            when(aAddress().getMeter()).thenReturn(null);
+            doNothing().when(addressRepository).deleteById(idAddress);
+
+            addressService.deleteAddressById(idAddress);
+            //Then
+            verify(addressService,times(1)).getAddressById(idAddress);
+            verify(addressRepository,times(1)).deleteById(idAddress);
+        }catch (ResourceDoesNotExistException | DeleteException e){
+            deleteAddressDenied();
+        }
+    }
+
+    @Test
+    public void deleteAddressByIdNotExist() throws ResourceDoesNotExistException{
+        //Given
+        Integer idAddress = anyInt();
+        //When
+        try {
+            when(addressService.getAddressById(idAddress)).thenReturn(null);
+            //Then
+            assertThrows(ResourceDoesNotExistException.class,() -> addressService.deleteAddressById(idAddress));
+            verify(addressService,times(1)).getAddressById(idAddress);
+            verify(addressRepository,times(0)).deleteById(idAddress);
+        }catch (ResourceDoesNotExistException e){
+            deleteAddressDenied();
+        }
+    }
+
+    @SneakyThrows
+    @Test
+    public void deleteAddressDenied(){
+        Integer idAddress = anyInt();
+        Assert.assertThrows(ResourceDoesNotExistException.class, ()->addressService.deleteAddressById(idAddress));
+    }
+
     @SneakyThrows
     @Test
     public void updateAddressDenied(){
@@ -151,52 +287,20 @@ public class AddressServiceTest {
         Assert.assertThrows(ResourceDoesNotExistException.class, ()->addressService.updateAddress(1,address));
     }
 
+    @SneakyThrows
     @Test
-    public void addMeterToAddressOK() throws ResourceDoesNotExistException {
-        //Given
+    public void meterToAddressDenied(){
         Address address = aAddress();
-        //When
-        when(addressRepository.findById(address.getId())).thenReturn(Optional.of(aAddress()));
-        when(meterService.getMeterById(address.getMeter().getSerialNumber())).thenReturn(aMeter());
-        address.setMeter(aMeter());
-        when(addressRepository.save(address)).thenReturn(address);
-
-        Address address1 = addressService.addMeterToAddress(1,1);
-
-        //Then
-        verify(addressRepository,times(2)).save(aAddress());
-        verify(meterService,times(1)).getMeterById(address.getMeter().getSerialNumber());
-        verify(addressRepository,times(2)).findById(address.getId());
-        assertEquals(address,address1);
+        Meter meter = aMeter();
+        Assert.assertThrows(ResourceDoesNotExistException.class, ()->addressService.addMeterToAddress(address.getId(),meter.getSerialNumber()));
     }
 
+    @SneakyThrows
     @Test
-    public void addRateToAddressOk(){
-        try {
-            Address aAddress = aAddress();
-            aAddress.setRate(aRate());
-            when(addressRepository.findById(aAddress.getId())).thenReturn(Optional.of(aAddress));
-            when(rateService.getRateById(aRate().getId())).thenReturn(aRate());
-            when(addressRepository.save(aAddress)).thenReturn(aAddress);
-
-            Address address = addressService.addRateToAddress(aAddress.getId(), aRate().getId());
-
-            verify(addressRepository, times(3)).findById(aAddress.getId());
-            verify(rateService, times(1)).getRateById(aRate().getId());
-            verify(addressRepository, times(1)).save(aAddress);
-            assertEquals(address.getRate(), address.getRate());
-        }
-        catch (ResourceDoesNotExistException e){
-            fail(e);
-        }
-    }
-
-    @Test
-    public void addRateToAddressError() {
-        when(addressRepository.findById(aAddress().getId())).thenReturn(Optional.empty());
-
-        assertThrows(ResourceDoesNotExistException.class, () -> addressService.addMeterToAddress(aAddress().getId(), aMeter().getSerialNumber()));
-        verify(addressRepository, times(4)).findById(aAddress().getId());
+    public void rateToAddressDenied(){
+        Address address = aAddress();
+        Rate rate = aRate();
+        Assert.assertThrows(ResourceDoesNotExistException.class, ()->addressService.addMeterToAddress(address.getId(),rate.getId()));
     }
 }
 

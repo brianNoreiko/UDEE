@@ -40,7 +40,7 @@ public class AddressService {
 
     public Address addNewAddress(Address address) throws ResourceAlreadyExistException, ResourceDoesNotExistException {
         boolean addressExists = addressRepository.existsById(address.getId());
-        if(addressExists==false){
+        if(addressExists == false){
             return addressRepository.save(address);
         }else{
             throw new ResourceAlreadyExistException("Address already exists");
@@ -59,18 +59,26 @@ public class AddressService {
         return addressRepository.save(address);
     }
 
-    public Address addMeterToAddress(Integer id, Integer idMeter) throws ResourceDoesNotExistException {
-        Address address = getAddressById(id);
+    public Address addMeterToAddress(Integer idAddress, Integer idMeter) throws ResourceDoesNotExistException {
+        Address address = getAddressById(idAddress);
         Meter meter = meterService.getMeterById(idMeter);
+        if(address == null || meter == null){
+            throw new ResourceDoesNotExistException("Address or Meter doesn't exist");
+        }else{
         address.setMeter(meter);
         return addressRepository.save(address);
+        }
     }
 
     public Address addRateToAddress(Integer id, Integer idRate) throws ResourceDoesNotExistException {
         Address address = getAddressById(id);
         Rate rate = rateService.getRateById(idRate);
+        if(address == null || rate == null){
+            throw new ResourceDoesNotExistException("Address or Rate doesn't exist");
+        }else{
         address.setRate(rate);
-        return  addressRepository.save(address);
+        return addressRepository.save(address);
+        }
     }
 
     public void deleteAddressById(Integer id) throws DeleteException, ResourceDoesNotExistException {
