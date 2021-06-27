@@ -2,6 +2,7 @@ package com.utn.UDEE.controller.BackofficeController;
 
 import com.utn.UDEE.controller.backofficeController.RateBackOfficeController;
 import com.utn.UDEE.exception.ResourceAlreadyExistException;
+import com.utn.UDEE.exception.ResourceDoesNotExistException;
 import com.utn.UDEE.models.Rate;
 import com.utn.UDEE.models.dto.RateDto;
 import com.utn.UDEE.models.responses.Response;
@@ -67,7 +68,7 @@ public class RateBackOfficeControllerTest {
     }
 
     @Test
-    public void getRateByIdOK(){
+    public void getRateByIdOK() throws ResourceDoesNotExistException {
         when(rateService.getRateById(1)).thenReturn(aRate());
         when(conversionService.convert(aRate(), RateDto.class)).thenReturn(aRateDto());
 

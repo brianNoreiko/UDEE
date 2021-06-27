@@ -1,12 +1,14 @@
 package com.utn.UDEE.service;
 
 import com.utn.UDEE.exception.DeleteException;
+import com.utn.UDEE.exception.PrimaryKeyViolationException;
 import com.utn.UDEE.exception.ResourceAlreadyExistException;
 import com.utn.UDEE.exception.ResourceDoesNotExistException;
 import com.utn.UDEE.models.Rate;
 import com.utn.UDEE.repository.RateRepository;
 import lombok.SneakyThrows;
 import org.junit.Assert;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -34,6 +36,11 @@ public class RateServiceTest {
         rateService = new RateService(rateRepository);
     }
 
+    @AfterEach
+    public void after(){
+        reset(rateRepository);
+    }
+
     @Test
     public void getAllRatesOk(){
         //Given
@@ -42,9 +49,10 @@ public class RateServiceTest {
         Mockito.when(rateRepository.findAll(pageable))
                 .thenReturn(aRatePage());
 
-        rateService.getAllRates(pageable);
+        Page<Rate> ratePage = rateService.getAllRates(pageable);
         //then
-        Mockito.verify(rateRepository,Mockito.times(2)).findAll(pageable);
+        Mockito.verify(rateRepository,Mockito.times(1)).findAll(pageable);
+        assertEquals(aRatePage(), ratePage);
     }
 
     @Test
@@ -64,7 +72,7 @@ public class RateServiceTest {
     }
 
     @Test
-    public void getRateByIdIk() throws ResourceDoesNotExistException {
+    public void getRateByIdOK() throws ResourceDoesNotExistException {
         //Given
         Integer id = anyInt();
         //When
@@ -73,7 +81,7 @@ public class RateServiceTest {
 
         Rate rate = rateService.getRateById(id);
         //Then
-        Mockito.verify(rateRepository,times(2)).findById(id);
+        Mockito.verify(rateRepository,times(1)).findById(id);
         assertEquals(aRate(),rate);
     }
 
@@ -84,21 +92,24 @@ public class RateServiceTest {
         //When
         Mockito.when(rateRepository.findById(1)).thenReturn(Optional.empty());
         //Then
-        Assert.assertThrows(HttpClientErrorException.class,()->rateService.getRateById(id));
+        Assert.assertThrows(ResourceDoesNotExistException.class,()->rateService.getRateById(id));
+        verify(rateRepository,times(1)).findById(id);
     }
 
     @Test
     public void addRateOK(){
         //Given
-        Rate arate = aRate();
+        Rate aRate = aRate();
         //When
         try{
-            when(rateRepository.existsById(anyInt())).thenReturn(false);
-            when(rateRepository.save(arate)).thenReturn(aRate());
+            when(rateRepository.existsById(aRate.getId())).thenReturn(false);
+            when(rateRepository.save(aRate)).thenReturn(aRate);
 
-            Rate rate = rateService.addRate(arate);
+            Rate rate = rateService.addRate(aRate);
 
-            Assert.assertEquals(rate,arate);
+            Assert.assertEquals(aRate(),rate);
+            verify(rateRepository,times(1)).existsById(aRate.getId());
+            verify(rateRepository,times(1)).save(aRate);
         } catch (ResourceAlreadyExistException e){
             addRateAlreadyExist();
         }
@@ -106,10 +117,14 @@ public class RateServiceTest {
 
     @Test
     public void addRateAlreadyExist(){
+        //Given
+        Rate aRate = aRate();
         //When
-        when(rateRepository.existsById(anyInt())).thenReturn(true);
+        when(rateRepository.existsById(aRate.getId())).thenReturn(true);
         //Then
         Assert.assertThrows(ResourceAlreadyExistException.class,()->rateService.addRate(aRate()));
+        verify(rateRepository,times(1)).existsById(aRate.getId());
+        verify(rateRepository,times(0)).save(aRate);
     }
 
     @Test
@@ -118,29 +133,140 @@ public class RateServiceTest {
         Integer idRate = anyInt();
         //When
         try {
+            when(rateRepository.existsById(idRate)).thenReturn(true);
             when(rateService.getRateById(idRate)).thenReturn(aRate());
-            when(aRate().getAddressList()).thenReturn(null);
-            doNothing().when(rateRepository).deleteById(idRate);
+            when(aRate().getAddressList().isEmpty()).thenReturn(true);
+            doNothing().when(rateRepository).delete(aRate());
 
             rateService.deleteRateById(idRate);
             //Then
+            verify(rateRepository,times(1)).existsById(idRate);
             verify(rateService,times(1)).getRateById(idRate);
-            verify(rateRepository,times(1)).deleteById(idRate);
+            verify(aRate().getAddressList(),times(1)).isEmpty();
+            verify(rateRepository,times(1)).delete(aRate());
         }catch (ResourceDoesNotExistException | DeleteException e){
             deleteRateDenied();
         }
     }
 
     @Test
-    public void deleteRateByIdNotExist() throws ResourceDoesNotExistException{
+    public void deleteRateByIdNotExist() throws ResourceDoesNotExistException, DeleteException{
         //Given
         Integer idRate = anyInt();
         //When
-        when(rateService.getRateById(idRate)).thenReturn(null);
+        when(rateRepository.existsById(idRate)).thenReturn(false);
         //Then
-        assertThrows(ResourceDoesNotExistException.class,() -> rateService.deleteRateById(idRate));
-        verify(rateService,times(1)).getRateById(idRate);
-        verify(rateRepository,times(0)).deleteById(idRate);
+        assertThrows(ResourceDoesNotExistException.class, () -> rateService.deleteRateById(idRate));
+        verify(rateRepository,times(1)).existsById(idRate);
+    }
+
+    @Test
+    public void deleteRateByIdException() throws ResourceDoesNotExistException, DeleteException{
+        //Given
+        Integer idRate = anyInt();
+        //When
+        try {
+            when(rateRepository.existsById(idRate)).thenReturn(true);
+            when(rateService.getRateById(idRate)).thenReturn(aRate());
+            when(aRate().getAddressList().isEmpty()).thenReturn(false);
+
+            rateService.deleteRateById(idRate);
+            //Then
+            assertThrows(DeleteException.class,() -> rateService.deleteRateById(idRate));
+            verify(rateRepository,times(1)).existsById(idRate);
+            verify(rateService,times(1)).getRateById(idRate);
+            verify(aRate().getAddressList(),times(1)).isEmpty();
+            verify(rateRepository,times(0)).delete(aRate());
+        }catch (ResourceDoesNotExistException | DeleteException e){
+            deleteRateDenied();
+        }
+    }
+
+    @Test
+    public void updateRateOK() throws ResourceDoesNotExistException, PrimaryKeyViolationException, ResourceAlreadyExistException {
+        //Given
+        Integer idToUp = anyInt();
+        Rate aRate = aRate();
+        //When
+        try {
+            when(rateService.getRateById(idToUp)).thenReturn(aRate());
+            when(aRate().equals(aRate)).thenReturn(false);
+            when(aRate() == null).thenReturn(false);
+            when(aRate().getId() != aRate.getId()).thenReturn(false);
+            doNothing().when(rateRepository).save(aRate);
+            //Then
+            verify(rateService, times(1)).getRateById(idToUp);
+            verify(aRate(), times(1)).equals(aRate);
+            verify(rateRepository, times(1)).save(aRate);
+        }catch (ResourceDoesNotExistException e){
+            updateRateDenied();
+        }
+    }
+
+    @Test
+    public void updateRateNotExist() throws ResourceDoesNotExistException, PrimaryKeyViolationException, ResourceAlreadyExistException {
+        //Given
+        Integer idToUp = anyInt();
+        Rate aRate = aRate();
+        //When
+        try {
+            when(rateService.getRateById(idToUp)).thenReturn(null);
+            when(aRate() == null).thenReturn(true);
+            //Then
+            verify(rateService, times(1)).getRateById(idToUp);
+            verify(aRate(), times(0)).equals(aRate);
+            verify(aRate(),times(0)).getId();
+            verify(aRate,times(0)).getId();
+            verify(rateRepository, times(0)).save(aRate);
+            assertThrows(ResourceDoesNotExistException.class,() -> rateService.updateRate(idToUp,aRate));
+        }catch (ResourceDoesNotExistException e){
+            updateRateDenied();
+        }
+    }
+
+    @Test
+    public void updateRatePKviolation() throws ResourceDoesNotExistException, PrimaryKeyViolationException, ResourceAlreadyExistException {
+        //Given
+        Integer idToUp = anyInt();
+        Rate aRate = aRate();
+        //When
+        try {
+            when(rateService.getRateById(idToUp)).thenReturn(aRate());
+            when(aRate() == null).thenReturn(false);
+            when(aRate().getId() != aRate.getId()).thenReturn(true);
+            //Then
+            verify(rateService, times(1)).getRateById(idToUp);
+            verify(aRate(),times(1)).getId();
+            verify(aRate,times(1)).getId();
+            verify(aRate(), times(0)).equals(aRate);
+            verify(rateRepository, times(0)).save(aRate);
+            assertThrows(PrimaryKeyViolationException.class,() -> rateService.updateRate(idToUp,aRate));
+        }catch (ResourceDoesNotExistException e){
+            updateRateDenied();
+        }
+    }
+
+    @Test
+    public void updateRateAlreadyExist() throws ResourceDoesNotExistException, PrimaryKeyViolationException, ResourceAlreadyExistException {
+        //Given
+        Integer idToUp = anyInt();
+        Rate aRate = aRate();
+        //When
+        try {
+            when(rateService.getRateById(idToUp)).thenReturn(aRate());
+            when(aRate() == null).thenReturn(false);
+            when(aRate().getId() != aRate.getId()).thenReturn(false);
+            when(aRate().equals(aRate)).thenReturn(true);
+            //Then
+            verify(rateService, times(1)).getRateById(idToUp);
+            verify(aRate(), times(1)).equals(aRate);
+            verify(aRate(),times(1)).getId();
+            verify(aRate,times(1)).getId();
+            verify(rateRepository, times(0)).save(aRate);
+            assertThrows(ResourceAlreadyExistException.class,() -> rateService.updateRate(idToUp,aRate));
+        }catch (ResourceDoesNotExistException e){
+            updateRateDenied();
+        }
     }
 
     @SneakyThrows
@@ -153,7 +279,9 @@ public class RateServiceTest {
     @SneakyThrows
     @Test
     public void updateRateDenied(){
-        Rate rate = aRate();
-        Assert.assertThrows(ResourceDoesNotExistException.class, ()->rateService.updateRate(1,rate));
+        Integer idRate = anyInt();
+        Rate aRate = aRate();
+        Assert.assertThrows(ResourceDoesNotExistException.class, ()->rateService.updateRate(idRate,aRate));
     }
+
 }

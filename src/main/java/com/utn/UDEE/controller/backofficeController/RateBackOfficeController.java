@@ -49,7 +49,7 @@ public class RateBackOfficeController {
 
     @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @GetMapping("/{id}")
-    public ResponseEntity<RateDto> getRateById(@PathVariable Integer idRate) throws HttpClientErrorException {
+    public ResponseEntity<RateDto> getRateById(@PathVariable Integer idRate) throws HttpClientErrorException, ResourceDoesNotExistException {
         Rate rate = rateService.getRateById(idRate);
         RateDto rateDto = conversionService.convert(rate, RateDto.class);
         return ResponseEntity.ok(rateDto);

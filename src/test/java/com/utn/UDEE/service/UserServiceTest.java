@@ -2,13 +2,11 @@ package com.utn.UDEE.service;
 
 import com.utn.UDEE.exception.ResourceAlreadyExistException;
 import com.utn.UDEE.exception.ResourceDoesNotExistException;
-import com.utn.UDEE.models.responses.PaginationResponse;
-import com.utn.UDEE.repository.AddressRepository;
+import com.utn.UDEE.models.Address;
+import com.utn.UDEE.models.User;
 import com.utn.UDEE.repository.UserRepository;
-import com.utn.UDEE.models.*;
 import lombok.SneakyThrows;
 import org.junit.Assert;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -17,10 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import java.util.Optional;
-
 import static com.utn.UDEE.utils.AddressUtilsTest.aAddress;
-import static com.utn.UDEE.utils.MeterUtilsTest.aMeter;
 import static com.utn.UDEE.utils.UserUtilsTest.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
