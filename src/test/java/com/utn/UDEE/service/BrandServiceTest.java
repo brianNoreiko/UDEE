@@ -78,7 +78,7 @@ public class BrandServiceTest {
         Integer id = anyInt();
         //When
         Mockito.when(brandRepository.findById(1)).thenReturn(Optional.empty());
-        //
+        //Then
         Assert.assertThrows(HttpClientErrorException.class,()->brandService.getBrandById(id));
     }
 

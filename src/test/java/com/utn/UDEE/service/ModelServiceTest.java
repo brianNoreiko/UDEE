@@ -2,7 +2,6 @@ package com.utn.UDEE.service;
 
 import com.utn.UDEE.exception.ResourceAlreadyExistException;
 import com.utn.UDEE.exception.ResourceDoesNotExistException;
-import com.utn.UDEE.models.Brand;
 import com.utn.UDEE.models.Model;
 import com.utn.UDEE.repository.ModelRepository;
 import org.junit.Assert;
