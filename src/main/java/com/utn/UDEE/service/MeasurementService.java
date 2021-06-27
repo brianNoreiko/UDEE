@@ -6,6 +6,7 @@ import com.utn.UDEE.models.Address;
 import com.utn.UDEE.models.Measurement;
 import com.utn.UDEE.models.Meter;
 import com.utn.UDEE.models.User;
+import com.utn.UDEE.models.dto.DeliveredMeasureDto;
 import com.utn.UDEE.models.responses.ClientConsuption;
 import com.utn.UDEE.repository.MeasurementRepository;
 import lombok.SneakyThrows;
@@ -45,42 +46,54 @@ public class MeasurementService {
         LinkedList<Measurement> measurementList = (LinkedList<Measurement>) measurementRepository.findAllByMeterAndDateBetween(meter, since, until);
 
         if(!measurementList.isEmpty()){
-            measurementList.forEach(o -> clientConsuption.get()
-                    .setConsumptionCost(clientConsuption.get().getConsumptionCost() + o.getKwhPrice()));
+            measurementList.forEach(m -> clientConsuption.get()
+                    .setConsumptionCost(clientConsuption.get().getConsumptionCost() + m.getKwhPrice()));
 
             clientConsuption.get().setConsumptionCost(measurementList.getLast().getKwhPrice() - measurementList.getFirst().getKwhPrice());
 
         } else{
-            throw new ResourceDoesNotExistException("Inexistent resource");
+            throw new ResourceDoesNotExistException("Doesn't exist any measurement!");
         }
 
 
         return clientConsuption;
     }
 
-    @SneakyThrows
-    public Page<Measurement> getAllByMeterAndBetweenDate(Integer idMeter, LocalDateTime since, LocalDateTime until, Pageable pageable) {
-        Meter meter = meterService.getMeterById(idMeter);
 
-        return measurementRepository.getAllByMeterAndBetweenDate(meter,since,until, pageable);
+    public Page<Measurement> getAllByMeterAndBetweenDate(Integer idMeter, LocalDateTime since, LocalDateTime until, Pageable pageable) throws ResourceDoesNotExistException {
+
+        Meter meter = meterService.getMeterById(idMeter);
+        if(meter != null) {
+            return measurementRepository.getAllByMeterAndBetweenDate(meter, since, until, pageable);
+        }else {
+            throw new ResourceDoesNotExistException("Meter doesn't exist");
+        }
     }
 
     public Page<Measurement> getMeasurementByAddressBetweenDate(Integer idAddress, LocalDateTime since, LocalDateTime until, Pageable pageable) throws ResourceDoesNotExistException {
         Address address = addressService.getAddressById(idAddress);
-
-        return measurementRepository.getMeasurementByAddressBetweenDate(address,since,until,pageable);
+        if(address != null) {
+            return measurementRepository.getMeasurementByAddressBetweenDate(address, since, until, pageable);
+        }else {
+            throw new ResourceDoesNotExistException("Address doesn't exist");
+        }
     }
 
     public Page<Measurement> getAllMeasurements(Pageable pageable) {
         return measurementRepository.findAll(pageable);
     }
 
-    public Measurement addMeasurement(Measurement measurement) throws ResourceAlreadyExistException, ResourceDoesNotExistException {
-        Measurement measurementExist = getMeasurementById(measurement.getId());
-        if(isNull(measurementExist)){
+    public Measurement addMeasurement(DeliveredMeasureDto deliveredMeasureDto) throws ResourceDoesNotExistException {
+        Meter meter = meterService.getMeterById(deliveredMeasureDto.getSerialNumber());
+        if(meter != null) {
+            Measurement measurement = Measurement.builder()
+                    .meter(meter)
+                    .Kwh(deliveredMeasureDto.getValue())
+                    .dateTime(deliveredMeasureDto.getDateTime())
+                    .build();
             return measurementRepository.save(measurement);
-        }else{
-            throw new ResourceAlreadyExistException("Measurement already exists");
+        }else {
+            throw new ResourceDoesNotExistException("Meter doesn't exist");
         }
     }
 

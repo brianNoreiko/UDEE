@@ -53,8 +53,8 @@ public class MeasurementBackOfficeControllerTest {
             MockHttpServletRequest request = new MockHttpServletRequest();
             RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
 
-            Mockito.when(measurementService.addMeasurement(aMeasurement())).thenReturn(aMeasurement());
-            ResponseEntity<Response> responseEntity = measurementBackOfficeController.addMeasurement(aMeasurement());
+            Mockito.when(measurementService.addMeasurement(aDeliveredMeasureDto())).thenReturn(aMeasurement());
+            ResponseEntity<Response> responseEntity = measurementBackOfficeController.addMeasurement(aDeliveredMeasureDto());
 
             Assert.assertEquals(EntityURLBuilder.buildURL("measurements", aMeasurement().getId()).toString(),responseEntity.getHeaders().get("Location").get(0));
             Assert.assertEquals(HttpStatus.CREATED.value(),responseEntity.getStatusCode().value());

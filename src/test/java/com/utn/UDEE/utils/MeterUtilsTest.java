@@ -35,6 +35,11 @@ public class MeterUtilsTest {
             return meter;
         }
 
+        public static Meter aNullMeter(){
+            Meter nullMeter = null;
+            return nullMeter;
+        }
+
         public static Page<Meter> aMeterPage() {
             return new PageImpl<>(List.of(aMeter()));
         }

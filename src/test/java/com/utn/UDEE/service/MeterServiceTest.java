@@ -3,7 +3,6 @@ package com.utn.UDEE.service;
 import com.utn.UDEE.exception.DeleteException;
 import com.utn.UDEE.exception.ResourceAlreadyExistException;
 import com.utn.UDEE.exception.ResourceDoesNotExistException;
-import com.utn.UDEE.models.Address;
 import com.utn.UDEE.models.Meter;
 import com.utn.UDEE.repository.MeterRepository;
 import com.utn.UDEE.repository.UserRepository;
@@ -15,7 +14,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.Optional;
 
@@ -111,15 +109,28 @@ public class MeterServiceTest {
     }
 
     @Test
+    public void addNewMeterAlreadyExist(){
+        //Given
+        Meter aMeter = aMeter();
+        //When
+        when(meterRepository.existsById(aMeter.getSerialNumber())).thenReturn(true);
+
+        //Then
+        assertThrows(ResourceAlreadyExistException.class,() -> meterService.addMeter(aMeter));
+        verify(meterRepository,times(1)).existsById(aMeter.getSerialNumber());
+        verify(meterRepository,times(0)).save(aMeter);
+    }
+
+    @Test
     public void deleteMeterByIdOK() throws ResourceDoesNotExistException, DeleteException {
         //Given
         Integer idMeter = anyInt();
         //When
         try {
             when(meterService.getMeterById(idMeter)).thenReturn(aMeter());
-            when(aMeter().getMeasurementList()).thenReturn(null);
-            when(aMeter().getInvoiceList()).thenReturn(null);
-            doNothing().when(meterRepository).deleteById(idMeter);
+            when(aMeter() == null).thenReturn(false);
+            when(aMeter().getAddress() == null).thenReturn(true);
+            doNothing().when(meterRepository).deleteById(aMeter().getSerialNumber());
 
             meterService.deleteMeterById(idMeter);
             //Then
@@ -141,7 +152,9 @@ public class MeterServiceTest {
             assertThrows(ResourceDoesNotExistException.class, () -> meterService.deleteMeterById(idMeter));
             verify(meterService, times(1)).getMeterById(idMeter);
             verify(meterRepository, times(0)).deleteById(idMeter);
-        } catch (ResourceDoesNotExistException e){
+
+        }catch (ResourceDoesNotExistException e){
+
             deleteMeterDenied();
         }
     }

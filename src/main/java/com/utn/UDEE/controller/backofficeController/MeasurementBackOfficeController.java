@@ -4,8 +4,8 @@ import com.utn.UDEE.exception.ResourceAlreadyExistException;
 import com.utn.UDEE.exception.ResourceDoesNotExistException;
 import com.utn.UDEE.exception.SinceUntilException;
 import com.utn.UDEE.models.Measurement;
+import com.utn.UDEE.models.dto.DeliveredMeasureDto;
 import com.utn.UDEE.models.dto.MeasurementDto;
-import com.utn.UDEE.models.dto.MeterDto;
 import com.utn.UDEE.models.responses.Response;
 import com.utn.UDEE.service.MeasurementService;
 import com.utn.UDEE.utils.EntityResponse;
@@ -21,9 +21,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpClientErrorException;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -45,8 +43,8 @@ public class MeasurementBackOfficeController {
 
     @PreAuthorize(value ="hasAuthority('EMPLOYEE')")
     @PostMapping("/")
-    public ResponseEntity<Response> addMeasurement(@RequestBody Measurement measurement) throws ResourceAlreadyExistException, ResourceDoesNotExistException {
-        Measurement measurementAdded = measurementService.addMeasurement(measurement);
+    public ResponseEntity<Response> addMeasurement(@RequestBody DeliveredMeasureDto deliveredMeasureDto) throws ResourceAlreadyExistException, ResourceDoesNotExistException {
+        Measurement measurementAdded = measurementService.addMeasurement(deliveredMeasureDto);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .location(EntityURLBuilder.buildURL("measurements",measurementAdded.getId()))

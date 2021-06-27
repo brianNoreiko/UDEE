@@ -4,6 +4,7 @@ import com.utn.UDEE.exception.DeleteException;
 import com.utn.UDEE.exception.ResourceAlreadyExistException;
 import com.utn.UDEE.exception.ResourceDoesNotExistException;
 import com.utn.UDEE.models.Meter;
+import com.utn.UDEE.models.Rate;
 import com.utn.UDEE.repository.MeterRepository;
 import com.utn.UDEE.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,8 +33,7 @@ public class MeterService {
     }
 
     public Meter getMeterById(Integer id) throws ResourceDoesNotExistException {
-        return meterRepository.findById(id)
-                .orElseThrow(() -> new ResourceDoesNotExistException("Rate doesn't exist"));
+        return meterRepository.findById(id).orElseThrow(() -> new ResourceDoesNotExistException("Meter doesn't exist"));
     }
 
 
@@ -51,8 +51,8 @@ public class MeterService {
         if (meter == null){
             throw new ResourceDoesNotExistException("Meter doesn't exist");
         }
-        if(isNull(meter.getAddress())) {
-            meterRepository.deleteById(id);
+        if(meter.getAddress() == null) {
+            meterRepository.deleteById(meter.getSerialNumber());
         } else {
             throw new DeleteException("It cannot be deleted because another object depends on it");
         }

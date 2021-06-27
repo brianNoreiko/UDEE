@@ -69,7 +69,7 @@ public class MeasurementAppController {
                                                                            @RequestParam(value = "size", defaultValue = "10") Integer size,
                                                                            @RequestParam(value = "page", defaultValue = "0") Integer page,
                                                                            @RequestParam(value = "since", defaultValue = "2021-01-01") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime since,
-                                                                           @RequestParam(value = "until", defaultValue = "#{T(java.time.LocalDateTime).now()}") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime until) throws SinceUntilException{
+                                                                           @RequestParam(value = "until", defaultValue = "#{T(java.time.LocalDateTime).now()}") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime until) throws SinceUntilException, ResourceDoesNotExistException {
         checkSinceUntil(since,until);
         Pageable pageable = PageRequest.of(page, size);
         Page<Measurement> measurementPage = measurementService.getAllByMeterAndBetweenDate(idMeter,since,until, pageable);

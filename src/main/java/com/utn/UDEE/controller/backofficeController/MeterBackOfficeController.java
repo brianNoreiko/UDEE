@@ -61,7 +61,7 @@ public class MeterBackOfficeController {
     @SneakyThrows
     @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @GetMapping("/{id}")
-    public ResponseEntity<MeterDto> getMeterById(@PathVariable Integer id) throws HttpClientErrorException {
+    public ResponseEntity<MeterDto> getMeterById(@PathVariable Integer id) throws HttpClientErrorException, ResourceDoesNotExistException {
         MeterDto meterDto = conversionService.convert(meterService.getMeterById(id), MeterDto.class);
         return ResponseEntity.ok(meterDto);
     }

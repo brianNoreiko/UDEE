@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class DeliveredMeasureDto {
-    String serialNumber;
+    Integer serialNumber;
     Double value;
     LocalDateTime dateTime;
     String password;

@@ -61,7 +61,7 @@ public class MeterBackOfficeControllerTest {
 
     @SneakyThrows
     @Test
-    public void getMeterByIdOK(){
+    public void getMeterByIdOK() throws ResourceDoesNotExistException {
         when(meterService.getMeterById(1)).thenReturn(aMeter());
         when(conversionService.convert(aMeter(), MeterDto.class)).thenReturn(aMeterDto());
 
