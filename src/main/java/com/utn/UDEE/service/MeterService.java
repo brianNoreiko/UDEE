@@ -37,8 +37,8 @@ public class MeterService {
 
 
     public Meter addMeter(Meter meter) throws ResourceAlreadyExistException {
-        Meter alreadyExist = getMeterById(meter.getSerialNumber());
-        if (isNull(alreadyExist)) {
+        Boolean alreadyExist = meterRepository.existsById(meter.getSerialNumber());
+        if (alreadyExist == false) {
             return meterRepository.save(meter);
         } else {
             throw new ResourceAlreadyExistException("Address already exists");
