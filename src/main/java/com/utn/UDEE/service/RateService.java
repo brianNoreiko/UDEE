@@ -13,17 +13,21 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
+import static java.util.Objects.isNull;
+
 @Service
 public class RateService {
     RateRepository rateRepository;
 
     @Autowired
-    public RateService(RateRepository rateRepository) {this.rateRepository=rateRepository; }
+    public RateService(RateRepository rateRepository) {
+        this.rateRepository = rateRepository;
+    }
 
 
-    public Rate getRateById(Integer idRate)  {
+    public Rate getRateById(Integer idRate) throws ResourceDoesNotExistException {
         return rateRepository.findById(idRate)
-                .orElseThrow(()-> new HttpClientErrorException(HttpStatus.NOT_FOUND));
+                .orElseThrow(()-> new ResourceDoesNotExistException("Rate doesn't exist"));
     }
 
     public Page<Rate> getAllRates(Pageable pageable) {
