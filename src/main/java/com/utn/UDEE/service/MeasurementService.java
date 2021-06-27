@@ -8,6 +8,7 @@ import com.utn.UDEE.models.Meter;
 import com.utn.UDEE.models.User;
 import com.utn.UDEE.models.responses.ClientConsuption;
 import com.utn.UDEE.repository.MeasurementRepository;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -57,6 +58,7 @@ public class MeasurementService {
         return clientConsuption;
     }
 
+    @SneakyThrows
     public Page<Measurement> getAllByMeterAndBetweenDate(Integer idMeter, LocalDateTime since, LocalDateTime until, Pageable pageable) {
         Meter meter = meterService.getMeterById(idMeter);
 

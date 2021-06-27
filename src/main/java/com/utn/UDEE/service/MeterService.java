@@ -31,8 +31,9 @@ public class MeterService {
         return meterRepository.findAll(pageable);
     }
 
-    public Meter getMeterById(Integer id) {
-        return meterRepository.findById(id).orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND));
+    public Meter getMeterById(Integer id) throws ResourceDoesNotExistException {
+        return meterRepository.findById(id)
+                .orElseThrow(() -> new ResourceDoesNotExistException("Rate doesn't exist"));
     }
 
 

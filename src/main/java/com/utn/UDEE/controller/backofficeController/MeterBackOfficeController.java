@@ -9,6 +9,7 @@ import com.utn.UDEE.models.responses.Response;
 import com.utn.UDEE.service.MeterService;
 import com.utn.UDEE.utils.EntityResponse;
 import com.utn.UDEE.utils.EntityURLBuilder;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Page;
@@ -57,6 +58,7 @@ public class MeterBackOfficeController {
         return EntityResponse.listResponse(meterDtoPage);
     }
 
+    @SneakyThrows
     @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @GetMapping("/{id}")
     public ResponseEntity<MeterDto> getMeterById(@PathVariable Integer id) throws HttpClientErrorException {

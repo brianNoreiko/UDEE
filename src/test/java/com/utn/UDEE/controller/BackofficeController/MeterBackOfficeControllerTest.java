@@ -9,6 +9,7 @@ import com.utn.UDEE.models.dto.MeterDto;
 import com.utn.UDEE.models.responses.Response;
 import com.utn.UDEE.service.MeterService;
 import com.utn.UDEE.utils.EntityURLBuilder;
+import lombok.SneakyThrows;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -58,6 +59,7 @@ public class MeterBackOfficeControllerTest {
         }
     }
 
+    @SneakyThrows
     @Test
     public void getMeterByIdOK(){
         when(meterService.getMeterById(1)).thenReturn(aMeter());

@@ -19,7 +19,6 @@ import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.Optional;
 
-import static com.utn.UDEE.utils.AddressUtilsTest.aAddress;
 import static com.utn.UDEE.utils.MeterUtilsTest.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -88,7 +87,7 @@ public class MeterServiceTest {
         //When
         when(meterRepository.findById(1)).thenReturn(Optional.empty());
         //Then
-        assertThrows(HttpClientErrorException.class, () -> meterService.getMeterById(id));
+        assertThrows(ResourceDoesNotExistException.class, () -> meterService.getMeterById(id));
         verify(meterRepository,times(1)).findById(id);
     }
 
@@ -136,11 +135,15 @@ public class MeterServiceTest {
         //Given
         Integer idMeter = anyInt();
         //When
-        when(meterService.getMeterById(idMeter)).thenReturn(null);
-        //Then
-        assertThrows(ResourceDoesNotExistException.class,() -> meterService.deleteMeterById(idMeter));
-        verify(meterService,times(1)).getMeterById(idMeter);
-        verify(meterRepository,times(0)).deleteById(idMeter);
+        try {
+            when(meterService.getMeterById(idMeter)).thenReturn(null);
+            //Then
+            assertThrows(ResourceDoesNotExistException.class, () -> meterService.deleteMeterById(idMeter));
+            verify(meterService, times(1)).getMeterById(idMeter);
+            verify(meterRepository, times(0)).deleteById(idMeter);
+        } catch (ResourceDoesNotExistException e){
+            deleteMeterDenied();
+        }
     }
 
     @SneakyThrows
