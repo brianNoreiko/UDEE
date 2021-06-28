@@ -24,6 +24,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.List;
+import java.util.Optional;
 
 import static com.utn.UDEE.utils.EntityResponse.messageResponse;
 import static com.utn.UDEE.utils.InvoiceUtilsTest.*;
@@ -44,15 +45,18 @@ public class InvoiceBackOfficeControllerTest {
     }
     @Test
     public void addInvoiceCreated(){
+        //Given
+        Invoice invoice = aInvoice();
         try {
             MockHttpServletRequest request = new MockHttpServletRequest();
             RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
-
-            Mockito.when(invoiceService.addNewInvoice(aInvoice())).thenReturn(aInvoice());
+            //When
+            when(invoiceService.addNewInvoice(invoice)).thenReturn(invoice);
             ResponseEntity<Response> responseEntity = invoiceBackOfficeController.addInvoice(aInvoice());
-
-            Assert.assertEquals(EntityURLBuilder.buildURL("invoices", aInvoice().getId()).toString(),responseEntity.getHeaders().get("Location").get(0));
+            //Then
+            Assert.assertEquals(EntityURLBuilder.buildURL("invoices", invoice.getId()).toString(),responseEntity.getHeaders().get("Location").get(0));
             Assert.assertEquals(HttpStatus.CREATED.value(),responseEntity.getStatusCode().value());
+            verify(invoiceService,times(1)).addNewInvoice(invoice);
         }
         catch (ResourceAlreadyExistException e) {
             e.printStackTrace();
@@ -61,77 +65,107 @@ public class InvoiceBackOfficeControllerTest {
 
     @Test
     public void getInvoiceByIdOK() throws ResourceDoesNotExistException {
-        when(invoiceService.getInvoiceById(anyInt())).thenReturn(aInvoice());
+        //Given
+        Integer idInvoice = 1;
+        //When
+        when(invoiceService.getInvoiceById(idInvoice)).thenReturn(aInvoice());
         when(conversionService.convert(aInvoice(), InvoiceDto.class)).thenReturn(aInvoiceDto());
 
         ResponseEntity<InvoiceDto> responseEntity = invoiceBackOfficeController.getInvoiceById(1);
-
+        //Then
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(aInvoiceDto(), responseEntity.getBody());
+        verify(invoiceService,times(1)).getInvoiceById(idInvoice);
+        verify(conversionService,times(1)).convert(aInvoice(), InvoiceDto.class);
     }
+
 
     @Test
     public void getAllInvoicesOK(){
-        Pageable pageable = PageRequest.of(1,1);
+        //Given
+        Integer page = 1;
+        Integer size = 1;
+        Pageable pageable = PageRequest.of(page,size);
+        //When
         when(invoiceService.getAllInvoices(pageable)).thenReturn(aInvoicePage());
-        when(conversionService.convert(aInvoice(), InvoiceDto.class)).thenReturn(aInvoiceDto());
+        when(conversionService.convert(aInvoicePage(), InvoiceDto.class)).thenReturn(aInvoiceDto());
 
-        ResponseEntity<List<InvoiceDto>> responseEntity = invoiceBackOfficeController.getAllInvoices(anyInt(),1);
-
+        ResponseEntity<List<InvoiceDto>> responseEntity = invoiceBackOfficeController.getAllInvoices(page,size);
+        //Then
         Assert.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         Assert.assertEquals(aInvoiceDtoPage().getContent().size(),responseEntity.getBody().size());
+        verify(invoiceService,times(1)).getAllInvoices(pageable);
+        verify(conversionService,times(1)).convert(aInvoicePage(), InvoiceDto.class);
     }
 
     @Test
-    public void getAllInvoicesNC(){ //NC == No Content
-        Pageable pageable = PageRequest.of(1, 1);
-        Page<Invoice> invoiceEmptyPage = aInvoiceEmptyPage();
-        when(invoiceService.getAllInvoices(pageable)).thenReturn(invoiceEmptyPage);
+    public void getAllInvoicesNC(){
+        //Given
+        Integer page = 1;
+        Integer size = 1;
+        Pageable pageable = PageRequest.of(page,size);
+        //When
+        when(invoiceService.getAllInvoices(pageable)).thenReturn(aInvoiceEmptyPage());
 
-        ResponseEntity<List<InvoiceDto>> responseEntity = invoiceBackOfficeController.getAllInvoices(1,1);
-
+        ResponseEntity<List<InvoiceDto>> responseEntity = invoiceBackOfficeController.getAllInvoices(page,size);
+        //Then
         Assert.assertEquals(HttpStatus.NO_CONTENT, responseEntity.getStatusCode());
         Assert.assertEquals(0,responseEntity.getBody().size());
+        verify(invoiceService,times(1)).getAllInvoices(pageable);
+        verify(conversionService,times(0)).convert(aInvoicePage(), InvoiceDto.class);
     }
 
+
+
     @Test
-    public void deleteInvoiceByIdHP() throws ResourceDoesNotExistException, DeleteException { //HP == Happy Path
-        doNothing().when(invoiceService).deleteInvoiceById(1);
+    public void deleteInvoiceById() throws ResourceDoesNotExistException, DeleteException {
+        //Given
+        Integer idInvoice = 1;
+        //When
+        doNothing().when(invoiceService).deleteInvoiceById(idInvoice);
 
-        ResponseEntity<Object> responseEntity = invoiceBackOfficeController.deleteInvoiceById(1);
-
+        ResponseEntity<Object> responseEntity = invoiceBackOfficeController.deleteInvoiceById(idInvoice);
+        //Then
         assertEquals(HttpStatus.ACCEPTED, responseEntity.getStatusCode());
+        verify(invoiceService,times(1)).deleteInvoiceById(idInvoice);
 
     }
 
-   /* @Test
-    public void deleteInvoiceByIdFirstIfCond() throws ResourceDoesNotExistException, DeleteException {
-        doThrow(new ResourceDoesNotExistException("")).when(invoiceService).deleteInvoiceById(1);
-
-        ResponseEntity<Object> responseEntity = invoiceBackOfficeController.deleteInvoiceById(1);
-
-        assertEquals(messageResponse("Invoice doesn't exist"),responseEntity.getBody());
-    }*/
-
     @Test
-    public void deleteInvoiceByIdSecondIfElseCond() throws ResourceDoesNotExistException, DeleteException {
-        doThrow(new DeleteException("")).when(invoiceService).deleteInvoiceById(1);
+    public void getAllUnpaidByAddressOK() throws ResourceDoesNotExistException {
+        //Given
+        Integer idAddress = 1;
+        Integer page = 1;
+        Integer size = 1;
+        Pageable pageable = PageRequest.of(page,size);
+        //When
+        when(invoiceService.getAllUnpaidByAddress(idAddress,pageable)).thenReturn(aInvoicePage());
+        when(conversionService.convert(aInvoice(), InvoiceDto.class)).thenReturn(aInvoiceDto());
 
-        ResponseEntity<Object> responseEntity = invoiceBackOfficeController.deleteInvoiceById(1);
-
-        assertEquals(messageResponse("It cannot be deleted because another object depends on it"),responseEntity.getBody());
-    }
-
-    @Test
-    public void getAllUnpaidByAddress() throws ResourceDoesNotExistException {
-        Pageable pageable = PageRequest.of(1,1);
-        when(invoiceService.getAllUnpaidByAddress(1,pageable)).thenReturn(aInvoicePage());
-        when(conversionService.convert(aInvoice(), InvoiceDto.class)).thenReturn((InvoiceDto) aInvoiceDtoPage());
-
-        ResponseEntity<List<InvoiceDto>> responseEntity = invoiceBackOfficeController.getAllUnpaidByAddress(anyInt(),1,1);
-
+        ResponseEntity<List<InvoiceDto>> responseEntity = invoiceBackOfficeController.getAllUnpaidByAddress(idAddress,page,size);
+        //Then
         Assert.assertEquals(aInvoiceDtoPage().getContent().size(), responseEntity.getBody().size());
         Assert.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        verify(invoiceService,times(1)).getAllUnpaidByAddress(idAddress,pageable);
+        verify(conversionService,times(1)).convert(aInvoice(),InvoiceDto.class);
+    }
+
+    @Test
+    public void getAllUnpaidByAddressNC() throws ResourceDoesNotExistException {
+        //Given
+        Integer idAddress = 1;
+        Integer page = 1;
+        Integer size = 1;
+        Pageable pageable = PageRequest.of(page,size);
+        //When
+        when(invoiceService.getAllUnpaidByAddress(idAddress,pageable)).thenReturn(aInvoiceEmptyPage());
+
+        ResponseEntity<List<InvoiceDto>> responseEntity = invoiceBackOfficeController.getAllUnpaidByAddress(idAddress,page,size);
+        //Then
+        Assert.assertEquals(0, responseEntity.getBody().size());
+        Assert.assertEquals(HttpStatus.NO_CONTENT, responseEntity.getStatusCode());
+        verify(invoiceService,times(1)).getAllUnpaidByAddress(idAddress,pageable);
+        verify(conversionService,times(0)).convert(aInvoice(),InvoiceDto.class);
     }
 
 }

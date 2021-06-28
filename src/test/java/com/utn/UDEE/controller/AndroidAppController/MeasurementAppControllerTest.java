@@ -2,11 +2,13 @@ package com.utn.UDEE.controller.AndroidAppController;
 
 import com.utn.UDEE.controller.androidAppController.MeasurementAppController;
 import com.utn.UDEE.exception.ResourceDoesNotExistException;
+import com.utn.UDEE.models.Measurement;
 import com.utn.UDEE.models.dto.MeasurementDto;
 import com.utn.UDEE.models.responses.ClientConsuption;
 import com.utn.UDEE.service.InvoiceService;
 import com.utn.UDEE.service.MeasurementService;
 import org.junit.Assert;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.convert.ConversionService;
@@ -21,11 +23,12 @@ import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Optional;
 
+import static com.utn.UDEE.utils.LocalDateTimeUtilsTest.aLocalDateTimeSince;
+import static com.utn.UDEE.utils.LocalDateTimeUtilsTest.aLocalDateTimeUntil;
 import static com.utn.UDEE.utils.MeasurementUtilsTest.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class MeasurementAppControllerTest {
     private static MeasurementService measurementService;
@@ -41,44 +44,110 @@ public class MeasurementAppControllerTest {
         measurementAppController = new MeasurementAppController(measurementService, conversionService, invoiceService);
     }
 
+    @AfterEach
+    public void after(){
+        reset(measurementService);
+        reset(conversionService);;
+        reset(invoiceService);
+    }
+
     @Test
-    public void getAllMeasurementsByUser() throws ResourceDoesNotExistException {
-        Pageable pageable = PageRequest.of(1, 1);
-        when(measurementService.getAllMeasurementsByUser(1, pageable)).thenReturn(aMeasurementPage());
+    public void getAllMeasurementsByUserOK() throws ResourceDoesNotExistException {
+        //Given
+        Integer idUser = 1;
+        Integer page = 1;
+        Integer size = 1;
+        Pageable pageable = PageRequest.of(page, size);
+        //When
+        when(measurementService.getAllMeasurementsByUser(idUser, pageable)).thenReturn(aMeasurementPage());
         when(conversionService.convert(aMeasurement(), MeasurementDto.class)).thenReturn(aMeasurementDto());
 
-        ResponseEntity<List<MeasurementDto>> response = measurementAppController.getAllMeasurementsByUser(1, 1, 1);
-
+        ResponseEntity<List<MeasurementDto>> response = measurementAppController.getAllMeasurementsByUser(idUser, page, size);
+        //Then
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(aMeasurementDtoPage().getContent().size(), response.getBody().size());
+        verify(measurementService,times(1)).getAllMeasurementsByUser(idUser,pageable);
+        verify(conversionService,times(1)).convert(aMeasurement(), MeasurementDto.class);
     }
 
     @Test
-    public void getConsumptionsBetweenDate() throws Exception {
-        LocalDateTime since = LocalDateTime.parse("2021-06-01 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        LocalDateTime until = LocalDateTime.parse("2020-06-23 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        when(measurementService.getConsumptionByMeterAndBetweenDate(1, since, until))
+    public void getAllMeasurementsByUserNC() throws ResourceDoesNotExistException { //NC == No Content
+        //Given
+        Integer idUser = 1;
+        Integer page = 1;
+        Integer size = 1;
+        Pageable pageable = PageRequest.of(page, size);
+        //When
+        when(measurementService.getAllMeasurementsByUser(idUser, pageable)).thenReturn(aMeasurementEmptyPage());
+
+        ResponseEntity<List<MeasurementDto>> response = measurementAppController.getAllMeasurementsByUser(idUser, page, size);
+        //Then
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertEquals(0, response.getBody().size());
+        verify(measurementService,times(1)).getAllMeasurementsByUser(idUser,pageable);
+        verify(conversionService,times(0)).convert(aMeasurement(), MeasurementDto.class);
+    }
+
+    @Test
+    public void getConsumptionsBetweenDateOK() throws Exception {
+        //Given
+        Integer idMeter = 1;
+        LocalDateTime since = aLocalDateTimeSince();
+        LocalDateTime until = aLocalDateTimeUntil();
+        //When
+        when(measurementService.getConsumptionByMeterAndBetweenDate(idMeter, since, until))
                 .thenReturn(Optional.of(aClientConsumption()));
 
-        ResponseEntity<Optional<ClientConsuption>> responseEntity = measurementAppController.getConsumptionsBetweenDate(1, since, until);
-
-        Assert.assertEquals(responseEntity.getBody().get().getConsumptionCost(), aClientConsumption().getConsumptionCost());
+        ResponseEntity<Optional<ClientConsuption>> responseEntity = measurementAppController.getConsumptionsBetweenDate(idMeter, since, until);
+        //Then
+        Assert.assertEquals(responseEntity.getBody().get().getConsumptionKw(), aClientConsumption().getConsumptionKw());
         Assert.assertEquals(responseEntity.getStatusCode(), HttpStatus.OK);
+        verify(measurementService,times(1)).getConsumptionByMeterAndBetweenDate(idMeter,since,until);
     }
 
     @Test
-    public void getMeasurementBetweenDate() throws Exception {
-        LocalDateTime since = LocalDateTime.parse("2021-06-01 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        LocalDateTime until = LocalDateTime.parse("2020-06-23 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        Pageable pageable = PageRequest.of(0, 1);
-        when(measurementService.getMeasurementByAddressBetweenDate(1,since,until,pageable)).thenReturn(aMeasurementPage());
+    public void getMeasurementsBetweenDateOK() throws Exception {
+        //Given
+        Integer idMeter = 1;
+        Integer page = 1;
+        Integer size = 1;
+        LocalDateTime since = aLocalDateTimeSince();
+        LocalDateTime until = aLocalDateTimeUntil();
+        Pageable pageable = PageRequest.of(page, size);
+        //When
+        when(measurementService.getAllByMeterAndBetweenDate(idMeter,since,until,pageable)).thenReturn(aMeasurementPage());
         when(conversionService.convert(aMeasurement(), MeasurementDto.class)).thenReturn(aMeasurementDto());
-
         try{
-            ResponseEntity<List<MeasurementDto>> responseEntity = measurementAppController.getMeasurementsBetweenDate(1,1,1,since,until);
-
+            ResponseEntity<List<MeasurementDto>> responseEntity = measurementAppController.getMeasurementsBetweenDate(idMeter,size,page,since,until);
+            //Then
             Assert.assertEquals(aMeasurementDtoPage().getContent().size(),responseEntity.getBody().size());
             Assert.assertEquals(HttpStatus.OK,responseEntity.getStatusCode());
+            verify(measurementService, times(1)).getAllByMeterAndBetweenDate(idMeter,since,until,pageable);
+            verify(conversionService,times(1)).convert(aMeasurement(),MeasurementDto.class);
+        }catch (DateTimeParseException e){
+            fail(e);
+        }
+    }
+
+    @Test
+    public void getMeasurementsBetweenDateNC() throws Exception {
+        //Given
+        Integer idMeter = 1;
+        Integer page = 1;
+        Integer size = 1;
+        LocalDateTime since = aLocalDateTimeSince();
+        LocalDateTime until = aLocalDateTimeUntil();
+        Pageable pageable = PageRequest.of(page, size);
+        //When
+        when(measurementService.getAllByMeterAndBetweenDate(idMeter,since,until,pageable)).thenReturn(aMeasurementEmptyPage());
+
+        try{
+            ResponseEntity<List<MeasurementDto>> responseEntity = measurementAppController.getMeasurementsBetweenDate(idMeter,size,page,since,until);
+            //Then
+            Assert.assertEquals(0,responseEntity.getBody().size());
+            Assert.assertEquals(HttpStatus.NO_CONTENT,responseEntity.getStatusCode());
+            verify(measurementService, times(1)).getAllByMeterAndBetweenDate(idMeter,since,until,pageable);
+            verify(conversionService,times(0)).convert(aMeasurement(),MeasurementDto.class);
         }catch (DateTimeParseException e){
             fail(e);
         }

@@ -22,7 +22,6 @@ import static com.utn.UDEE.utils.InvoiceUtilsTest.*;
 import static com.utn.UDEE.utils.LocalDateTimeUtilsTest.aLocalDateTimeSince;
 import static com.utn.UDEE.utils.LocalDateTimeUtilsTest.aLocalDateTimeUntil;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 public class InvoiceAppControllerTest {

@@ -49,22 +49,23 @@ public class MeterBackOfficeController {
     }
 
     @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
-    @GetMapping("/")
-    public ResponseEntity<List<MeterDto>> getAllMeters(@RequestParam(value = "size", defaultValue = "10") Integer size,
-                                                       @RequestParam(value = "page", defaultValue = "0") Integer page) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Meter> meterPage = meterService.getAllMeters(pageable);
-        Page<MeterDto> meterDtoPage = meterPage.map(meter -> conversionService.convert(meter,MeterDto.class));
-        return EntityResponse.listResponse(meterDtoPage);
-    }
-
-    @SneakyThrows
-    @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @GetMapping("/{id}")
     public ResponseEntity<MeterDto> getMeterById(@PathVariable Integer id) throws HttpClientErrorException, ResourceDoesNotExistException {
         MeterDto meterDto = conversionService.convert(meterService.getMeterById(id), MeterDto.class);
         return ResponseEntity.ok(meterDto);
     }
+
+    @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
+    @GetMapping("/")
+    public ResponseEntity<List<MeterDto>> getAllMeters(@RequestParam(value = "size", defaultValue = "0") Integer page,
+                                                       @RequestParam(value = "page", defaultValue = "10") Integer size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Meter> meterPage = meterService.getAllMeters(pageable);
+        Page<MeterDto> meterDtoPage = meterPage.map(meter -> conversionService.convert(meterPage,MeterDto.class));
+        return EntityResponse.listResponse(meterDtoPage);
+    }
+
+
 
     @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @DeleteMapping("/{id}")

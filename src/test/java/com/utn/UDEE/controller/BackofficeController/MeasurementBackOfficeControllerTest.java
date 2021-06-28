@@ -5,11 +5,13 @@ import com.utn.UDEE.exception.ResourceAlreadyExistException;
 import com.utn.UDEE.exception.ResourceDoesNotExistException;
 import com.utn.UDEE.exception.SinceUntilException;
 import com.utn.UDEE.models.Measurement;
+import com.utn.UDEE.models.dto.DeliveredMeasureDto;
 import com.utn.UDEE.models.dto.MeasurementDto;
 import com.utn.UDEE.models.responses.Response;
 import com.utn.UDEE.service.MeasurementService;
 import com.utn.UDEE.utils.EntityURLBuilder;
 import org.junit.Assert;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -26,14 +28,16 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 
 import static com.utn.UDEE.utils.InvoiceUtilsTest.aInvoiceDtoPage;
+import static com.utn.UDEE.utils.LocalDateTimeUtilsTest.aLocalDateTimeSince;
+import static com.utn.UDEE.utils.LocalDateTimeUtilsTest.aLocalDateTimeUntil;
 import static com.utn.UDEE.utils.MeasurementUtilsTest.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class MeasurementBackOfficeControllerTest {
     private static MeasurementService measurementService;
@@ -46,18 +50,26 @@ public class MeasurementBackOfficeControllerTest {
         conversionService = mock(ConversionService.class);
         measurementBackOfficeController = new MeasurementBackOfficeController(measurementService, conversionService);
     }
+    @AfterEach
+    public void after(){
+        reset(measurementService);
+        reset(conversionService);
+    }
 
     @Test
     public void addMeasurementCreated(){
+        //Given
+        DeliveredMeasureDto deliveredMeasureDto = aDeliveredMeasureDto();
         try {
             MockHttpServletRequest request = new MockHttpServletRequest();
             RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
-
-            Mockito.when(measurementService.addMeasurement(aDeliveredMeasureDto())).thenReturn(aMeasurement());
-            ResponseEntity<Response> responseEntity = measurementBackOfficeController.addMeasurement(aDeliveredMeasureDto());
-
+            //When
+            when(measurementService.addMeasurement(deliveredMeasureDto)).thenReturn(aMeasurement());
+            ResponseEntity<Response> responseEntity = measurementBackOfficeController.addMeasurement(deliveredMeasureDto);
+            //Then
             Assert.assertEquals(EntityURLBuilder.buildURL("measurements", aMeasurement().getId()).toString(),responseEntity.getHeaders().get("Location").get(0));
             Assert.assertEquals(HttpStatus.CREATED.value(),responseEntity.getStatusCode().value());
+            verify(measurementService,times(1)).addMeasurement(deliveredMeasureDto);
         }
         catch (ResourceAlreadyExistException | ResourceDoesNotExistException e) {
             e.printStackTrace();
@@ -66,50 +78,97 @@ public class MeasurementBackOfficeControllerTest {
 
     @Test
     public void getMeasurementByIdOK() throws ResourceDoesNotExistException {
-        when(measurementService.getMeasurementById(anyInt())).thenReturn(aMeasurement());
+        //Given
+        Integer idMeasure = 1;
+        //When
+        when(measurementService.getMeasurementById(idMeasure)).thenReturn(aMeasurement());
         when(conversionService.convert(aMeasurement(), MeasurementDto.class)).thenReturn(aMeasurementDto());
 
         ResponseEntity<MeasurementDto> responseEntity = measurementBackOfficeController.getMeasurementById(1);
-
+        //Then
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(aMeasurementDto(), responseEntity.getBody());
+        verify(measurementService,times(1)).getMeasurementById(idMeasure);
+        verify(conversionService,times(1)).convert(aMeasurement(),MeasurementDto.class);
     }
 
     @Test
     public void getAllMeasurementsOK(){
-        Pageable pageable = PageRequest.of(1,1);
+        //Given
+        Integer page = 1;
+        Integer size = 1;
+        Pageable pageable = PageRequest.of(page,size);
+        //When
         when(measurementService.getAllMeasurements(pageable)).thenReturn(aMeasurementPage());
-        when(conversionService.convert(aMeasurement(), MeasurementDto.class)).thenReturn(aMeasurementDto());
+        when(conversionService.convert(aMeasurementPage(), MeasurementDto.class)).thenReturn(aMeasurementDto());
 
-        ResponseEntity<List<MeasurementDto>> responseEntity = measurementBackOfficeController.getAllMeasurements(anyInt(),1);
-
+        ResponseEntity<List<MeasurementDto>> responseEntity = measurementBackOfficeController.getAllMeasurements(page,size);
+        //Then
         Assert.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        Assert.assertEquals(aInvoiceDtoPage().getContent().size(),responseEntity.getBody().size());
+        Assert.assertEquals(aMeasurementDtoPage().getContent().size(),responseEntity.getBody().size());
+        verify(measurementService,times(1)).getAllMeasurements(pageable);
+        verify(conversionService,times(1)).convert(aMeasurementPage(),MeasurementDto.class);
     }
     @Test
     public void getAllMeasurementsNC(){ //NC == No Content
-        Pageable pageable = PageRequest.of(1, 1);
-        Page<Measurement> measurementEmptyPage = aMeasurementEmptyPage();
-        when(measurementService.getAllMeasurements(pageable)).thenReturn(measurementEmptyPage);
+        //Given
+        Integer page = 1;
+        Integer size = 1;
+        Pageable pageable = PageRequest.of(page,size);
 
-        ResponseEntity<List<MeasurementDto>> responseEntity = measurementBackOfficeController.getAllMeasurements(1,1);
+        //When
+        when(measurementService.getAllMeasurements(pageable)).thenReturn(aMeasurementEmptyPage());
 
+        ResponseEntity<List<MeasurementDto>> responseEntity = measurementBackOfficeController.getAllMeasurements(page,size);
+        //Then
         Assert.assertEquals(HttpStatus.NO_CONTENT, responseEntity.getStatusCode());
         Assert.assertEquals(0,responseEntity.getBody().size());
+        verify(measurementService,times(1)).getAllMeasurements(pageable);
+        verify(conversionService,times(0)).convert(aMeasurementPage(),MeasurementDto.class);
     }
     @Test
-    public void getMeasurementByAddressBetweenDate() throws ResourceDoesNotExistException {
-        LocalDateTime since = LocalDateTime.parse("2021-06-01 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        LocalDateTime until = LocalDateTime.parse("2020-06-23 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        Pageable pageable = PageRequest.of(0, 1);
-        when(measurementService.getMeasurementByAddressBetweenDate(1,since,until,pageable)).thenReturn(aMeasurementPage());
+    public void getMeasurementByAddressBetweenDateOK() throws ResourceDoesNotExistException {
+        //Given
+        Integer idAddress = 1;
+        Integer page = 1;
+        Integer size = 1;
+        LocalDateTime since = aLocalDateTimeSince();
+        LocalDateTime until = aLocalDateTimeUntil();
+        Pageable pageable = PageRequest.of(page,size);
+        //Whem
+        when(measurementService.getMeasurementByAddressBetweenDate(idAddress,since,until,pageable)).thenReturn(aMeasurementPage());
         when(conversionService.convert(aMeasurement(), MeasurementDto.class)).thenReturn(aMeasurementDto());
 
         try{
-            ResponseEntity<List<MeasurementDto>> responseEntity = measurementBackOfficeController.getMeasurementByAddressBetweenDate(1,1,1,since,until);
-
+            ResponseEntity<List<MeasurementDto>> responseEntity = measurementBackOfficeController.getMeasurementByAddressBetweenDate(idAddress,page,size,since,until);
+            //Then
             Assert.assertEquals(aMeasurementDtoPage().getContent().size(),responseEntity.getBody().size());
             Assert.assertEquals(HttpStatus.OK,responseEntity.getStatusCode());
+            verify(measurementService,times(1)).getMeasurementByAddressBetweenDate(idAddress,since,until,pageable);
+            verify(conversionService,times(1)).convert(aMeasurement(),MeasurementDto.class);
+        }catch (SinceUntilException | ResourceDoesNotExistException e){
+            fail(e);
+        }
+    }
+
+    @Test
+    public void getMeasurementByAddressBetweenDateNC() throws ResourceDoesNotExistException {
+        //Given
+        Integer idAddress = 1;
+        Integer page = 1;
+        Integer size = 1;
+        LocalDateTime since = aLocalDateTimeSince();
+        LocalDateTime until = aLocalDateTimeUntil();
+        Pageable pageable = PageRequest.of(page,size);
+        //Whem
+        when(measurementService.getMeasurementByAddressBetweenDate(idAddress,since,until,pageable)).thenReturn(aMeasurementEmptyPage());
+        try{
+            ResponseEntity<List<MeasurementDto>> responseEntity = measurementBackOfficeController.getMeasurementByAddressBetweenDate(idAddress,page,size,since,until);
+            //Then
+            Assert.assertEquals(0,responseEntity.getBody().size());
+            Assert.assertEquals(HttpStatus.NO_CONTENT,responseEntity.getStatusCode());
+            verify(measurementService,times(1)).getMeasurementByAddressBetweenDate(idAddress,since,until,pageable);
+            verify(conversionService,times(0)).convert(aMeasurement(),MeasurementDto.class);
         }catch (SinceUntilException | ResourceDoesNotExistException e){
             fail(e);
         }

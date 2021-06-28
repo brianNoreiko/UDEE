@@ -13,7 +13,6 @@ import lombok.SneakyThrows;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -44,15 +43,18 @@ public class MeterBackOfficeControllerTest {
 
     @Test
     public void addMeterOK(){
+        //Given
+        Meter meter = aMeter();
         try {
             MockHttpServletRequest request = new MockHttpServletRequest();
             RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
-
-            Mockito.when(meterService.addMeter(aMeter())).thenReturn(aMeter());
-            ResponseEntity<Response> responseEntity = meterBackOfficeController.addMeter(aMeter());
-
-            Assert.assertEquals(EntityURLBuilder.buildURL("meters", aMeter().getSerialNumber()).toString(),responseEntity.getHeaders().get("Location").get(0));
+            //When
+            when(meterService.addMeter(meter)).thenReturn(meter);
+            ResponseEntity<Response> responseEntity = meterBackOfficeController.addMeter(meter);
+            //Then
+            Assert.assertEquals(EntityURLBuilder.buildURL("meters", meter.getSerialNumber()).toString(),responseEntity.getHeaders().get("Location").get(0));
             Assert.assertEquals(HttpStatus.CREATED.value(),responseEntity.getStatusCode().value());
+            verify(meterService,times(1)).addMeter(meter);
         }
         catch (ResourceAlreadyExistException e) {
             e.printStackTrace();
@@ -61,47 +63,66 @@ public class MeterBackOfficeControllerTest {
 
     @SneakyThrows
     @Test
-    public void getMeterByIdOK() throws ResourceDoesNotExistException {
-        when(meterService.getMeterById(1)).thenReturn(aMeter());
+    public void getMeterByIdOK() throws Exception {
+        //Given
+        Integer idMeter = 1;
+        //When
+        when(meterService.getMeterById(idMeter)).thenReturn(aMeter());
         when(conversionService.convert(aMeter(), MeterDto.class)).thenReturn(aMeterDto());
 
-        ResponseEntity<MeterDto> responseEntity = meterBackOfficeController.getMeterById(1);
-
+        ResponseEntity<MeterDto> responseEntity = meterBackOfficeController.getMeterById(idMeter);
+        //Then
         Assert.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         Assert.assertEquals(aMeterDto(), responseEntity.getBody());
+        verify(meterService,times(1)).getMeterById(idMeter);
+        verify(conversionService,times(1)).convert(aMeter(),MeterDto.class);
     }
 
     @Test
     public void getAllMetersOK(){
-        Pageable pageable = PageRequest.of(1,5);
-        Page<Meter> meterPage = aMeterPage();
+        //Given
+        Integer page = 1;
+        Integer size = 1;
+        Pageable pageable = PageRequest.of(page,size);
+        //When
         when(meterService.getAllMeters(pageable)).thenReturn(aMeterPage());
-        when(conversionService.convert(aMeterDto(), MeterDto.class)).thenReturn(aMeterDto());
+        when(conversionService.convert(aMeterPage(), MeterDto.class)).thenReturn(aMeterDto());
 
-        ResponseEntity<List<MeterDto>> responseEntity = meterBackOfficeController.getAllMeters(1,5);
-
+        ResponseEntity<List<MeterDto>> responseEntity = meterBackOfficeController.getAllMeters(page,size);
+        //Then
         Assert.assertEquals(HttpStatus.OK,responseEntity.getStatusCode());
-        Assert.assertEquals(meterPage.getContent().size(),responseEntity.getBody().size());
+        Assert.assertEquals(aMeterPage().getContent().size(),responseEntity.getBody().size());
+        verify(meterService,times(1)).getAllMeters(pageable);
+        verify(conversionService,times(1)).convert(aMeterPage(),MeterDto.class);
     }
 
     @Test
     public void getAllMetersNC(){ //NC == No Content
-        Pageable pageable = PageRequest.of(1, 1);
-        Page<Meter> meterEmptyPage = aMeterEmptyPage();
-        when(meterService.getAllMeters(pageable)).thenReturn(meterEmptyPage);
+        //Given
+        Integer page = 1;
+        Integer size = 1;
+        Pageable pageable = PageRequest.of(page,size);
+        //When
+        when(meterService.getAllMeters(pageable)).thenReturn(aMeterEmptyPage());
 
-        ResponseEntity<List<MeterDto>> responseEntity = meterBackOfficeController.getAllMeters(1,1);
-
+        ResponseEntity<List<MeterDto>> responseEntity = meterBackOfficeController.getAllMeters(page,size);
+        //Then
         Assert.assertEquals(HttpStatus.NO_CONTENT, responseEntity.getStatusCode());
         Assert.assertEquals(0,responseEntity.getBody().size());
+        verify(meterService,times(1)).getAllMeters(pageable);
+        verify(conversionService,times(0)).convert(aMeterPage(),MeterDto.class);
     }
 
     @Test
     public void deleteMeterById() throws ResourceDoesNotExistException, DeleteException {
-        doNothing().when(meterService).deleteMeterById(1);
+        //Given
+        Integer idMeter = 1;
+        //When
+        doNothing().when(meterService).deleteMeterById(idMeter);
 
-        ResponseEntity<Object> responseEntity = meterBackOfficeController.deleteMeterById(1);
-
+        ResponseEntity<Object> responseEntity = meterBackOfficeController.deleteMeterById(idMeter);
+        //Then
         assertEquals(HttpStatus.ACCEPTED, responseEntity.getStatusCode());
+        verify(meterService,times(1)).deleteMeterById(idMeter);
     }
 }

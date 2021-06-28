@@ -39,6 +39,13 @@ public class AddressBackOfficeController {
     }
 
     @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
+    @GetMapping("/{id}")
+    public ResponseEntity<AddressDto> getAddressById(@PathVariable Integer id) throws HttpClientErrorException, ResourceDoesNotExistException {
+        AddressDto addressDto = conversionService.convert(addressService.getAddressById(id), AddressDto.class);
+        return ResponseEntity.ok(addressDto);
+    }
+
+    @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @GetMapping("/")
     public ResponseEntity<List<AddressDto>> getAllAddresses(@RequestParam(value = "page", defaultValue = "0") Integer page,
                                                             @RequestParam(value = "size", defaultValue = "10") Integer size){
@@ -46,13 +53,6 @@ public class AddressBackOfficeController {
         Page<Address> addressPage = addressService.getAllAddresses(pageable);
         Page<AddressDto> addressDtoPage = addressPage.map(address -> conversionService.convert(addressPage, AddressDto.class));
         return EntityResponse.listResponse(addressDtoPage);
-    }
-
-    @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
-    @GetMapping("/{id}")
-    public ResponseEntity<AddressDto> getAddressById(@PathVariable Integer id) throws HttpClientErrorException, ResourceDoesNotExistException {
-        AddressDto addressDto = conversionService.convert(addressService.getAddressById(id), AddressDto.class);
-        return ResponseEntity.ok(addressDto);
     }
 
     @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
@@ -70,7 +70,7 @@ public class AddressBackOfficeController {
     @PutMapping("/{id}")
     public ResponseEntity<Response> updateAddress(@PathVariable Integer idToUp,
                                                   @RequestBody Address address) throws PrimaryKeyViolationException, ResourceAlreadyExistException, ResourceDoesNotExistException {
-        addressService.updateAddress(idToUp,address);
+        Address addressUpdated = addressService.updateAddress(idToUp,address);
         return ResponseEntity
                 .status(HttpStatus.ACCEPTED)
                 .contentType(MediaType.APPLICATION_JSON)

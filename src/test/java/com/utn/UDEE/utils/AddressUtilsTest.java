@@ -1,9 +1,7 @@
 package com.utn.UDEE.utils;
 
+import com.utn.UDEE.models.Address;
 import com.utn.UDEE.models.dto.AddressDto;
-
-
-import com.utn.UDEE.models.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 
@@ -34,6 +32,10 @@ public class AddressUtilsTest {
     public static Page<Address> aAddressEmptyPage() {
         List<Address> addressList = Collections.emptyList();
         return new PageImpl<>(addressList);
+    }
+
+    public static Page<AddressDto> aAddressDtoPage(){
+        return new PageImpl<>(List.of(aAddressDto()));
     }
 
     }
