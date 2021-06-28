@@ -2,15 +2,19 @@ package com.utn.UDEE.controller;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.utn.UDEE.exception.WrongCredentialsException;
+import com.utn.UDEE.models.User;
+import com.utn.UDEE.models.dto.LoginDto;
 import com.utn.UDEE.models.dto.LoginResponseDto;
 import com.utn.UDEE.models.dto.UserDto;
 import com.utn.UDEE.service.UserService;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -22,10 +26,8 @@ import org.springframework.security.core.authority.AuthorityUtils;
 
 import static com.utn.UDEE.utils.Constants.JWT_SECRET;
 import static com.utn.UDEE.utils.UserUtilsTest.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 public class LoginControllerTest {
     @MockBean
@@ -40,26 +42,41 @@ public class LoginControllerTest {
         conversionService = mock(ConversionService.class);
         loginController = new LoginController(userService,conversionService);
     }
-
+    @AfterEach
+    public void after(){
+        reset(userService);
+        reset(conversionService);
+    }
 
     @Test
     public void loginOk() throws WrongCredentialsException {
-        when(userService.login("brian_mn24@gmail.com", "123456")).thenReturn(aUser());
+        //Given
+        LoginDto loginDto = aLoginDto();
+        //When
+        when(userService.login(loginDto.getEmail(),loginDto.getPassword())).thenReturn(aUser());
         when(conversionService.convert(aUser(), UserDto.class)).thenReturn(aUserDto());
 
         ResponseEntity<LoginResponseDto> responseEntity = loginController.login(aLoginDto());
-
+        //Then
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        verify(userService,times(1)).login(loginDto.getEmail(),loginDto.getPassword());
+        verify(conversionService,times(1)).convert(aUser(),UserDto.class);
     }
 
 
     @Test
     public void loginUnauthorized() throws WrongCredentialsException {
-        when(userService.login("messirve@gmail.com", "123456")).thenReturn(null);
+        //Given
+        LoginDto loginDto = aLoginDto();
+        //When
+        when(userService.login(loginDto.getEmail(),loginDto.getPassword())).thenReturn(null);
 
         ResponseEntity<LoginResponseDto> responseEntity = loginController.login(aLoginDto());
+        //Then
 
         assertEquals(HttpStatus.UNAUTHORIZED, responseEntity.getStatusCode());
+        verify(userService,times(1)).login(loginDto.getEmail(),loginDto.getPassword());
+        verify(conversionService,times(0)).convert(aUser(), UserDto.class);
     }
 
 

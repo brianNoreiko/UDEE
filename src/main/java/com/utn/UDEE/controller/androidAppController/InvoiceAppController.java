@@ -49,6 +49,13 @@ public class InvoiceAppController {
         return EntityResponse.listResponse(invoiceDtoPage);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<InvoiceDto> getInvoiceById(@PathVariable Integer id) throws HttpClientErrorException, ResourceDoesNotExistException {
+        Invoice invoice = invoiceService.getInvoiceById(id);
+        InvoiceDto invoiceDto = conversionService.convert(invoice, InvoiceDto.class);
+        return ResponseEntity.ok(invoiceDto);
+    }
+
     @GetMapping("/")
     public ResponseEntity<List<InvoiceDto>> getAllInvoicesByUser(@PathVariable Integer idUser,
                                                                  @RequestParam(value = "page", defaultValue = "0") Integer page,
@@ -57,12 +64,6 @@ public class InvoiceAppController {
         Page<Invoice> invoicePage = invoiceService.getAllInvoicesByUser(idUser, pageable);
         Page<InvoiceDto> invoiceDtoPage = invoicePage.map(invoice -> conversionService.convert(invoice, InvoiceDto.class));
         return EntityResponse.listResponse(invoiceDtoPage);
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<InvoiceDto> getInvoiceById(@PathVariable Integer id) throws HttpClientErrorException, ResourceDoesNotExistException {
-        InvoiceDto invoiceDto = conversionService.convert(invoiceService.getInvoiceById(id), InvoiceDto.class);
-        return ResponseEntity.ok(invoiceDto);
     }
 
     //Consulta de deuda (Facturas impagas)

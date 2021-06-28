@@ -66,7 +66,7 @@ public class LoginController {
                     .signWith(SignatureAlgorithm.HS512, JWT_SECRET.getBytes()).compact();
             return  token;
         } catch(JsonProcessingException e) {
-            return "F";
+            return "Dummy";
         }
     }
 }

@@ -59,7 +59,7 @@ public class UserUtilsTest {
 
     public static LoginDto aLoginDto(){
         LoginDto loginDto = new LoginDto();
-        loginDto.setEmail("brian_mn24@hotmail.com");
+        loginDto.setEmail("user@gmail.com");
         loginDto.setPassword("123456");
         return loginDto;
     }
