@@ -103,4 +103,5 @@ public class InvoiceService {
             return invoiceRepository.findAllByUser(user, pageable);
         }
     }
+    public void InvoicingUpdateRate(){ invoiceRepository.p_invoicing_update_rate();}
 }

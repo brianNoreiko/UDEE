@@ -76,4 +76,8 @@ public class InvoiceAppController {
         Page<InvoiceDto> invoiceDtoPage = invoicePage.map(invoice -> conversionService.convert(invoice,InvoiceDto.class));
         return EntityResponse.listResponse(invoiceDtoPage);
     }
+    @GetMapping("/updateAllRates")
+    public void UpdateAllRates(){
+        invoiceService.InvoicingUpdateRate();
+    }
 }
