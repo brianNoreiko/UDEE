@@ -46,7 +46,7 @@ public class MeasurementUtilsTest {
     }
 
     public static DeliveredMeasureDto aDeliveredMeasureDto() {
-        return DeliveredMeasureDto.builder().serialNumber(null).value(2.0).dateTime(LocalDateTime.of(2021, 6, 1,0,0,0)).password("123456").build();
+        return DeliveredMeasureDto.builder().serialNumber(1).value(2.0).dateTime(LocalDateTime.of(2021, 6, 1,0,0,0)).password("123456").build();
     }
 
     public static Page<MeasurementDto> aMeasurementDtoPage(){

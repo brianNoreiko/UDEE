@@ -9,6 +9,7 @@ import com.utn.UDEE.models.User;
 import com.utn.UDEE.models.dto.DeliveredMeasureDto;
 import com.utn.UDEE.models.responses.ClientConsuption;
 import com.utn.UDEE.repository.MeasurementRepository;
+import com.utn.UDEE.repository.MeterRepository;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -27,13 +28,15 @@ import static java.util.Objects.isNull;
 public class MeasurementService {
 
     MeasurementRepository measurementRepository;
+    MeterRepository meterRepository;
     MeterService meterService;
     AddressService addressService;
     UserService userService;
 
     @Autowired
-    public MeasurementService(MeasurementRepository measurementRepository, MeterService meterService, AddressService addressService, UserService userService) {
+    public MeasurementService(MeasurementRepository measurementRepository,MeterRepository meterRepository, MeterService meterService, AddressService addressService, UserService userService) {
         this.measurementRepository = measurementRepository;
+        this.meterRepository = meterRepository;
         this.meterService = meterService;
         this.addressService = addressService;
         this.userService = userService;
@@ -84,8 +87,9 @@ public class MeasurementService {
     }
 
     public Measurement addMeasurement(DeliveredMeasureDto deliveredMeasureDto) throws ResourceDoesNotExistException {
-        Meter meter = meterService.getMeterById(deliveredMeasureDto.getSerialNumber());
-        if(meter != null) {
+        Boolean meterExist = meterRepository.existsById(deliveredMeasureDto.getSerialNumber());
+        if(meterExist == true) {
+            Meter meter = meterService.getMeterById(deliveredMeasureDto.getSerialNumber());
             Measurement measurement = Measurement.builder()
                     .meter(meter)
                     .Kwh(deliveredMeasureDto.getValue())
@@ -104,8 +108,11 @@ public class MeasurementService {
 
     public Page<Measurement> getAllMeasurementsByUser(Integer idUser, Pageable pageable) throws ResourceDoesNotExistException {
         User user = userService.getUserById(idUser);
-
-        return measurementRepository.findAllMeasurementsByUser(user, pageable);
+        if(user != null) {
+            return measurementRepository.findAllMeasurementsByUser(user, pageable);
+        }else {
+            throw new ResourceDoesNotExistException("User doesn't exist");
+        }
     }
 }
 
