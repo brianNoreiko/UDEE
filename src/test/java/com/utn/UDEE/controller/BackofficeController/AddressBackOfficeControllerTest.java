@@ -79,7 +79,7 @@ public class AddressBackOfficeControllerTest extends AbstractController {
         //Then
         Assert.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         verify(addressService,times(1)).getAllAddresses(pageable);
-        verify(conversionService,times(1)).convert(aAddressPage(),AddressDto.class);
+        verify(conversionService,times(1)).convert(aAddress(),AddressDto.class);
     }
 
     @Test

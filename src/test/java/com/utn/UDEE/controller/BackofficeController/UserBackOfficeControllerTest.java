@@ -63,7 +63,7 @@ public class UserBackOfficeControllerTest extends AbstractController {
         Assert.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         Assert.assertEquals(aUserDtoPage().getContent().size(),responseEntity.getBody().size());
         verify(userService,times(1)).getAllUsers(pageable);
-        verify(conversionService,times(1)).convert(aUserPage(), UserDto.class);
+        verify(conversionService,times(1)).convert(aUser(), UserDto.class);
     }
 
     @Test

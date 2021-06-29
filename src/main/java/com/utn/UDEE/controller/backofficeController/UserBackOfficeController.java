@@ -46,7 +46,7 @@ public class UserBackOfficeController {
                                                      @RequestParam(value = "page", defaultValue = "10") Integer size){
         Pageable pageable = PageRequest.of(page,size);
         Page<User> userPage = userService.getAllUsers(pageable);
-        Page<UserDto> userDtoPage = userPage.map(user -> conversionService.convert(userPage,UserDto.class));
+        Page<UserDto> userDtoPage = userPage.map(user -> conversionService.convert(user,UserDto.class));
         return EntityResponse.listResponse(userDtoPage);
     }
 

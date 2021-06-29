@@ -50,7 +50,8 @@ public class MeterBackOfficeController {
     @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @GetMapping("/{id}")
     public ResponseEntity<MeterDto> getMeterById(@PathVariable Integer id) throws HttpClientErrorException, ResourceDoesNotExistException {
-        MeterDto meterDto = conversionService.convert(meterService.getMeterById(id), MeterDto.class);
+        Meter meter = meterService.getMeterById(id);
+        MeterDto meterDto = conversionService.convert(meter, MeterDto.class);
         return ResponseEntity.ok(meterDto);
     }
 
@@ -60,7 +61,7 @@ public class MeterBackOfficeController {
                                                        @RequestParam(value = "page", defaultValue = "10") Integer size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Meter> meterPage = meterService.getAllMeters(pageable);
-        Page<MeterDto> meterDtoPage = meterPage.map(meter -> conversionService.convert(meterPage,MeterDto.class));
+        Page<MeterDto> meterDtoPage = meterPage.map(meter -> conversionService.convert(meter,MeterDto.class));
         return EntityResponse.listResponse(meterDtoPage);
     }
 

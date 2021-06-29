@@ -5,6 +5,7 @@ import com.utn.UDEE.exception.PrimaryKeyViolationException;
 import com.utn.UDEE.exception.ResourceAlreadyExistException;
 import com.utn.UDEE.exception.ResourceDoesNotExistException;
 import com.utn.UDEE.models.Address;
+import com.utn.UDEE.models.User;
 import com.utn.UDEE.models.dto.AddressDto;
 import com.utn.UDEE.models.responses.Response;
 import com.utn.UDEE.service.AddressService;
@@ -41,7 +42,8 @@ public class AddressBackOfficeController {
     @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @GetMapping("/{id}")
     public ResponseEntity<AddressDto> getAddressById(@PathVariable Integer id) throws HttpClientErrorException, ResourceDoesNotExistException {
-        AddressDto addressDto = conversionService.convert(addressService.getAddressById(id), AddressDto.class);
+        Address address = addressService.getAddressById(id);
+        AddressDto addressDto = conversionService.convert(address, AddressDto.class);
         return ResponseEntity.ok(addressDto);
     }
 
@@ -51,7 +53,7 @@ public class AddressBackOfficeController {
                                                             @RequestParam(value = "size", defaultValue = "10") Integer size){
         Pageable pageable = PageRequest.of(page,size);
         Page<Address> addressPage = addressService.getAllAddresses(pageable);
-        Page<AddressDto> addressDtoPage = addressPage.map(address -> conversionService.convert(addressPage, AddressDto.class));
+        Page<AddressDto> addressDtoPage = addressPage.map(address -> conversionService.convert(address, AddressDto.class));
         return EntityResponse.listResponse(addressDtoPage);
     }
 

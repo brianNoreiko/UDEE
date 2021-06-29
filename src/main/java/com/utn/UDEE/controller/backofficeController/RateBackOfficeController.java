@@ -43,7 +43,7 @@ public class RateBackOfficeController {
                                                      @RequestParam(value = "size", defaultValue = "10") Integer size){
         Pageable pageable = PageRequest.of(page,size);
         Page<Rate> ratePage = rateService.getAllRates(pageable);
-        Page<RateDto> rateDtoPage = ratePage.map(rate -> conversionService.convert(ratePage, RateDto.class));
+        Page<RateDto> rateDtoPage = ratePage.map(rate -> conversionService.convert(rate, RateDto.class));
         return EntityResponse.listResponse(rateDtoPage);
     }
 

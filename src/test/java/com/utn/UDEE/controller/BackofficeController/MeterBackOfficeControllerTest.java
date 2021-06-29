@@ -99,7 +99,7 @@ public class MeterBackOfficeControllerTest {
         Assert.assertEquals(HttpStatus.OK,responseEntity.getStatusCode());
         Assert.assertEquals(aMeterPage().getContent().size(),responseEntity.getBody().size());
         verify(meterService,times(1)).getAllMeters(pageable);
-        verify(conversionService,times(1)).convert(aMeterPage(),MeterDto.class);
+        verify(conversionService,times(1)).convert(aMeter(),MeterDto.class);
     }
 
     @Test

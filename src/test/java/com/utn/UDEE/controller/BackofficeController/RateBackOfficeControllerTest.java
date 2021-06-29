@@ -65,7 +65,7 @@ public class RateBackOfficeControllerTest {
         Assert.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         Assert.assertEquals(aRatePage().getContent().size(), responseEntity.getBody().size());
         verify(rateService,times(1)).getAllRates(pageable);
-        verify(conversionService,times(1)).convert(aRatePage(),RateDto.class);
+        verify(conversionService,times(1)).convert(aRate(),RateDto.class);
     }
 
     @Test

@@ -50,7 +50,8 @@ public class InvoiceBackOfficeController {
     @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @GetMapping("/{id}")
     public ResponseEntity<InvoiceDto> getInvoiceById(@PathVariable Integer id) throws HttpClientErrorException, ResourceDoesNotExistException {
-        InvoiceDto invoiceDto = conversionService.convert(invoiceService.getInvoiceById(id), InvoiceDto.class);
+        Invoice invoice = invoiceService.getInvoiceById(id);
+        InvoiceDto invoiceDto = conversionService.convert(invoice, InvoiceDto.class);
         return ResponseEntity.ok(invoiceDto);
     }
 
