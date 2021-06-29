@@ -216,10 +216,10 @@ begin
     declare vKwMeasure float default null;
 
     select max(`date`) into vlastDate from measurements where meter_id = new.meter_id and `date` <=new.date;
-    select rates.`value`  into vValueRate from rates inner join addresses on adresses.id_rate = rates.rate_id where adresses.meter_id = new.meter_id limit 1;
+    select rates.`value`  into vValueRate from rates inner join addresses on addresses.id_rate = rates.rate_id where addresses.meter_id = new.meter_id limit 1;
 
     if (vlastDate is not null) then
-		select max(quantity_kw) into vKwMeasure from measuremets where meter_id and `date` = vlastDate;
+		select max(quantity_kw) into vKwMeasure from measurements where meter_id and `date` = vlastDate;
         set new.price_measurement = (new.quantity_kw - vKwMeasure) * vValueRate;
 	else
 		set new.price_measurement = new.quantity_kw * vValueRate;
