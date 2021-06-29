@@ -18,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.ResultSet;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -75,6 +76,20 @@ public class MeasurementAppController {
         Page<Measurement> measurementPage = measurementService.getAllByMeterAndBetweenDate(idMeter,since,until, pageable);
         Page<MeasurementDto> measurementDtos = measurementPage.map(measurement -> conversionService.convert(measurement, MeasurementDto.class));
         return EntityResponse.listResponse(measurementDtos);
+    }
+
+    //Consulta de mediciones por rango de fechas
+    @GetMapping("/meters/{idUser}")
+    public ResponseEntity<List<ResultSet>> getMeasurementsByUserBetweenDate(@PathVariable Integer idUser,
+                                                                           @RequestParam(value = "size", defaultValue = "10") Integer size,
+                                                                           @RequestParam(value = "page", defaultValue = "0") Integer page,
+                                                                           @RequestParam(value = "since", defaultValue = "2021-01-01") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime since,
+                                                                           @RequestParam(value = "until", defaultValue = "#{T(java.time.LocalDateTime).now()}") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime until) throws SinceUntilException, ResourceDoesNotExistException {
+        checkSinceUntil(since,until);
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ResultSet> resultSets = measurementService.getMeasurementByUserBetweenDate(idUser,since,until, pageable);
+
+        return EntityResponse.listResponse(resultSets);
     }
 
 }

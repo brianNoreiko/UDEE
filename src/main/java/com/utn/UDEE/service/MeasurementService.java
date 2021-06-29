@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.sql.ResultSet;
 import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.Optional;
@@ -104,6 +105,15 @@ public class MeasurementService {
         User user = userService.getUserById(idUser);
         if(user != null) {
             return measurementRepository.findAllMeasurementsByUser(user, pageable);
+        }else {
+            throw new ResourceDoesNotExistException("User doesn't exist");
+        }
+    }
+
+    public Page<ResultSet> getMeasurementByUserBetweenDate(Integer idUser, LocalDateTime since, LocalDateTime until, Pageable pageable) throws ResourceDoesNotExistException {
+        User user = userService.getUserById(idUser);
+        if(user != null) {
+            return measurementRepository.getMeasurementByUserBetweenDate(user.getUsername(), since, until,pageable);
         }else {
             throw new ResourceDoesNotExistException("User doesn't exist");
         }
