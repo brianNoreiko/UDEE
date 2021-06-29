@@ -30,11 +30,15 @@ public interface MeasurementRepository extends JpaRepository<Measurement,Integer
             @Param("until") LocalDateTime until,
             Pageable pageable);
 
-    Page<Measurement> getMeasurementByAddressBetweenDate(Address address, LocalDateTime since, LocalDateTime until, Pageable pageable);
+    @Query(value = "select ms.* from measurements ms\n" +
+            "join meters mt on ms.meterId=mt.serial_number\n" +
+            "join addresses a on mt.serial_number =a.meterId where a.addressId = aId and date between since and until",nativeQuery = true)
+    Page<Measurement> getMeasurementByAddressBetweenDate(
+            @Param("aId")Address address,
+            @Param("since")LocalDateTime since,
+            @Param("until")LocalDateTime until, Pageable pageable);
 
-    @Query(value = "select ms.* from users u join addresses a ON a.userId=u.userId \n" +
-            "        JOIN meters mt ON mt.serial_number= a.meterId \n" +
-            "        JOIN measurements ms ON mt.serial_number=ms.meterId")
+    @Query(value = "select ms.* from measurements ms join meters mt on ms.meterId = mt.serial_number join addresses a on mt.serial_number = a.addressId join users u on a.userId = u.userId where a.userId = UserID",nativeQuery = true)
     Page<Measurement> findAllMeasurementsByUser(@Param("UserID") User user, Pageable pageable);
 
     @Procedure(procedureName = "p_consult_User_measurements_byDates")
