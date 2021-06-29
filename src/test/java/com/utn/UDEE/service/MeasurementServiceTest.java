@@ -167,9 +167,9 @@ public class MeasurementServiceTest {
             when(meterService.getMeterById(deliveredMeasureDto.getSerialNumber())).thenReturn(aMeter());
             when(measurementRepository.save(measurement)).thenReturn(measurement);
 
-            Measurement savedMeasurement = measurementService.addMeasurement(aDeliveredMeasureDto());
+            Measurement savedMeasurement = measurementService.addMeasurement(deliveredMeasureDto);
             //Then
-            assertEquals(measurement, savedMeasurement);
+            assertEquals(aMeasurement(), savedMeasurement);
             verify(meterRepository,times(1)).existsById(deliveredMeasureDto.getSerialNumber());
             verify(meterService, times(1)).getMeterById(deliveredMeasureDto.getSerialNumber());
             verify(measurementRepository, times(1)).save(savedMeasurement);
