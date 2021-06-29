@@ -1,6 +1,5 @@
 package com.utn.UDEE.service;
 
-import com.utn.UDEE.exception.ResourceAlreadyExistException;
 import com.utn.UDEE.exception.ResourceDoesNotExistException;
 import com.utn.UDEE.models.Address;
 import com.utn.UDEE.models.Measurement;
@@ -10,19 +9,14 @@ import com.utn.UDEE.models.dto.DeliveredMeasureDto;
 import com.utn.UDEE.models.responses.ClientConsuption;
 import com.utn.UDEE.repository.MeasurementRepository;
 import com.utn.UDEE.repository.MeterRepository;
-import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 
 import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.Optional;
-
-import static java.util.Objects.isNull;
 
 @Service
 public class MeasurementService {

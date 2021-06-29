@@ -1,13 +1,7 @@
 package com.utn.UDEE.controller;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.utn.UDEE.exception.WrongCredentialsException;
-import com.utn.UDEE.models.User;
 import com.utn.UDEE.models.dto.LoginDto;
 import com.utn.UDEE.models.dto.LoginResponseDto;
 import com.utn.UDEE.models.dto.UserDto;
@@ -17,20 +11,23 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static com.utn.UDEE.utils.Constants.JWT_SECRET;
 import static com.utn.UDEE.utils.UserUtilsTest.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.*;
 
 public class LoginControllerTest {
-    @MockBean
     private static UserService userService;
     private static ConversionService conversionService;
     private static LoginController loginController;

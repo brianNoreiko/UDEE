@@ -13,7 +13,6 @@ import org.junit.Assert;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,7 +20,6 @@ import org.springframework.data.domain.Pageable;
 import java.util.Optional;
 
 import static com.utn.UDEE.utils.AddressUtilsTest.*;
-import static com.utn.UDEE.utils.InvoiceUtilsTest.aInvoice;
 import static com.utn.UDEE.utils.MeterUtilsTest.aMeter;
 import static com.utn.UDEE.utils.RateUtilsTest.aRate;
 import static org.junit.jupiter.api.Assertions.*;

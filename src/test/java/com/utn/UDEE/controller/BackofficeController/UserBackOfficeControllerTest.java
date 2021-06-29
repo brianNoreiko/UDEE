@@ -4,7 +4,6 @@ import com.utn.UDEE.AbstractController;
 import com.utn.UDEE.controller.backofficeController.UserBackOfficeController;
 import com.utn.UDEE.exception.ResourceAlreadyExistException;
 import com.utn.UDEE.exception.ResourceDoesNotExistException;
-import com.utn.UDEE.models.Invoice;
 import com.utn.UDEE.models.User;
 import com.utn.UDEE.models.dto.UserDto;
 import com.utn.UDEE.models.responses.Response;
@@ -16,21 +15,16 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.List;
 
-import static com.utn.UDEE.utils.InvoiceUtilsTest.aInvoice;
 import static com.utn.UDEE.utils.UserUtilsTest.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
 public class UserBackOfficeControllerTest extends AbstractController {

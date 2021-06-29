@@ -9,7 +9,6 @@ import com.utn.UDEE.models.responses.Response;
 import com.utn.UDEE.service.MeterService;
 import com.utn.UDEE.utils.EntityResponse;
 import com.utn.UDEE.utils.EntityURLBuilder;
-import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Page;

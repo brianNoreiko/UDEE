@@ -4,7 +4,6 @@ import com.utn.UDEE.controller.backofficeController.MeasurementBackOfficeControl
 import com.utn.UDEE.exception.ResourceAlreadyExistException;
 import com.utn.UDEE.exception.ResourceDoesNotExistException;
 import com.utn.UDEE.exception.SinceUntilException;
-import com.utn.UDEE.models.Measurement;
 import com.utn.UDEE.models.dto.DeliveredMeasureDto;
 import com.utn.UDEE.models.dto.MeasurementDto;
 import com.utn.UDEE.models.responses.Response;
@@ -14,9 +13,7 @@ import org.junit.Assert;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.core.convert.ConversionService;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -26,17 +23,13 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Optional;
 
-import static com.utn.UDEE.utils.InvoiceUtilsTest.aInvoiceDtoPage;
 import static com.utn.UDEE.utils.LocalDateTimeUtilsTest.aLocalDateTimeSince;
 import static com.utn.UDEE.utils.LocalDateTimeUtilsTest.aLocalDateTimeUntil;
 import static com.utn.UDEE.utils.MeasurementUtilsTest.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
 
 public class MeasurementBackOfficeControllerTest {
