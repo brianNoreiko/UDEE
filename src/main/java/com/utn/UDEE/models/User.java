@@ -21,7 +21,7 @@ import java.util.List;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column (name = "userId")
+    @Column (name = "userId",unique = true)
     private Integer id;
 
     @NotBlank(message = "The first name can not be blank")
@@ -38,7 +38,7 @@ public class User {
 
     @NotBlank(message = "Username required")
     @Length(min = 4, max= 20, message = "Username must contain between 4 and 20 characters")
-    @Column(name = "username")
+    @Column(name = "username",unique = true,nullable = false)
     private String username;
 
     @NotNull(message = "Password may not be null")

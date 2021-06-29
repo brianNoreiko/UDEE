@@ -18,14 +18,14 @@ public class Model {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "modelId")
+    @Column(name = "modelId",unique = true,nullable = false)
     private Integer id;
 
     @Column(name = "name")
     private String name;
 
     @ManyToOne (fetch = FetchType.EAGER)
-    @JoinColumn(name = "brandId")
+    @JoinColumn(name = "brandId",nullable = false, updatable = false)
     private Brand Brand;
 
     @OneToMany(mappedBy = "model", fetch = FetchType.LAZY)

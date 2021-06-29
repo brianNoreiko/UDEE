@@ -15,11 +15,11 @@ import java.util.List;
 public class Meter {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "serial_number")
+    @Column(name = "serial_number",unique = true,nullable = false)
     private Integer serialNumber;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "modelId")
+    @JoinColumn(name = "modelId",nullable = false, updatable = false)
     private Model model;
 
     @NotNull(message = "The password can not be null")

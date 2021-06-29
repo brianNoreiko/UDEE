@@ -19,19 +19,19 @@ public class Invoice {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "invoiceId")
+    @Column(name = "invoiceId",unique = true,nullable = false)
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "addressId")
+    @JoinColumn(name = "addressId", nullable = false, updatable = false)
     private Address address;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "meterId")
+    @JoinColumn(name = "meterId", nullable = false, updatable = false)
     private Meter meter;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userId")
+    @JoinColumn(name = "userId", nullable = false, updatable = false)
     private User user;
 
     @OneToMany(mappedBy = "invoice", fetch = FetchType.LAZY)

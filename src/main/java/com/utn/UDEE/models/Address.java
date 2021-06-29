@@ -18,7 +18,7 @@ public class Address {
 
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-    @Column(name = "addressId")
+    @Column(name = "addressId",unique = true,nullable = false)
     private Integer id;
 
     @NotNull(message = "The street shouldn't be null")
@@ -37,11 +37,11 @@ public class Address {
     private User user;
 
     @OneToOne
-    @JoinColumn(name = "meterId")
+    @JoinColumn(name = "meterId",nullable = false)
     private Meter meter;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_rate")
+    @JoinColumn(name = "id_rate", nullable = false, updatable = false)
     private Rate rate;
 
 

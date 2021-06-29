@@ -17,11 +17,11 @@ public class Measurement {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "measurementId")
+    @Column(name = "measurementId",unique = true,nullable = false)
     private Integer id;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "meterId")
+    @JoinColumn(name = "meterId", nullable = false, updatable = false)
     private Meter meter;
 
     @ManyToOne(fetch = FetchType.EAGER)
