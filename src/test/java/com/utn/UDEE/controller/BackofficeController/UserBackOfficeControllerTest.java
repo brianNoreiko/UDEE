@@ -14,6 +14,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -51,15 +53,16 @@ public class UserBackOfficeControllerTest extends AbstractController {
         //Given
         Integer page = 1;
         Integer size = 1;
+        Pageable pageable = PageRequest.of(page,size);
         //When
-        when(userService.getAllUsers(page,size)).thenReturn(aUserPage());
+        when(userService.getAllUsers(pageable)).thenReturn(aUserPage());
         when(conversionService.convert(aUserPage(),UserDto.class)).thenReturn(aUserDto());
 
         ResponseEntity<List<UserDto>> responseEntity = userBackOfficeController.getAllUsers(page,size);
         //Then
         Assert.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         Assert.assertEquals(aUserDtoPage().getContent().size(),responseEntity.getBody().size());
-        verify(userService,times(1)).getAllUsers(page,size);
+        verify(userService,times(1)).getAllUsers(pageable);
         verify(conversionService,times(1)).convert(aUserPage(), UserDto.class);
     }
 
@@ -68,14 +71,15 @@ public class UserBackOfficeControllerTest extends AbstractController {
         //Given
         Integer page = 1;
         Integer size = 1;
+        Pageable pageable = PageRequest.of(page,size);
         //When
-        when(userService.getAllUsers(page,size)).thenReturn(aUserEmptyPage());
+        when(userService.getAllUsers(pageable)).thenReturn(aUserEmptyPage());
 
         ResponseEntity<List<UserDto>> responseEntity = userBackOfficeController.getAllUsers(page,size);
         //Then
         Assert.assertEquals(HttpStatus.NO_CONTENT, responseEntity.getStatusCode());
         Assert.assertEquals(0,responseEntity.getBody().size());
-        verify(userService,times(1)).getAllUsers(page,size);
+        verify(userService,times(1)).getAllUsers(pageable);
         verify(conversionService,times(0)).convert(aUserPage(), UserDto.class);
     }
 

@@ -8,8 +8,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer> {
-    Page<User> getAllUsers(Pageable pageable);
-
     User findByUsernameOrEmail(String username, String email);
 
     User findByEmail(String email);

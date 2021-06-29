@@ -36,11 +36,8 @@ public class UserService {
         return userRepository.findById(idUser).orElseThrow(() -> new ResourceDoesNotExistException("User doesn't exist"));
     }
 
-    public Page<User> getAllUsers(Integer page , Integer size){
-        Pageable pageable = PageRequest.of(page,size);
-        Page<User> userPage = userRepository.getAllUsers(pageable);
-
-        return userPage;
+    public Page<User> getAllUsers(Pageable pageable){
+        return userRepository.findAll(pageable);
     }
 
     public User addUser(User user) throws ResourceAlreadyExistException {

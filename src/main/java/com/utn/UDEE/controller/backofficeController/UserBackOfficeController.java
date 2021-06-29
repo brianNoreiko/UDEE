@@ -12,6 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
 import org.springframework.http.HttpStatus;
@@ -42,7 +44,8 @@ public class UserBackOfficeController {
     @GetMapping
     public ResponseEntity<List<UserDto>> getAllUsers(@RequestParam(value = "size", defaultValue = "0" ) Integer page,
                                                      @RequestParam(value = "page", defaultValue = "10") Integer size){
-        Page<User> userPage = userService.getAllUsers(page,size);
+        Pageable pageable = PageRequest.of(page,size);
+        Page<User> userPage = userService.getAllUsers(pageable);
         Page<UserDto> userDtoPage = userPage.map(user -> conversionService.convert(userPage,UserDto.class));
         return EntityResponse.listResponse(userDtoPage);
     }

@@ -113,7 +113,7 @@ public class MeasurementService {
     public Page<ResultSet> getMeasurementByUserBetweenDate(Integer idUser, LocalDateTime since, LocalDateTime until, Pageable pageable) throws ResourceDoesNotExistException {
         User user = userService.getUserById(idUser);
         if(user != null) {
-            return measurementRepository.getMeasurementByUserBetweenDate(user.getUsername(), since, until,pageable);
+            return (Page<ResultSet>) measurementRepository.getMeasurementByUserBetweenDate(user.getUsername(), since, until,pageable);
         }else {
             throw new ResourceDoesNotExistException("User doesn't exist");
         }

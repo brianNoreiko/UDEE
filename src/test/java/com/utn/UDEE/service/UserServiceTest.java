@@ -60,11 +60,11 @@ public class UserServiceTest {
         Integer size = 1;
         Pageable pageable = PageRequest.of(page,size);
         //When
-        when(userRepository.getAllUsers(pageable)).thenReturn(aUserPage());
-        Page<User> userPage = userService.getAllUsers(page,size);
+        when(userRepository.findAll(pageable)).thenReturn(aUserPage());
+        Page<User> userPage = userService.getAllUsers(pageable);
         //Then
         assertEquals(aUserPage(),userPage);
-        verify(userRepository,times(1)).getAllUsers(pageable);
+        verify(userRepository,times(1)).findAll(pageable);
     }
 
     @Test
@@ -74,11 +74,11 @@ public class UserServiceTest {
         Integer size = 1;
         Pageable pageable = PageRequest.of(page,size);
         //When
-        when(userRepository.getAllUsers(pageable)).thenReturn(aUserEmptyPage());
-        Page<User> userPage = userService.getAllUsers(page,size);
+        when(userRepository.findAll(pageable)).thenReturn(aUserEmptyPage());
+        Page<User> userPage = userService.getAllUsers(pageable);
         //Then
         assertEquals(aUserEmptyPage(),userPage);
-        verify(userRepository,times(1)).getAllUsers(pageable);
+        verify(userRepository,times(1)).findAll(pageable);
     }
 
     @Test
