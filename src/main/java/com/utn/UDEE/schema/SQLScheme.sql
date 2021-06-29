@@ -81,7 +81,7 @@ CREATE TABLE IF NOT EXISTS measurements(
 	measurementId INT NOT NULL AUTO_INCREMENT,
 	meterId  INT NOT NULL,
 	InvoiceId  INT,
-	`date` DATETIME,
+	date DATETIME,
 	quantity_kw DOUBLE NOT NULL,
 	price_measurement DOUBLE DEFAULT 0,
 	CONSTRAINT pk_measurement PRIMARY KEY (measurementId),

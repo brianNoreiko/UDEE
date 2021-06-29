@@ -65,13 +65,13 @@ public class MeasurementServiceTest {
         //When
         when(meterService.getMeterById(idMeter)).thenReturn(aMeter());
 
-        when(measurementRepository.getAllByMeterAndBetweenDate(aMeter(), since, until, pageable)).thenReturn(aMeasurementPage());
+        when(measurementRepository.getAllByMeterAndDateBetween(aMeter(), since, until, pageable)).thenReturn(aMeasurementPage());
 
         Page<Measurement> measurementPage = measurementService.getAllByMeterAndBetweenDate(idMeter, since, until, pageable);
         //Then
         assertEquals(aMeasurementPage(), measurementPage);
         verify(meterService, times(1)).getMeterById(idMeter);
-        verify(measurementRepository, times(1)).getAllByMeterAndBetweenDate(aMeter(), since, until, pageable);
+        verify(measurementRepository, times(1)).getAllByMeterAndDateBetween(aMeter(), since, until, pageable);
     }
 
     @Test
@@ -87,7 +87,7 @@ public class MeasurementServiceTest {
         //Then
         assertThrows(ResourceDoesNotExistException.class, () -> measurementService.getAllByMeterAndBetweenDate(idMeter, since, until, pageable));
         verify(meterService, times(1)).getMeterById(idMeter);
-        verify(measurementRepository, times(0)).getAllByMeterAndBetweenDate(aMeter(), since, until, pageable);
+        verify(measurementRepository, times(0)).getAllByMeterAndDateBetween(aMeter(), since, until, pageable);
     }
 
     @Test

@@ -62,7 +62,7 @@ public class MeasurementService {
 
         Meter meter = meterService.getMeterById(idMeter);
         if(meter != null) {
-            return measurementRepository.getAllByMeterAndBetweenDate(meter, since, until, pageable);
+            return measurementRepository.getAllByMeterAndDateBetween(meter, since, until, pageable);
         }else {
             throw new ResourceDoesNotExistException("Meter doesn't exist");
         }
