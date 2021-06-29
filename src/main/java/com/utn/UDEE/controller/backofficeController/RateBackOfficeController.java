@@ -71,7 +71,7 @@ public class RateBackOfficeController {
     @PutMapping("/{id}")
     public ResponseEntity<Response> updateRate(@PathVariable Integer idToUp,
                                                @RequestBody Rate newRate) throws ResourceDoesNotExistException, ResourceAlreadyExistException, PrimaryKeyViolationException {
-        rateService.updateRate(idToUp, newRate);
+        Rate rateSaved = rateService.updateRate(idToUp, newRate);
         return ResponseEntity
                 .status(HttpStatus.ACCEPTED)
                 .contentType(MediaType.APPLICATION_JSON)

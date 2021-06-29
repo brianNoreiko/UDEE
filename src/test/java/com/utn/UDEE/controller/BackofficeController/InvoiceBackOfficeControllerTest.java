@@ -10,11 +10,10 @@ import com.utn.UDEE.models.responses.Response;
 import com.utn.UDEE.service.InvoiceService;
 import com.utn.UDEE.utils.EntityURLBuilder;
 import org.junit.Assert;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.core.convert.ConversionService;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -24,12 +23,9 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.List;
-import java.util.Optional;
 
-import static com.utn.UDEE.utils.EntityResponse.messageResponse;
 import static com.utn.UDEE.utils.InvoiceUtilsTest.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
 
 public class InvoiceBackOfficeControllerTest {
@@ -43,6 +39,13 @@ public class InvoiceBackOfficeControllerTest {
         conversionService = mock(ConversionService.class);
         invoiceBackOfficeController = new InvoiceBackOfficeController(invoiceService, conversionService);
     }
+
+    @AfterEach
+    public void after(){
+        reset(invoiceService);
+        reset(conversionService);
+    }
+
     @Test
     public void addInvoiceCreated(){
         //Given

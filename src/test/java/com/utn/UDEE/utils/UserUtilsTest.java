@@ -3,7 +3,6 @@ package com.utn.UDEE.utils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.utn.UDEE.models.Invoice;
 import com.utn.UDEE.models.User;
 import com.utn.UDEE.models.UserType;
 import com.utn.UDEE.models.dto.LoginDto;
@@ -50,6 +49,9 @@ public class UserUtilsTest {
     }
     public static Page<User> aUserPage() {
         return new PageImpl<>(List.of(aUser()));
+    }
+    public static Page<UserDto> aUserDtoPage(){
+        return new PageImpl<>(List.of(aUserDto()));
     }
 
     public static Page<User> aUserEmptyPage() {

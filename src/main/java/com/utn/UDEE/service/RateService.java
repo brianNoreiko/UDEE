@@ -58,7 +58,7 @@ public class RateService {
         }
     }
 
-    public void updateRate(Integer idToUp, Rate newRate) throws ResourceDoesNotExistException, PrimaryKeyViolationException, ResourceAlreadyExistException {
+    public Rate updateRate(Integer idToUp, Rate newRate) throws ResourceDoesNotExistException, PrimaryKeyViolationException, ResourceAlreadyExistException {
         Rate toUpdate = getRateById(idToUp);
         if(toUpdate == null){
             throw new ResourceDoesNotExistException("Rate doesn't exist");
@@ -69,7 +69,7 @@ public class RateService {
         if(toUpdate.equals(newRate)){
             throw new ResourceAlreadyExistException("You are trying to update the same information! Rate already exist");
         }else{
-            rateRepository.save(newRate);
+           return rateRepository.save(newRate);
         }
 
     }

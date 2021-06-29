@@ -11,6 +11,7 @@ import com.utn.UDEE.service.MeterService;
 import com.utn.UDEE.utils.EntityURLBuilder;
 import lombok.SneakyThrows;
 import org.junit.Assert;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.convert.ConversionService;
@@ -39,6 +40,12 @@ public class MeterBackOfficeControllerTest {
         meterService = mock(MeterService.class);
         conversionService = mock(ConversionService.class);
         meterBackOfficeController = new MeterBackOfficeController(meterService, conversionService);
+    }
+
+    @AfterEach
+    public void after(){
+        reset(meterService);
+        reset(conversionService);
     }
 
     @Test

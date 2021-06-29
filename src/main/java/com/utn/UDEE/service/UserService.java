@@ -39,7 +39,7 @@ public class UserService {
     }
 
     public Page<User> getAllUsers(Integer page , Integer size){
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page,size);
         Page<User> userPage = userRepository.getAllUsers(pageable);
 
         return userPage;

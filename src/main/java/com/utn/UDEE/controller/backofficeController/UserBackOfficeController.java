@@ -5,7 +5,6 @@ import com.utn.UDEE.exception.ResourceAlreadyExistException;
 import com.utn.UDEE.exception.ResourceDoesNotExistException;
 import com.utn.UDEE.models.User;
 import com.utn.UDEE.models.dto.UserDto;
-import com.utn.UDEE.models.responses.PaginationResponse;
 import com.utn.UDEE.models.responses.Response;
 import com.utn.UDEE.service.UserService;
 import com.utn.UDEE.utils.EntityResponse;
@@ -21,7 +20,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,22 +33,20 @@ public class UserBackOfficeController {
 
     ConversionService conversionService;
     UserService userService;
-    ObjectMapper objectMapper;
-    PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserBackOfficeController(ConversionService conversionService, UserService userService, ObjectMapper objectMapper, PasswordEncoder passwordEncoder) {
+    public UserBackOfficeController(UserService userService, ConversionService conversionService) {
         this.conversionService = conversionService;
         this.userService = userService;
-        this.objectMapper = objectMapper;
-        this.passwordEncoder = passwordEncoder;
+
     }
 
     @GetMapping
-    public Page<User> getAllUsers(@RequestParam(value = "size", defaultValue = "10" ) Integer size,
-                                  @RequestParam(value = "page", defaultValue = "0") Integer page){
-
-        return userService.getAllUsers(page,size);
+    public ResponseEntity<List<UserDto>> getAllUsers(@RequestParam(value = "size", defaultValue = "0" ) Integer page,
+                                                     @RequestParam(value = "page", defaultValue = "10") Integer size){
+        Page<User> userPage = userService.getAllUsers(page,size);
+        Page<UserDto> userDtoPage = userPage.map(user -> conversionService.convert(userPage,UserDto.class));
+        return EntityResponse.listResponse(userDtoPage);
     }
 
     @GetMapping("/{id}")
