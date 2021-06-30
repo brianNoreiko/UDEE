@@ -202,7 +202,7 @@ ON SCHEDULE EVERY 1 MONTH STARTS '2021-07-01 00:00:00'
 DO CALL p_all_clients_invoice();
 
 /*3) Generar las estructuras necesarias para el cálculo de precio de cada medición y las
-inserción de la misma. Se debe tener en cuenta que una modificación en la tarifa debe
+inserción de la misma. Se debe tener en cuenta que una modificación en la tarifa debe.
 modificar el precio de cada una de estas mediciones en la base de datos y generar una
 factura de ajuste a la nueva medición de cada una de las mediciones involucradas con esta
 tarifa*/
@@ -300,8 +300,8 @@ SELECT  u.username as 'Usuario', u.name As 'Nombre',u.last_name as'Apellido',mt.
         JOIN measurements ms ON mt.serial_number=ms.meter_id;
 
 #Creacion de indices
-CREATE INDEX measurement_info ON measurements(measurement_id,date,quantity_kw,price_measurement) USING BTREE;
-CREATE INDEX user_profile on users (username,name,last_name) Using btree;
+CREATE INDEX measurement_info ON measurements(measurement_id,date) USING BTREE;
+CREATE INDEX user_profile on users (username) Using btree;
 
 #Creacion de procedimiento
 DROP PROCEDURE IF EXISTS p_consult_User_measurements_byDates;

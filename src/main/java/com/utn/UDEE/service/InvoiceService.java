@@ -10,8 +10,10 @@ import com.utn.UDEE.repository.InvoiceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.NamedStoredProcedureQuery;
 import java.time.LocalDateTime;
 
 import static java.util.Objects.isNull;
@@ -101,5 +103,6 @@ public class InvoiceService {
             return invoiceRepository.findAllByUser(user, pageable);
         }
     }
+    @Procedure(procedureName = "p_invoicing_update_rate")
     public void InvoicingUpdateRate(){ invoiceRepository.p_invoicing_update_rate();}
 }

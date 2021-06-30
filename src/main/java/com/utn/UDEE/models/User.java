@@ -33,7 +33,7 @@ public class User {
     private String lastname;
 
     @NotBlank
-    @Column (name = "email")
+    @Column (name = "email",unique = true,nullable = false)
     private String email;
 
     @NotBlank(message = "Username required")
