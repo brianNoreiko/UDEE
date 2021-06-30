@@ -82,7 +82,7 @@ public class MeasurementService {
     }
 
     public Measurement addMeasurement(DeliveredMeasureDto deliveredMeasureDto) throws ResourceDoesNotExistException {
-        Boolean meterExist = meterRepository.existsById(deliveredMeasureDto.getSerialNumber());
+        boolean meterExist = meterRepository.existsById(deliveredMeasureDto.getSerialNumber());
         if(meterExist == true) {
             Meter meter = meterService.getMeterById(deliveredMeasureDto.getSerialNumber());
             Measurement measurement = Measurement.builder()

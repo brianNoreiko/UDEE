@@ -154,25 +154,17 @@ public class MeasurementServiceTest {
         DeliveredMeasureDto deliveredMeasureDto = aDeliveredMeasureDto();
         //When
         try {
-            Measurement measurement = Measurement   //Tuve que agregar manualmente este measurement porque no me "tomaba" un "aMeasurement()" en el thenReturn del .save()
-                    .builder()                      //Al correr el test poniendo: when(measurementRepository.save(aMeasurement())).thenReturn(aMeasurement());
-                    .id(1)                          //me devolvía un null y hacía que falle el test
-                    .meter(aMeter())
-                    .invoice(null)
-                    .Kwh(6.0)
-                    .dateTime(LocalDateTime.of(2021, 6, 23, 0, 0, 0))
-                    .KwhPrice(75.0)
-                    .build();
+            Measurement measurement = aMeasurement();
             when(meterRepository.existsById(deliveredMeasureDto.getSerialNumber())).thenReturn(true);
             when(meterService.getMeterById(deliveredMeasureDto.getSerialNumber())).thenReturn(aMeter());
-            when(measurementRepository.save(measurement)).thenReturn(measurement);
+            when(measurementRepository.save(any(Measurement.class))).thenReturn(measurement);
 
             Measurement savedMeasurement = measurementService.addMeasurement(deliveredMeasureDto);
             //Then
-            assertEquals(aMeasurement(), savedMeasurement);
+            assertEquals(measurement, savedMeasurement);
             verify(meterRepository,times(1)).existsById(deliveredMeasureDto.getSerialNumber());
             verify(meterService, times(1)).getMeterById(deliveredMeasureDto.getSerialNumber());
-            verify(measurementRepository, times(1)).save(savedMeasurement);
+            verify(measurementRepository, times(1)).save(any(Measurement.class));
         } catch (ResourceDoesNotExistException e) {
             addMeasurementDenied();
         }
@@ -186,8 +178,8 @@ public class MeasurementServiceTest {
         try{
         when(meterRepository.existsById(deliveredMeasureDto.getSerialNumber())).thenReturn(false);
         //Then
-        assertThrows(ResourceDoesNotExistException.class, () -> measurementService.getMeasurementById(deliveredMeasureDto.getSerialNumber()));
-        verify(meterRepository,times(1)).existsById(deliveredMeasureDto.getSerialNumber());
+        assertThrows(ResourceDoesNotExistException.class, () -> measurementService.addMeasurement(deliveredMeasureDto));
+        verify(meterRepository,times(1)).existsById(any());
         verify(meterService,times(0)).getMeterById(deliveredMeasureDto.getSerialNumber());
         verify(measurementRepository,times(0)).save(aMeasurement());
         } catch (ResourceDoesNotExistException e) {
