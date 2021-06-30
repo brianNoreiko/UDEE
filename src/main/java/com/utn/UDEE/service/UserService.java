@@ -28,8 +28,8 @@ public class UserService {
 
     }
 
-    public User login(String email, String password) {
-        return userRepository.findByEmailAndPassword(email,password);
+    public User login(String username, String password) {
+        return userRepository.findByUsernameAndPassword(username,password);
     }
 
     public User getUserById(Integer idUser) throws ResourceDoesNotExistException {

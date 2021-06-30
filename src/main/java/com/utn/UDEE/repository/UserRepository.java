@@ -14,6 +14,8 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     User findByEmailAndPassword(String email, String password);
 
+    User findByUsernameAndPassword(String username, String password);
+
     /*@Query(value =
             "SELECT consum.id_user AS id, consum.name,consum.last_name as lastname, consum.username, ( SUM(consum.max) - SUM(consum.min) ) AS consumption\n" +
                     "FROM\n" +

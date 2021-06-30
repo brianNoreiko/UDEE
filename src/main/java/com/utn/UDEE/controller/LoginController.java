@@ -41,7 +41,7 @@ public class LoginController {
 
     @PostMapping(value = "/")
     public ResponseEntity<LoginResponseDto> login(@RequestBody LoginDto loginDto) {
-        User user = userService.login(loginDto.getEmail(), loginDto.getPassword());
+        User user = userService.login(loginDto.getUsername(), loginDto.getPassword());
         if (user!=null){
             UserDto userDto = conversionService.convert(user,UserDto.class);
             return ResponseEntity.ok(LoginResponseDto.builder().token(this.generateToken(userDto)).build());

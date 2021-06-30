@@ -19,6 +19,7 @@ import org.springframework.data.domain.Sort.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -26,7 +27,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("/backoffice/user")
+@RequestMapping("/backoffice/users")
 
 public class UserBackOfficeController {
 
@@ -41,6 +42,7 @@ public class UserBackOfficeController {
 
     }
 
+    @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @GetMapping
     public ResponseEntity<List<UserDto>> getAllUsers(@RequestParam(value = "size", defaultValue = "0" ) Integer page,
                                                      @RequestParam(value = "page", defaultValue = "10") Integer size){
@@ -50,6 +52,7 @@ public class UserBackOfficeController {
         return EntityResponse.listResponse(userDtoPage);
     }
 
+    @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @GetMapping("/{id}")
     public ResponseEntity<UserDto> getUserById(@PathVariable Integer id) throws ResourceDoesNotExistException {
         User user = userService.getUserById(id);
@@ -57,6 +60,7 @@ public class UserBackOfficeController {
         return ResponseEntity.ok(userDto);
     }
 
+    @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @GetMapping("/sort")
     public ResponseEntity<List<UserDto>> getAllSorted(@RequestParam(value = "size", defaultValue = "10" ) Integer size,
                                                       @RequestParam(value = "page", defaultValue = "0") Integer page,
@@ -69,6 +73,7 @@ public class UserBackOfficeController {
         return EntityResponse.listResponse(dtos);
     }
 
+    @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @PostMapping("")
     public ResponseEntity<Response> addUser(@RequestBody User user) throws ResourceAlreadyExistException {
         User newUser = userService.addUser(user);
@@ -80,6 +85,7 @@ public class UserBackOfficeController {
                 .body(EntityResponse.messageResponse("User created successfully"));
     }
 
+    @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @PutMapping("/{id}/addresses/{id}")
     public ResponseEntity<Response> addAddressToClient(@PathVariable Integer idUser,
                                                         @PathVariable Integer idAddress) throws ResourceDoesNotExistException {

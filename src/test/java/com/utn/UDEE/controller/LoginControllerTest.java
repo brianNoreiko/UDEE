@@ -50,13 +50,13 @@ public class LoginControllerTest {
         //Given
         LoginDto loginDto = aLoginDto();
         //When
-        when(userService.login(loginDto.getEmail(),loginDto.getPassword())).thenReturn(aUser());
+        when(userService.login(loginDto.getUsername(),loginDto.getPassword())).thenReturn(aUser());
         when(conversionService.convert(aUser(), UserDto.class)).thenReturn(aUserDto());
 
         ResponseEntity<LoginResponseDto> responseEntity = loginController.login(aLoginDto());
         //Then
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        verify(userService,times(1)).login(loginDto.getEmail(),loginDto.getPassword());
+        verify(userService,times(1)).login(loginDto.getUsername(),loginDto.getPassword());
         verify(conversionService,times(1)).convert(aUser(),UserDto.class);
     }
 
@@ -66,13 +66,13 @@ public class LoginControllerTest {
         //Given
         LoginDto loginDto = aLoginDto();
         //When
-        when(userService.login(loginDto.getEmail(),loginDto.getPassword())).thenReturn(null);
+        when(userService.login(loginDto.getUsername(),loginDto.getPassword())).thenReturn(null);
 
         ResponseEntity<LoginResponseDto> responseEntity = loginController.login(aLoginDto());
         //Then
 
         assertEquals(HttpStatus.UNAUTHORIZED, responseEntity.getStatusCode());
-        verify(userService,times(1)).login(loginDto.getEmail(),loginDto.getPassword());
+        verify(userService,times(1)).login(loginDto.getUsername(),loginDto.getPassword());
         verify(conversionService,times(0)).convert(aUser(), UserDto.class);
     }
 
