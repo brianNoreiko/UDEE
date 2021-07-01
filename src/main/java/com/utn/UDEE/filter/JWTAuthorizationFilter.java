@@ -18,17 +18,26 @@ import java.util.stream.Collectors;
 
 import static com.utn.UDEE.utils.Constants.*;
 
-
 public class JWTAuthorizationFilter extends OncePerRequestFilter {
 
-    private final ObjectMapper objectMapper;
+    ObjectMapper objectMapper;
 
     public JWTAuthorizationFilter() {
         this.objectMapper = new ObjectMapper();
     }
 
+    /**
+     * Internal JWT Filter to check if the request is valid
+     *
+     * @param request
+     * @param response
+     * @param chain
+     * @throws ServletException
+     * @throws IOException
+     */
+
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
         try {
             if (containsJWT(request, response)) {
                 Claims claims = validateToken(request);
@@ -40,18 +49,32 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
             } else {
                 SecurityContextHolder.clearContext();
             }
-            filterChain.doFilter(request, response);
+            chain.doFilter(request, response);
         } catch (ExpiredJwtException | UnsupportedJwtException | MalformedJwtException e) {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            response.sendError(HttpServletResponse.SC_FORBIDDEN, e.getMessage());
+            ((HttpServletResponse) response).sendError(HttpServletResponse.SC_FORBIDDEN, e.getMessage());
+            return;
         }
     }
+
+
+    /**
+     * Method to validate if the token is valid
+     *
+     * @param request
+     * @return
+     */
 
     private Claims validateToken(HttpServletRequest request) {
         String jwtToken = request.getHeader(JWT_HEADER).replace(JWT_PREFIX, "");
         return Jwts.parser().setSigningKey(JWT_SECRET.getBytes()).parseClaimsJws(jwtToken).getBody();
     }
 
+    /**
+     * Authentication Method to authorize through Spring
+     *
+     * @param claims
+     */
     private void setUpSpringAuthentication(Claims claims) {
         try {
             List<String> authorities = (List) claims.get("authorities");
@@ -63,10 +86,14 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
         } catch (JsonProcessingException e) {
             SecurityContextHolder.clearContext();
         }
+
+
     }
 
     private boolean containsJWT(HttpServletRequest request, HttpServletResponse res) {
         String authenticationHeader = request.getHeader(JWT_HEADER);
-        return authenticationHeader != null && authenticationHeader.startsWith(JWT_PREFIX);
+        if (authenticationHeader == null || !authenticationHeader.startsWith(JWT_PREFIX))
+            return false;
+        return true;
     }
 }

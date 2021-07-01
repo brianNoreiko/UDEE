@@ -2,8 +2,10 @@ package com.utn.UDEE.controller.BackofficeController;
 
 import com.utn.UDEE.controller.backofficeController.MeterBackOfficeController;
 import com.utn.UDEE.exception.DeleteException;
+import com.utn.UDEE.exception.PrimaryKeyViolationException;
 import com.utn.UDEE.exception.ResourceAlreadyExistException;
 import com.utn.UDEE.exception.ResourceDoesNotExistException;
+import com.utn.UDEE.models.Address;
 import com.utn.UDEE.models.Meter;
 import com.utn.UDEE.models.dto.MeterDto;
 import com.utn.UDEE.models.responses.Response;
@@ -25,8 +27,11 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.List;
 
+import static com.utn.UDEE.utils.AddressUtilsTest.aAddress;
+import static com.utn.UDEE.utils.EntityResponse.messageResponse;
 import static com.utn.UDEE.utils.MeterUtilsTest.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.*;
 
 public class MeterBackOfficeControllerTest {
@@ -130,5 +135,25 @@ public class MeterBackOfficeControllerTest {
         //Then
         assertEquals(HttpStatus.ACCEPTED, responseEntity.getStatusCode());
         verify(meterService,times(1)).deleteMeterById(idMeter);
+    }
+
+    @Test
+    public void updateMeter() {
+        //Given
+        Integer idToUp = 1;
+        Meter meter = aMeter();
+        try {
+            //When
+            when(meterService.updateMeter(idToUp,meter)).thenReturn(aMeter());
+
+            ResponseEntity<Response> responseEntity = meterBackOfficeController.updateMeter(idToUp,meter);
+            //Then
+            Assert.assertEquals(HttpStatus.ACCEPTED.value(),responseEntity.getStatusCode().value());
+            Assert.assertEquals(messageResponse("Meter updated successfully"),responseEntity.getBody());
+            verify(meterService,times(1)).updateMeter(idToUp,meter);
+        }
+        catch (ResourceAlreadyExistException | PrimaryKeyViolationException | ResourceDoesNotExistException e) {
+            fail(e);
+        }
     }
 }

@@ -1,8 +1,10 @@
 package com.utn.UDEE.service;
 
 import com.utn.UDEE.exception.DeleteException;
+import com.utn.UDEE.exception.PrimaryKeyViolationException;
 import com.utn.UDEE.exception.ResourceAlreadyExistException;
 import com.utn.UDEE.exception.ResourceDoesNotExistException;
+import com.utn.UDEE.models.Address;
 import com.utn.UDEE.models.Meter;
 import com.utn.UDEE.repository.MeterRepository;
 import com.utn.UDEE.repository.UserRepository;
@@ -17,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.Optional;
 
+import static com.utn.UDEE.utils.AddressUtilsTest.aAddress;
 import static com.utn.UDEE.utils.MeterUtilsTest.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -157,6 +160,34 @@ public class MeterServiceTest {
 
             deleteMeterDenied();
         }
+    }
+
+    @Test
+    public void updateMeterOK() {
+        //Given
+        Integer idMeterToUp = anyInt();
+        Meter aMeter = aMeter();
+        //When
+        try {
+            when(meterService.getMeterById(idMeterToUp)).thenReturn(aMeter);
+            when(meterRepository.save(aMeter)).thenReturn(aMeter);
+
+            Meter meter = meterService.updateMeter(idMeterToUp,aMeter);
+            //Then
+            assertEquals(aMeter(),meter);
+            verify(meterService, times(1)).getMeterById(idMeterToUp);
+            verify(meterRepository, times(1)).save(meter);
+        }
+        catch (ResourceDoesNotExistException | PrimaryKeyViolationException | ResourceAlreadyExistException e){
+            updateMeterDenied();
+        }
+    }
+
+    @SneakyThrows
+    @Test
+    public void updateMeterDenied(){
+        Meter meter = aMeter();
+        Assert.assertThrows(ResourceDoesNotExistException.class, ()->meterService.updateMeter(1,meter));
     }
 
     @SneakyThrows

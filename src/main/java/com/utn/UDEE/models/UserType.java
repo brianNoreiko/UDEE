@@ -2,8 +2,8 @@ package com.utn.UDEE.models;
 
 public enum UserType {
 
-    CLIENT("Cliente"),
-    EMPLOYEE("Empleado");
+    CLIENT("Cliente"), //0
+    EMPLOYEE("Empleado"); //1
 
     private String description;
 

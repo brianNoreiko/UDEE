@@ -23,10 +23,10 @@ INSERT INTO meters(`model_id`,`password`) VALUES
 ;
 
 INSERT INTO users(`name`, `last_name`, `username`, `password`,`email`, `type_user`) VALUES
-("Leo", "Messi", "Messias", "qatar2022","Messi@gmail.com", 1),
-("Angel", "Di Maria", "Centritos", "SinQuebrar","Angelito@hotmail.com", 1),
-("Sergio", "Aguero", "SLAKUN10", "Streamer","AgueroS@outlook.com", 1),
-("admin", "udee", "adminUDEE", "123456","admin@admin.com", 0)
+("Leo", "Messi", "Messias", "qatar2022","Messi@gmail.com", 0),
+("Angel", "Di Maria", "Centritos", "SinQuebrar","Angelito@hotmail.com", 0),
+("Sergio", "Aguero", "SLAKUN10", "Streamer","AgueroS@outlook.com", 0),
+("admin", "udee", "adminUDEE", "123456","admin@admin.com", 1)
 ;
 
 INSERT INTO `rates`(`value`,`type_rate`) VALUES

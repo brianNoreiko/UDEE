@@ -1,6 +1,7 @@
 package com.utn.UDEE.service;
 
 import com.utn.UDEE.exception.DeleteException;
+import com.utn.UDEE.exception.PrimaryKeyViolationException;
 import com.utn.UDEE.exception.ResourceAlreadyExistException;
 import com.utn.UDEE.exception.ResourceDoesNotExistException;
 import com.utn.UDEE.models.Meter;
@@ -51,5 +52,16 @@ public class MeterService {
         } else {
             throw new DeleteException("It cannot be deleted because another object depends on it");
         }
+    }
+
+    public Meter updateMeter(Integer idToUp, Meter meter) throws ResourceAlreadyExistException, PrimaryKeyViolationException, ResourceDoesNotExistException {
+        Meter meterToUpdate = getMeterById(idToUp);
+        if(meterToUpdate.equals(meter)){
+            throw new ResourceDoesNotExistException("Nothing to update. The meter already exist");
+        }
+        if(meter.getSerialNumber() != meterToUpdate.getSerialNumber()){
+            throw new PrimaryKeyViolationException("Primary key (id) cannot be changed");
+        }
+        return meterRepository.save(meter);
     }
 }

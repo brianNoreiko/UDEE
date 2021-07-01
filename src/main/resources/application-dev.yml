@@ -8,3 +8,4 @@ spring:
       dialect: org.hibernate.dialect.MySQL8Dialect
       driverClassName: com.mysql.cj.jdbc.Driver
     database: mysql
+    show-sql: true

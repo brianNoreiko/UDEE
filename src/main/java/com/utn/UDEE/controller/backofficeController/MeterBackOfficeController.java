@@ -1,8 +1,10 @@
 package com.utn.UDEE.controller.backofficeController;
 
 import com.utn.UDEE.exception.DeleteException;
+import com.utn.UDEE.exception.PrimaryKeyViolationException;
 import com.utn.UDEE.exception.ResourceAlreadyExistException;
 import com.utn.UDEE.exception.ResourceDoesNotExistException;
+import com.utn.UDEE.models.Address;
 import com.utn.UDEE.models.Meter;
 import com.utn.UDEE.models.dto.MeterDto;
 import com.utn.UDEE.models.responses.Response;
@@ -65,13 +67,22 @@ public class MeterBackOfficeController {
         return EntityResponse.listResponse(meterDtoPage);
     }
 
-
-
     @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> deleteMeterById(@PathVariable Integer id) throws DeleteException, ResourceDoesNotExistException {
         meterService.deleteMeterById(id);
         return ResponseEntity.accepted().build();
+    }
+
+    @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
+    @PutMapping("/{id}")
+    public ResponseEntity<Response> updateMeter(@PathVariable Integer idToUp,
+                                                  @RequestBody Meter meter) throws PrimaryKeyViolationException, ResourceAlreadyExistException, ResourceDoesNotExistException {
+        Meter meterUpdated = meterService.updateMeter(idToUp,meter);
+        return ResponseEntity
+                .status(HttpStatus.ACCEPTED)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(EntityResponse.messageResponse("Meter updated successfully"));
     }
 
 }

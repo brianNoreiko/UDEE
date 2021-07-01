@@ -36,8 +36,8 @@ public class UserService {
         return userRepository.findByUsernameAndPassword(username, password);
     }
 
-    public User getUserById(Integer id) throws ResourceDoesNotExistException {
-        return userRepository.findById(id).orElseThrow(() -> new ResourceDoesNotExistException("User doesn't exist"));
+    public User getUserById(Integer idUser) throws ResourceDoesNotExistException {
+        return userRepository.findById(idUser).orElseThrow(() -> new ResourceDoesNotExistException("User doesn't exist"));
     }
 
     public Page<User> getAllUsers(Pageable pageable) {

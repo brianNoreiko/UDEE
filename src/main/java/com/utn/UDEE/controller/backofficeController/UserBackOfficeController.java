@@ -55,7 +55,7 @@ public class UserBackOfficeController {
 
     @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @GetMapping("/{id}")
-    public ResponseEntity<UserDto> getUserById(@PathVariable Integer id) throws ResourceDoesNotExistException {
+    public ResponseEntity<UserDto> getUserById(@RequestParam Integer id) throws ResourceDoesNotExistException {
         UserDto userDto = conversionService.convert(userService.getUserById(id),UserDto.class);
         return ResponseEntity.ok(userDto);
     }

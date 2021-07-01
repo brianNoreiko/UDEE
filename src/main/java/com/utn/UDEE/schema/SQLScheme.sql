@@ -30,9 +30,9 @@ CREATE TABLE IF NOT EXISTS users(
                                     username VARCHAR(50) NOT NULL,
                                     email VARCHAR(50) NOT NULL,
                                     `password` VARCHAR(30) NOT NULL,
-                                    type_user INT NOT NULL DEFAULT 1,
+                                    type_user INT NOT NULL DEFAULT 0,
                                     CONSTRAINT pk_user PRIMARY KEY (user_id),
-                                    CONSTRAINT unq_username UNIQUE (username)
+                                    CONSTRAINT unq_username UNIQUE (username),
                                     CONSTRAINT check_type_user check (type_user BETWEEN 0 AND 1)
 );
 
@@ -45,16 +45,16 @@ CREATE TABLE IF NOT EXISTS rates(
 
 CREATE TABLE IF NOT EXISTS addresses(
                                         address_id INT NOT NULL AUTO_INCREMENT,
-                                        meter_id INT NULL,
-                                        user_id INT NULL,
-                                        rate_id INT NULL,
+                                        meter_id INT,
+                                        user_id INT,
+                                        id_rate INT,
                                         street VARCHAR(40) NOT NULL,
                                         number INT NOT NULL,
                                         apartment VARCHAR(10),
                                         CONSTRAINT pk_address PRIMARY KEY (address_id),
                                         CONSTRAINT fk_address_meter FOREIGN KEY (meter_id) REFERENCES meters(meter_id),
                                         CONSTRAINT fk_address_user FOREIGN KEY (user_id) REFERENCES users(user_id),
-                                        CONSTRAINT fk_address_rate FOREIGN KEY (rate_id) REFERENCES rates(rate_id)
+                                        CONSTRAINT fk_address_rate FOREIGN KEY (id_rate) REFERENCES rates(rate_id)
 );
 
 
