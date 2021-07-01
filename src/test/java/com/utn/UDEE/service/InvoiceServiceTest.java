@@ -1,9 +1,12 @@
 package com.utn.UDEE.service;
 
+import com.utn.UDEE.exception.AccessNotAllowedException;
 import com.utn.UDEE.exception.DeleteException;
 import com.utn.UDEE.exception.ResourceAlreadyExistException;
 import com.utn.UDEE.exception.ResourceDoesNotExistException;
 import com.utn.UDEE.models.Invoice;
+import com.utn.UDEE.models.User;
+import com.utn.UDEE.models.UserType;
 import com.utn.UDEE.repository.InvoiceRepository;
 import lombok.SneakyThrows;
 import org.junit.Assert;
@@ -13,6 +16,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -20,7 +25,10 @@ import java.util.Optional;
 
 import static com.utn.UDEE.utils.AddressUtilsTest.aAddress;
 import static com.utn.UDEE.utils.InvoiceUtilsTest.*;
+import static com.utn.UDEE.utils.LocalDateTimeUtilsTest.aLocalDateTimeSince;
+import static com.utn.UDEE.utils.LocalDateTimeUtilsTest.aLocalDateTimeUntil;
 import static com.utn.UDEE.utils.UserUtilsTest.aUser;
+import static com.utn.UDEE.utils.UserUtilsTest.aUserDto;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
@@ -51,14 +59,16 @@ public class InvoiceServiceTest {
         reset(userService);
         reset(addressService);
     }
-
+    /*
     @Test
     public void getInvoiceBetweenDateByUserOK(){
         //Given
         Integer idUser = anyInt();
-        LocalDateTime since = LocalDateTime.parse("2021-06-01 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        LocalDateTime until = LocalDateTime.parse("2020-06-23 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        Pageable pageable = PageRequest.of(1,1);
+        Integer page = 1;
+        Integer size = 1;
+        LocalDateTime since = aLocalDateTimeSince();
+        LocalDateTime until = aLocalDateTimeUntil();
+        Pageable pageable = PageRequest.of(page,size);
         //When
         try {
             when(userService.getUserById(idUser)).thenReturn(aUser());
@@ -109,53 +119,107 @@ public class InvoiceServiceTest {
         assertThrows(ResourceDoesNotExistException.class, () -> invoiceService.getInvoiceBetweenDateByUser(idUser,since,until,pageable));
         verify(userService,times(1)).getUserById(idUser);
         verify(invoiceRepository, times(0)).findAllByUserAndDateBetween(aUser(),since,until,pageable);
-    }
+    }*/
     @Test
     public void getUnpaidByUserOK() throws ResourceDoesNotExistException {
         //Given
-        Integer idUser = anyInt();
-        Pageable pageable = PageRequest.of(1,1);
-        //When
-        when(userService.getUserById(idUser)).thenReturn(aUser());
-        when(invoiceRepository.findAllByUserAndPayed(aUser(),false,pageable)).thenReturn(aInvoicePage());
+        User queryUser = aUser();
+        User user = aUser();
+        Integer page = 1;
+        Integer size = 1;
+        Pageable pageable = PageRequest.of(page,size);
+        try {
+            when(userService.getUserById(queryUser.getId())).thenReturn(aUser());
+            when(userService.getUserById(user.getId())).thenReturn(aUser());
+            when(invoiceRepository.findAllByUserAndPayed(user,false,pageable)).thenReturn(aInvoicePage());
 
-        Page<Invoice> invoicePage = invoiceService.getUnpaidByUser(idUser,pageable);
-        //Then
-        assertEquals(aInvoicePage(),invoicePage);
-        verify(userService,times(1)).getUserById(idUser);
-        verify(invoiceRepository,times(1)).findAllByUserAndPayed(aUser(),false,pageable);
+            Page<Invoice> invoicePage = invoiceService.getUnpaidByUser(queryUser.getId(),user.getId(),pageable);
+
+            assertEquals(aInvoicePage(), invoicePage);
+            verify(invoiceRepository, times(1)).findAllByUserAndPayed(user,false,pageable);
+            verify(userService, times(2)).getUserById(aUser().getId());
+        }
+        catch (AccessNotAllowedException e) {
+            fail(e);
+        }
     }
 
     @Test
     public void getUnpaidByUserButNotExist() throws ResourceDoesNotExistException {
         //Given
-        Integer idUser = anyInt();
-        Pageable pageable = PageRequest.of(1,1);
-        //When
-        when(userService.getUserById(idUser)).thenReturn(null);
-        //Then
-        assertThrows(ResourceDoesNotExistException.class,() -> invoiceService.getUnpaidByUser(idUser,pageable));
-        verify(invoiceRepository,times(0)).findAllByUserAndPayed(aUser(),false,pageable);
-    }
+        Integer page = 1;
+        Integer size = 1;
+        User queryUser = aUser();
+        User user = aUser();
+        queryUser.setUserType(UserType.EMPLOYEE);
+        user.setUserType(UserType.EMPLOYEE);
 
-    @Test
-    public void getUnpaidByUserNC() throws ResourceDoesNotExistException { //NC == No Content
-        //Given
-        Integer idUser = anyInt();
-        Pageable pageable = PageRequest.of(1,1);
-        //When
+        Pageable pageable = PageRequest.of(page,size);
         try {
-            when(userService.getUserById(idUser)).thenReturn(aUser());
-            when(invoiceRepository.findAllByUserAndPayed(aUser(), false, pageable)).thenReturn(aInvoiceEmptyPage());
-            Page<Invoice> invoicePage = invoiceService.getUnpaidByUser(idUser, pageable);
-            //Then
-            assertEquals(aInvoiceEmptyPage(),invoicePage);
-            verify(userService,times(1)).getUserById(idUser);
-            verify(invoiceRepository,times(1)).findAllByUserAndPayed(aUser(),false, pageable);
-        }catch (ResourceDoesNotExistException e){
+            when(userService.getUserById(queryUser.getId())).thenReturn(queryUser);
+            when(userService.getUserById(user.getId())).thenReturn(user);
+            when(invoiceRepository.findAllByUserAndPayed(user,false,pageable)).thenReturn(aInvoicePage());
+
+            assertThrows(ResourceDoesNotExistException.class, ()-> {
+                Page<Invoice> invoicePage = invoiceService.getUnpaidByUser(queryUser.getId(),user.getId(),pageable);
+            });
+
+            verify(userService, times(2)).getUserById(aUser().getId());
+        }
+        catch (ResourceDoesNotExistException e) {
             fail(e);
         }
     }
+
+    @Test
+    public void getUnpaidByUserAccessNotAllowed() {
+        Integer page = 1;
+        Integer size = 1;
+        User queryUser = aUser();
+        User user = aUser();
+        user.setId(2);
+
+        Pageable pageable = PageRequest.of(page,size);
+        try {
+            when(userService.getUserById(queryUser.getId())).thenReturn(queryUser);
+            when(userService.getUserById(user.getId())).thenReturn(user);
+            when(invoiceRepository.findAllByUserAndPayed(user,false,pageable)).thenReturn(aInvoicePage());
+
+            assertThrows(AccessNotAllowedException.class, ()-> {
+                Page<Invoice> invoicePage = invoiceService.getUnpaidByUser(queryUser.getId(),user.getId(),pageable);
+            });
+
+            verify(userService, times(1)).getUserById(queryUser.getId());
+            verify(userService, times(1)).getUserById(user.getId());
+        }
+        catch (ResourceDoesNotExistException e) {
+            fail(e);
+        }
+    }
+
+    /*@Test
+    public void getUnpaidByUserNC() throws ResourceDoesNotExistException { //NC == No Content
+        //Given
+        Integer idUser = 1;
+        Integer idQueryUser = 1;
+        Integer page = 1;
+        Integer size = 1;
+        Pageable pageable = PageRequest.of(page,size);
+        Authentication authentication = mock(Authentication.class);
+        //When
+        try {
+            when(authentication.getPrincipal()).thenReturn(aUserDto());
+            when(userService.getUserById(idUser)).thenReturn(aUser());
+            when(invoiceRepository.findAllByUserAndPayed(aUser(), false, pageable)).thenReturn(aInvoiceEmptyPage());
+            Page<Invoice> invoicePage = invoiceService.getUnpaidByUser(idQueryUser,idUser,pageable);
+            //Then
+            assertEquals(0,invoicePage.getContent().size());
+            verify(userService,times(1)).getUserById(idUser);
+            verify(invoiceRepository,times(1)).findAllByUserAndPayed(aUser(),false, pageable);
+        }catch (ResourceDoesNotExistException | AccessNotAllowedException e){
+            fail(e);
+        }
+    }*/
 
     @Test
     public void addNewInvoiceOK() throws ResourceAlreadyExistException {

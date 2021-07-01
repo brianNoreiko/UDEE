@@ -26,7 +26,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/backoffice/address")
+@RequestMapping("/backoffice/addresses")
 public class AddressBackOfficeController {
 
 

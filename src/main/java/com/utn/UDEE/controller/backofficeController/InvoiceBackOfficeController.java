@@ -65,7 +65,7 @@ public class InvoiceBackOfficeController {
 
     @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @DeleteMapping("/{idInvoice}")
-    public ResponseEntity<Object> deleteInvoiceById(Integer idInvoice) throws ResourceDoesNotExistException, DeleteException {
+    public ResponseEntity<Response> deleteInvoiceById(Integer idInvoice) throws ResourceDoesNotExistException, DeleteException {
         invoiceService.deleteInvoiceById(idInvoice);
         return ResponseEntity.accepted().build();
     }

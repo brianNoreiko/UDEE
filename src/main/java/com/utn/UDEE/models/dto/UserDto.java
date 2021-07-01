@@ -1,5 +1,6 @@
 package com.utn.UDEE.models.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.utn.UDEE.models.UserType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
