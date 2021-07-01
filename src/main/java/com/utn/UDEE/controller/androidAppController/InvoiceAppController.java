@@ -39,8 +39,8 @@ public class InvoiceAppController {
 
     //Consulta de facturas por rango de fechas
     @PreAuthorize(value = "hasAuthority('EMPLOYEE') OR hasAuthority('CLIENT')")
-    @GetMapping("/users/{idUser}/")
-    public ResponseEntity<List<InvoiceDto>> getAllByUserAndBetweenDate(@RequestParam(value = "idUser") Integer idUser,
+    @GetMapping(value = "/users/{idUser}",params = {"since","until"})
+    public ResponseEntity<List<InvoiceDto>> getAllByUserAndBetweenDate(@PathVariable Integer idUser,
                                                                           @RequestParam(value = "page", defaultValue = "0") Integer page,
                                                                           @RequestParam(value = "size", defaultValue = "10") Integer size,
                                                                           @RequestParam(value = "since", defaultValue = "2021-06-01 00:00:00") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime since,
@@ -49,7 +49,7 @@ public class InvoiceAppController {
         checkSinceUntil(since,until);
         UserDto userDto = (UserDto) authentication.getPrincipal();
         Pageable pageable = PageRequest.of(page, size);
-        Page<Invoice> invoicePage = invoiceService.getAllInvoicesByUserAndBetweenDate(idUser,userDto.getIdUser(), since, until, pageable);
+        Page<Invoice> invoicePage = invoiceService.getAllInvoicesByUserAndBetweenDate(userDto.getIdUser(),idUser, since, until, pageable);
         Page<InvoiceDto> invoiceDtoPage = invoicePage.map(invoice -> conversionService.convert(invoice, InvoiceDto.class));
         return EntityResponse.listResponse(invoiceDtoPage);
     }

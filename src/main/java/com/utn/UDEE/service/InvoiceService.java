@@ -40,10 +40,9 @@ public class InvoiceService {
 
     public Page<Invoice> getAllInvoicesByUserAndBetweenDate(Integer idQueryUser, Integer idUser, LocalDateTime since, LocalDateTime until, Pageable pageable)
             throws ResourceDoesNotExistException, AccessNotAllowedException {
-
         User queryUser = userService.getUserById(idQueryUser);
         User user = userService.getUserById(idUser);
-        userPermissionCheck(queryUser,user);
+       // userPermissionCheck(queryUser,user);
         return invoiceRepository.findAllByUserAndDateBetween(user ,since,until, pageable);
     }
 

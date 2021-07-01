@@ -16,9 +16,19 @@ public class Utils {
         }
     }
 
-    public static void userPermissionCheck(User queryUser, User user) throws ResourceDoesNotExistException, AccessNotAllowedException {
+    /*public static void userPermissionCheck(User queryUser, User user) throws ResourceDoesNotExistException, AccessNotAllowedException {
         if(queryUser.getId().equals(user.getId()) || queryUser.getUserType().equals(UserType.EMPLOYEE)) {
             if(!user.getUserType().equals(UserType.CLIENT)) {
+                throw new ResourceDoesNotExistException (String.format("The client with id %s ",user.getId()," do not exists"));
+            }
+        } else {
+            throw new AccessNotAllowedException("You have not access to this resource");
+        }
+    }*/
+
+    public static void userPermissionCheck(User queryUser, User user) throws ResourceDoesNotExistException, AccessNotAllowedException {
+        if(queryUser.getId().equals(user.getId()) || queryUser.getUserType().equals(UserType.EMPLOYEE)) {
+            if(!user.getUserType().equals(UserType.CLIENT) || (!user.getUserType().equals(UserType.EMPLOYEE))) {
                 throw new ResourceDoesNotExistException (String.format("The client with id %s ",user.getId()," do not exists"));
             }
         } else {
@@ -27,3 +37,4 @@ public class Utils {
     }
 
 }
+
