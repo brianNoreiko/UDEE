@@ -65,7 +65,7 @@ public class MeasurementUtilsTest {
                 .since(LocalDateTime.of(2021, 6, 1,0,0,0))
                 .until(LocalDateTime.of(2021, 6, 23,0,0,0))
                 .measurementsCount(10)
-                .User(aUserDto())
+                .user(aUserDto())
                 .build();
     }
 }

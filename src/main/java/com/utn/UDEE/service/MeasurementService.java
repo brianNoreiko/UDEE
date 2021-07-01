@@ -1,11 +1,10 @@
 package com.utn.UDEE.service;
 
+import com.utn.UDEE.exception.AccessNotAllowedException;
 import com.utn.UDEE.exception.ResourceDoesNotExistException;
-import com.utn.UDEE.models.Address;
-import com.utn.UDEE.models.Measurement;
-import com.utn.UDEE.models.Meter;
-import com.utn.UDEE.models.User;
+import com.utn.UDEE.models.*;
 import com.utn.UDEE.models.dto.DeliveredMeasureDto;
+import com.utn.UDEE.models.dto.UserDto;
 import com.utn.UDEE.models.responses.ClientConsuption;
 import com.utn.UDEE.repository.MeasurementRepository;
 import com.utn.UDEE.repository.MeterRepository;
@@ -16,8 +15,10 @@ import org.springframework.stereotype.Service;
 
 import java.sql.ResultSet;
 import java.time.LocalDateTime;
-import java.util.LinkedList;
-import java.util.Optional;
+import java.util.List;
+
+import static com.utn.UDEE.utils.Utils.userPermissionCheck;
+import static java.util.Objects.isNull;
 
 @Service
 public class MeasurementService {
@@ -37,34 +38,57 @@ public class MeasurementService {
         this.userService = userService;
     }
 
-    public Optional<ClientConsuption> getConsumptionByMeterAndBetweenDate(Integer idMeter, LocalDateTime since, LocalDateTime until) throws ResourceDoesNotExistException {
+    public ClientConsuption getConsumptionByMeterAndBetweenDate(Integer idMeter, Integer idQueryUser, LocalDateTime since, LocalDateTime until) throws ResourceDoesNotExistException, AccessNotAllowedException {
         Meter meter = meterService.getMeterById(idMeter);
-        Optional<ClientConsuption> clientConsuption = Optional.of(new ClientConsuption());
+        User queryUser = userService.getUserById(idQueryUser);
+        User user = meter.getAddress().getUser();
 
-        LinkedList<Measurement> measurementList = (LinkedList<Measurement>) measurementRepository.findAllByMeterAndDateBetween(meter, since, until);
+        double totalConsumptionKw = 0.0;
+        double totalConsumptionMoney = 0.0;
+        int quantityMeasurements = 0;
 
-        if(!measurementList.isEmpty()){
-            measurementList.forEach(m -> clientConsuption.get()
-                    .setConsumptionCost(clientConsuption.get().getConsumptionCost() + m.getKwhPrice()));
 
-            clientConsuption.get().setConsumptionCost(measurementList.getLast().getKwhPrice() - measurementList.getFirst().getKwhPrice());
+        userPermissionCheck(queryUser,user);
 
-        } else{
-            throw new ResourceDoesNotExistException("Doesn't exist any measurement!");
+        List<Measurement> measurements = measurementRepository.findAllByMeterAndDateBetween(meter,since,until);
+
+        double firstMeasurement = isNull(measurements) ? measurements.get(0).getKwhPrice() : 0.0;
+
+        if(!measurements.isEmpty()) {
+
+            totalConsumptionKw = measurements.get(measurements.size() - 1).getKwh() - measurements.get(0).getKwh();
+
+            if(measurements.size() == 1){
+                totalConsumptionKw = measurements.get(0).getKwh();
+            }
+
+            for(Measurement m : measurements) {
+                totalConsumptionMoney += m.getKwhPrice();
+            }
+
+            quantityMeasurements = measurements.size();
         }
 
-
-        return clientConsuption;
+        return ClientConsuption.builder()
+                .consumptionKw(totalConsumptionKw)
+                .consumptionCost(totalConsumptionMoney - firstMeasurement)
+                .measurementsCount(quantityMeasurements)
+                .since(since)
+                .until(until)
+                .user(new UserDto(user.getId(),user.getName(), user.getLastname(), user.getUsername(),user.getUserType()))
+                .build();
     }
 
 
-    public Page<Measurement> getAllByMeterAndBetweenDate(Integer idMeter, LocalDateTime since, LocalDateTime until, Pageable pageable) throws ResourceDoesNotExistException {
-
+    public Page<Measurement> getAllByMeterAndBetweenDate(Integer idMeter, Integer idUser, LocalDateTime since, LocalDateTime until, Pageable pageable) throws AccessNotAllowedException, ResourceDoesNotExistException {
         Meter meter = meterService.getMeterById(idMeter);
-        if(meter != null) {
-            return measurementRepository.getAllByMeterAndDateBetween(meter, since, until, pageable);
-        }else {
-            throw new ResourceDoesNotExistException("Meter doesn't exist");
+        User user = userService.getUserById(idUser);
+
+        if(userService.containsMeter(user,meter) || user.getUserType().equals(UserType.EMPLOYEE)) {
+            return measurementRepository.findAllByMeterAndDateBetween(meter,since,until,pageable);
+        }
+        else {
+            throw new AccessNotAllowedException("You have not access to this resource");
         }
     }
 

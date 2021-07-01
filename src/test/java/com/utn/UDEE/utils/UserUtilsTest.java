@@ -32,7 +32,7 @@ public class UserUtilsTest {
     }
 
     public static UserDto aUserDto() {
-        return new UserDto(1,"Jorge","Gonzalez","jorgeGonzalez1@hotmail.com", "jorgito1", "123456", UserType.CLIENT);
+        return new UserDto(1,"Jorge","Gonzalez","jorgito1",UserType.CLIENT);
     }
 
     public static User aUser() {

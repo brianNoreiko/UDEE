@@ -19,7 +19,7 @@ public class ClientConsuption {
     private LocalDateTime since;
     private LocalDateTime until;
     private Integer measurementsCount;
-    private UserDto User;
+    private UserDto user;
 
     public String getSince() {
         return this.since.toString();

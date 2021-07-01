@@ -8,6 +8,7 @@ import com.utn.UDEE.service.InvoiceService;
 import com.utn.UDEE.service.MeasurementService;
 import org.junit.Assert;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.convert.ConversionService;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
@@ -24,6 +26,7 @@ import java.util.Optional;
 import static com.utn.UDEE.utils.LocalDateTimeUtilsTest.aLocalDateTimeSince;
 import static com.utn.UDEE.utils.LocalDateTimeUtilsTest.aLocalDateTimeUntil;
 import static com.utn.UDEE.utils.MeasurementUtilsTest.*;
+import static com.utn.UDEE.utils.UserUtilsTest.aUserDto;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.*;
@@ -92,15 +95,20 @@ public class MeasurementAppControllerTest {
         Integer idMeter = 1;
         LocalDateTime since = aLocalDateTimeSince();
         LocalDateTime until = aLocalDateTimeUntil();
+        Authentication authentication = mock(Authentication.class);
         //When
-        when(measurementService.getConsumptionByMeterAndBetweenDate(idMeter, since, until))
-                .thenReturn(Optional.of(aClientConsumption()));
+        when(authentication.getPrincipal()).thenReturn(aUserDto());
+        when(measurementService.getConsumptionByMeterAndBetweenDate(idMeter, aUserDto().getIdUser(), since, until)).thenReturn(aClientConsumption());
 
-        ResponseEntity<Optional<ClientConsuption>> responseEntity = measurementAppController.getConsumptionsBetweenDate(idMeter, since, until);
-        //Then
-        Assert.assertEquals(responseEntity.getBody().get().getConsumptionKw(), aClientConsumption().getConsumptionKw());
-        Assert.assertEquals(responseEntity.getStatusCode(), HttpStatus.OK);
-        verify(measurementService,times(1)).getConsumptionByMeterAndBetweenDate(idMeter,since,until);
+        try {
+            ResponseEntity<ClientConsuption> response = measurementAppController.getConsumptionsBetweenDate(idMeter, since, until, authentication);
+
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            assertEquals(aClientConsumption(), response.getBody());
+
+        } catch (DateTimeParseException e) {
+            fail(e);
+        }
     }
 
     @Test
@@ -112,15 +120,18 @@ public class MeasurementAppControllerTest {
         LocalDateTime since = aLocalDateTimeSince();
         LocalDateTime until = aLocalDateTimeUntil();
         Pageable pageable = PageRequest.of(page, size);
+        Authentication authentication = mock(Authentication.class);
+
         //When
-        when(measurementService.getAllByMeterAndBetweenDate(idMeter,since,until,pageable)).thenReturn(aMeasurementPage());
+        when(authentication.getPrincipal()).thenReturn(aUserDto());
+        when(measurementService.getAllByMeterAndBetweenDate(idMeter,aUserDto().getIdUser(),since,until,pageable)).thenReturn(aMeasurementPage());
         when(conversionService.convert(aMeasurement(), MeasurementDto.class)).thenReturn(aMeasurementDto());
         try{
-            ResponseEntity<List<MeasurementDto>> responseEntity = measurementAppController.getMeasurementsBetweenDate(idMeter,size,page,since,until);
+            ResponseEntity<List<MeasurementDto>> responseEntity = measurementAppController.getMeasurementsBetweenDate(idMeter,size,page,since,until,authentication);
             //Then
             Assert.assertEquals(aMeasurementDtoPage().getContent().size(),responseEntity.getBody().size());
             Assert.assertEquals(HttpStatus.OK,responseEntity.getStatusCode());
-            verify(measurementService, times(1)).getAllByMeterAndBetweenDate(idMeter,since,until,pageable);
+            verify(measurementService, times(1)).getAllByMeterAndBetweenDate(idMeter,aUserDto().getIdUser(),since,until,pageable);
             verify(conversionService,times(1)).convert(aMeasurement(),MeasurementDto.class);
         }catch (DateTimeParseException e){
             fail(e);
@@ -136,15 +147,17 @@ public class MeasurementAppControllerTest {
         LocalDateTime since = aLocalDateTimeSince();
         LocalDateTime until = aLocalDateTimeUntil();
         Pageable pageable = PageRequest.of(page, size);
+        Authentication authentication = mock(Authentication.class);
         //When
-        when(measurementService.getAllByMeterAndBetweenDate(idMeter,since,until,pageable)).thenReturn(aMeasurementEmptyPage());
+        when(authentication.getPrincipal()).thenReturn(aUserDto());
+        when(measurementService.getAllByMeterAndBetweenDate(idMeter,aUserDto().getIdUser(),since,until,pageable)).thenReturn(aMeasurementEmptyPage());
 
         try{
-            ResponseEntity<List<MeasurementDto>> responseEntity = measurementAppController.getMeasurementsBetweenDate(idMeter,size,page,since,until);
+            ResponseEntity<List<MeasurementDto>> responseEntity = measurementAppController.getMeasurementsBetweenDate(idMeter,size,page,since,until,authentication);
             //Then
             Assert.assertEquals(0,responseEntity.getBody().size());
             Assert.assertEquals(HttpStatus.NO_CONTENT,responseEntity.getStatusCode());
-            verify(measurementService, times(1)).getAllByMeterAndBetweenDate(idMeter,since,until,pageable);
+            verify(measurementService, times(1)).getAllByMeterAndBetweenDate(idMeter,aUserDto().getIdUser(),since,until,pageable);
             verify(conversionService,times(0)).convert(aMeasurement(),MeasurementDto.class);
         }catch (DateTimeParseException e){
             fail(e);

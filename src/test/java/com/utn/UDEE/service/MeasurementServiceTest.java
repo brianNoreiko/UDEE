@@ -1,7 +1,10 @@
 package com.utn.UDEE.service;
 
+import com.utn.UDEE.exception.AccessNotAllowedException;
 import com.utn.UDEE.exception.ResourceDoesNotExistException;
 import com.utn.UDEE.models.Measurement;
+import com.utn.UDEE.models.User;
+import com.utn.UDEE.models.UserType;
 import com.utn.UDEE.models.dto.DeliveredMeasureDto;
 import com.utn.UDEE.repository.MeasurementRepository;
 import com.utn.UDEE.repository.MeterRepository;
@@ -23,8 +26,7 @@ import static com.utn.UDEE.utils.LocalDateTimeUtilsTest.aLocalDateTimeUntil;
 import static com.utn.UDEE.utils.MeasurementUtilsTest.*;
 import static com.utn.UDEE.utils.MeterUtilsTest.aMeter;
 import static com.utn.UDEE.utils.UserUtilsTest.aUser;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
 
@@ -56,25 +58,65 @@ public class MeasurementServiceTest {
     }
 
     @Test
-    public void getAllByMeterAndBetweenDateOK() throws ResourceDoesNotExistException {
+    public void getAllByMeterAndBetweenDateOK() throws ResourceDoesNotExistException, AccessNotAllowedException {
+        User user = aUser();
+        user.setUserType(UserType.EMPLOYEE);
         //Given
         Integer idMeter = anyInt();
+        Integer idUser  = 1;
         LocalDateTime since = aLocalDateTimeSince();
         LocalDateTime until = aLocalDateTimeUntil();
         Pageable pageable = PageRequest.of(1, 1);
         //When
-        when(meterService.getMeterById(idMeter)).thenReturn(aMeter());
+        try {
+            when(meterService.getMeterById(idMeter)).thenReturn(aMeter());
+            when(userService.getUserById(idUser)).thenReturn(user);
 
-        when(measurementRepository.getAllByMeterAndDateBetween(aMeter(), since, until, pageable)).thenReturn(aMeasurementPage());
+            when(measurementRepository.findAllByMeterAndDateBetween(aMeter(), since, until, pageable)).thenReturn(aMeasurementPage());
 
-        Page<Measurement> measurementPage = measurementService.getAllByMeterAndBetweenDate(idMeter, since, until, pageable);
-        //Then
-        assertEquals(aMeasurementPage(), measurementPage);
-        verify(meterService, times(1)).getMeterById(idMeter);
-        verify(measurementRepository, times(1)).getAllByMeterAndDateBetween(aMeter(), since, until, pageable);
+            Page<Measurement> measurementPage = measurementService.getAllByMeterAndBetweenDate(idMeter, aUser().getId(), since, until, pageable);
+            //Then
+            assertEquals(aMeasurementPage().getTotalElements(),measurementPage.getTotalElements());
+            assertEquals(aMeasurementPage().getTotalPages(), measurementPage.getTotalElements());
+            assertEquals(aMeasurementPage().getContent().size(),measurementPage.getContent().size());
+            verify(meterService, times(1)).getMeterById(idMeter);
+            verify(measurementRepository, times(1)).findAllByMeterAndDateBetween(aMeter(), since, until, pageable);
+        }catch (ResourceDoesNotExistException | AccessNotAllowedException e){
+            fail(e);
+        }
     }
 
     @Test
+    public void getAllByMeterAndDateBetweenRestrict() {
+        User user = aUser();
+        user.setUserType(UserType.CLIENT);
+        //Given
+        Integer idMeter = 1;
+        Integer idUser  = 1;
+        LocalDateTime since = aLocalDateTimeSince();
+        LocalDateTime until = aLocalDateTimeUntil();
+        Pageable pageable = PageRequest.of(1, 1);
+        //When
+        try {
+            when(meterService.getMeterById(idMeter)).thenReturn(aMeter());
+            when(userService.getUserById(idUser)).thenReturn(user);
+
+            when(measurementRepository.findAllByMeterAndDateBetween(aMeter(), since, until, pageable)).thenReturn(aMeasurementPage());
+
+
+            //Then
+            assertThrows(AccessNotAllowedException.class,() -> {
+                measurementService.getAllByMeterAndBetweenDate(idMeter,idUser, since,until, pageable);
+            } );
+            verify(meterService,times(1)).getMeterById(1);
+            verify(userService,times(1)).getUserById(1);
+            verify(measurementRepository,times(0)).findAllByMeterAndDateBetween(aMeter(),since,until,pageable);
+        }catch (ResourceDoesNotExistException e){
+            fail(e);
+        }
+    }
+
+    /*@Test
     public void getAllByMeterAndBetweenDateNotExist() throws ResourceDoesNotExistException {
         //Given
         Integer idMeter = anyInt();
@@ -82,13 +124,13 @@ public class MeasurementServiceTest {
         LocalDateTime until = aLocalDateTimeUntil();
         Pageable pageable = PageRequest.of(1, 1);
         //When
-        when(meterService.getMeterById(idMeter)).thenReturn(null);
+        when(meterService.getMeterById(idMeter)).thenReturn();
 
         //Then
-        assertThrows(ResourceDoesNotExistException.class, () -> measurementService.getAllByMeterAndBetweenDate(idMeter, since, until, pageable));
+        assertThrows(ResourceDoesNotExistException.class, () -> measurementService.getAllByMeterAndBetweenDate(idMeter,aUser().getId(), since, until, pageable));
         verify(meterService, times(1)).getMeterById(idMeter);
         verify(measurementRepository, times(0)).getAllByMeterAndDateBetween(aMeter(), since, until, pageable);
-    }
+    }*/
 
     @Test
     public void getMeasurementByAddressBetweenDateOK() throws ResourceDoesNotExistException {

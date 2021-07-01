@@ -1,9 +1,11 @@
 package com.utn.UDEE.controller.androidAppController;
 
+import com.utn.UDEE.exception.AccessNotAllowedException;
 import com.utn.UDEE.exception.ResourceDoesNotExistException;
 import com.utn.UDEE.exception.SinceUntilException;
 import com.utn.UDEE.models.Measurement;
 import com.utn.UDEE.models.dto.MeasurementDto;
+import com.utn.UDEE.models.dto.UserDto;
 import com.utn.UDEE.models.responses.ClientConsuption;
 import com.utn.UDEE.service.InvoiceService;
 import com.utn.UDEE.service.MeasurementService;
@@ -16,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.ResultSet;
@@ -52,33 +55,35 @@ public class MeasurementAppController {
 
     //Consulta de consumo por rango de fechas (el usuario va a ingresar un rango de fechas y quiere saber cuánto consumió en ese periodo en Kwh y dinero)
     @GetMapping("/meters/{idMeter}/consumptions")
-    public ResponseEntity<Optional<ClientConsuption>> getConsumptionsBetweenDate(@PathVariable Integer idMeter,
+    public ResponseEntity<ClientConsuption>  getConsumptionsBetweenDate(@PathVariable Integer idMeter,
                                                                                  @RequestParam(value = "since", defaultValue = "2021-01-01") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime since,
-                                                                                 @RequestParam(value = "until", defaultValue = "#{T(java.time.LocalDateTime).now()}") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime until)
-            throws SinceUntilException, ResourceDoesNotExistException {
+                                                                                 @RequestParam(value = "until", defaultValue = "#{T(java.time.LocalDateTime).now()}") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime until,
+                                                                                 Authentication authentication)
+            throws SinceUntilException, ResourceDoesNotExistException, AccessNotAllowedException {
         checkSinceUntil(since, until);
-        System.out.println(since);
-        System.out.println(until);
-        Optional<ClientConsuption> clientConsuption = measurementService.getConsumptionByMeterAndBetweenDate(idMeter, since, until);
+        UserDto userDto = (UserDto) authentication.getPrincipal();
+        ClientConsuption clientConsuption = measurementService.getConsumptionByMeterAndBetweenDate(idMeter, userDto.getIdUser(), since, until);
         return ResponseEntity.status(HttpStatus.OK).body(clientConsuption);
-
     }
 
     //Consulta de mediciones por rango de fechas
     @GetMapping("/meters/{id}")
     public ResponseEntity<List<MeasurementDto>> getMeasurementsBetweenDate(@PathVariable Integer idMeter,
-                                                                           @RequestParam(value = "size", defaultValue = "10") Integer size,
                                                                            @RequestParam(value = "page", defaultValue = "0") Integer page,
+                                                                           @RequestParam(value = "size", defaultValue = "10") Integer size,
                                                                            @RequestParam(value = "since", defaultValue = "2021-01-01") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime since,
-                                                                           @RequestParam(value = "until", defaultValue = "#{T(java.time.LocalDateTime).now()}") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime until) throws SinceUntilException, ResourceDoesNotExistException {
+                                                                           @RequestParam(value = "until", defaultValue = "#{T(java.time.LocalDateTime).now()}") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime until,
+                                                                           Authentication authentication) throws SinceUntilException, ResourceDoesNotExistException, AccessNotAllowedException {
         checkSinceUntil(since,until);
+        UserDto userDto = (UserDto) authentication.getPrincipal();
         Pageable pageable = PageRequest.of(page, size);
-        Page<Measurement> measurementPage = measurementService.getAllByMeterAndBetweenDate(idMeter,since,until, pageable);
-        Page<MeasurementDto> measurementDtos = measurementPage.map(measurement -> conversionService.convert(measurement, MeasurementDto.class));
-        return EntityResponse.listResponse(measurementDtos);
+        Page<Measurement> measurementPage = measurementService.getAllByMeterAndBetweenDate(idMeter,userDto.getIdUser(),since,until,pageable);
+
+        Page<MeasurementDto> measurementDtoPage = measurementPage.map(measurement -> conversionService.convert(measurement,MeasurementDto.class));
+        return EntityResponse.listResponse(measurementDtoPage);
     }
 
-    //Consulta de mediciones por rango de fechas
+    /*//Consulta de mediciones por rango de fechas
     @GetMapping("/meters/{idUser}")
     public ResponseEntity<List<ResultSet>> getMeasurementsByUserBetweenDate(@PathVariable Integer idUser,
                                                                            @RequestParam(value = "size", defaultValue = "10") Integer size,
@@ -90,7 +95,7 @@ public class MeasurementAppController {
         Page<ResultSet> resultSets = measurementService.getMeasurementByUserBetweenDate(idUser,since,until, pageable);
 
         return EntityResponse.listResponse(resultSets);
-    }
+    }*/
 
 }
 
