@@ -63,7 +63,7 @@ public class InvoiceBackOfficeController {
         return EntityResponse.listResponse(invoiceDtoPage);
     }
 
-    @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
+
     @DeleteMapping("/{idInvoice}")
     public ResponseEntity<Response> deleteInvoiceById(Integer idInvoice) throws ResourceDoesNotExistException, DeleteException {
         invoiceService.deleteInvoiceById(idInvoice);
@@ -82,4 +82,9 @@ public class InvoiceBackOfficeController {
         return EntityResponse.listResponse(invoiceDtoPage);
     }
 
+    @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
+    @GetMapping("/updateAllRates")
+    public void UpdateAllRates(){
+        invoiceService.InvoicingUpdateRate();
+    }
 }

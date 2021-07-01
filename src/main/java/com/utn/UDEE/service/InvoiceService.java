@@ -104,6 +104,6 @@ public class InvoiceService {
             return invoiceRepository.findAllByUser(user, pageable);
         }
     }
-    @Procedure(procedureName = "p_invoicing_update_rate")
+
     public void InvoicingUpdateRate(){ invoiceRepository.p_invoicing_update_rate();}
 }

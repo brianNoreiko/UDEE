@@ -40,8 +40,8 @@ public class AddressBackOfficeController {
     }
 
     @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
-    @GetMapping("/{id}")
-    public ResponseEntity<AddressDto> getAddressById(@PathVariable Integer id) throws HttpClientErrorException, ResourceDoesNotExistException {
+    @GetMapping("/id")
+    public ResponseEntity<AddressDto> getAddressById(@RequestParam(value = "id") Integer id) throws HttpClientErrorException, ResourceDoesNotExistException {
         Address address = addressService.getAddressById(id);
         AddressDto addressDto = conversionService.convert(address, AddressDto.class);
         return ResponseEntity.ok(addressDto);
@@ -94,8 +94,8 @@ public class AddressBackOfficeController {
     }
 
     @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deleteAddressById(@PathVariable Integer id) throws ResourceDoesNotExistException, DeleteException {
+    @DeleteMapping("/id")
+    public ResponseEntity<Object> deleteAddressById(@RequestParam(value = "id")  Integer id) throws ResourceDoesNotExistException, DeleteException {
         addressService.deleteAddressById(id);
         return ResponseEntity.accepted().build();
     }
