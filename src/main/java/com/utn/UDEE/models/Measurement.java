@@ -17,7 +17,7 @@ public class Measurement {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "measurementId",unique = true,nullable = false)
+    @Column(name = "measurement_id",unique = true,nullable = false)
     private Integer id;
 
     @ManyToOne(fetch = FetchType.EAGER)

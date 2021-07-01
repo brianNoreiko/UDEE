@@ -18,7 +18,7 @@ public class Address {
 
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-    @Column(name = "addressId",unique = true,nullable = false)
+    @Column(name = "address_id",unique = true,nullable = false)
     private Integer id;
 
     @NotNull(message = "The street shouldn't be null")

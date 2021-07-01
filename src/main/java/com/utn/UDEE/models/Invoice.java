@@ -19,7 +19,7 @@ public class Invoice {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "invoiceId",unique = true,nullable = false)
+    @Column(name = "invoice_id",unique = true,nullable = false)
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)

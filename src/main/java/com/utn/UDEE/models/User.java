@@ -21,7 +21,7 @@ import java.util.List;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column (name = "userId",unique = true)
+    @Column (name = "user_id",unique = true)
     private Integer id;
 
     @NotBlank(message = "The first name can not be blank")

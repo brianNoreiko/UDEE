@@ -17,7 +17,7 @@ public class Rate {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "rateId",unique = true,nullable = false)
+    @Column(name = "rate_id",unique = true,nullable = false)
     private Integer id;
 
     @Column (name = "value")

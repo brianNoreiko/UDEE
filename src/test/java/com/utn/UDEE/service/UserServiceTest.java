@@ -16,6 +16,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import java.util.Optional;
+
 import static com.utn.UDEE.utils.AddressUtilsTest.aAddress;
 import static com.utn.UDEE.utils.UserUtilsTest.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -57,6 +59,30 @@ public class UserServiceTest {
     }
 
     @Test
+    public void getUserByIdOK() throws ResourceDoesNotExistException {
+        //Given
+        Integer idUser = 1;
+        //When
+        when(userRepository.findById(idUser)).thenReturn(Optional.of(aUser()));
+        User user = userService.getUserById(idUser);
+        //Then
+        assertEquals(aUser(),user);
+        verify(userRepository, times(1)).findById(idUser);
+    }
+
+    @Test
+    public void getUserByIdNotExist(){
+        //Given
+        Integer idUser = 1;
+        //When
+        when(userRepository.findById(idUser)).thenReturn(Optional.empty());
+
+        //Then
+        assertThrows(ResourceDoesNotExistException.class,() -> userService.getUserById(idUser));
+        verify(userRepository, times(1)).findById(idUser);
+    }
+
+    @Test
     public void getAllUsersOK(){
         //Given
         Integer page = 1;
@@ -69,6 +95,7 @@ public class UserServiceTest {
         assertEquals(aUserPage(),userPage);
         verify(userRepository,times(1)).findAll(pageable);
     }
+
 
     @Test
     public void getAllUsersNC(){ //NC == No Content

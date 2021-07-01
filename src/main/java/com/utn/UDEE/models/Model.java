@@ -18,7 +18,7 @@ public class Model {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "modelId",unique = true,nullable = false)
+    @Column(name = "model_id",unique = true,nullable = false)
     private Integer id;
 
     @Column(name = "name")

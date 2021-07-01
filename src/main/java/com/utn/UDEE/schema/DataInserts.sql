@@ -26,7 +26,7 @@ INSERT INTO users(`name`, `last_name`, `username`, `password`,`email`, `type_use
 ("Leo", "Messi", "Messias", "qatar2022","Messi@gmail.com", 1),
 ("Angel", "Di Maria", "Centritos", "SinQuebrar","Angelito@hotmail.com", 1),
 ("Sergio", "Aguero", "SLAKUN10", "Streamer","AgueroS@outlook.com", 1),
-("admin", "udee", "adminUDEE", "123456","admin@admin.com", 2)
+("admin", "udee", "adminUDEE", "123456","admin@admin.com", 0)
 ;
 
 INSERT INTO `rates`(`value`,`type_rate`) VALUES
@@ -34,7 +34,7 @@ INSERT INTO `rates`(`value`,`type_rate`) VALUES
 (200,"B")
 ;
 
-INSERT INTO `addresses`(`meter_id`,`user_id`,`id_rate`,street,number,apartment) VALUES
+INSERT INTO `addresses`(`meter_id`,`user_id`,`rate_id`,street,number,apartment) VALUES
 (1,1,1,"San Lorenzo",2371,""),
 (2,1,2,"Independencia",1456,"6°A"),
 (3,3,2,"Santiago Del Estero",1233,"3°B")
