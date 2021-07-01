@@ -1,5 +1,6 @@
 package com.utn.UDEE.service;
 
+import com.utn.UDEE.exception.DeleteException;
 import com.utn.UDEE.exception.ResourceAlreadyExistException;
 import com.utn.UDEE.exception.ResourceDoesNotExistException;
 import com.utn.UDEE.models.Address;
@@ -41,16 +42,18 @@ public class UserServiceTest {
 
     @Test
     public void loginOK(){
-        //Given
-        String email = anyString();
-        String password = anyString();
         //When
-        Mockito.when(userRepository.findByEmailAndPassword(email,password)).thenReturn(aUser());
-
-        User user = userService.login(email,password);
+        when(userRepository.findByUsernameAndPassword(any(),any())).thenReturn(aUser());
+        User user = userService.login(aUser().getUsername(),aUser().getPassword());
         //Then
-        assertEquals(aUser(), user);
-        verify(userRepository,times(1)).findByEmailAndPassword(email,password);
+        assertEquals(aUser().getId(),user.getId());
+        assertEquals(aUser().getName(),user.getName());
+        assertEquals(aUser().getLastname(),user.getLastname());
+        assertEquals(aUser().getUsername(),user.getUsername());
+        assertEquals(aUser().getUserType(),user.getUserType());
+        assertEquals(aUser().getPassword(),user.getPassword());
+
+        verify(userRepository,times(1)).findByUsernameAndPassword(aUser().getUsername(),aUser().getPassword());
     }
 
     @Test
@@ -161,11 +164,53 @@ public class UserServiceTest {
         }
     }
 
+    @Test
+    public void deleteUserByIdOK() throws ResourceDoesNotExistException, DeleteException {
+        //Given
+        Integer idUser = 1;
+        //When
+        try {
+            when(userService.getUserById(idUser)).thenReturn(aUser());
+            when(aUser().getAddressList()).thenReturn(null);
+            doNothing().when(userService).deleteById(idUser);
+
+            userService.deleteById(idUser);
+            //Then
+            verify(userService, times(1)).getUserById(idUser);
+            verify(userService, times(1)).deleteById(idUser);
+        }catch (ResourceDoesNotExistException | DeleteException e){
+            deleteUserDenied();
+        }
+    }
+
+    @Test
+    public void deleteUserByIdNotExist() throws ResourceDoesNotExistException{
+        //Given
+        Integer idUser = anyInt();
+        //When
+        try {
+            when(userService.getUserById(idUser)).thenReturn(null);
+            //Then
+            assertThrows(ResourceDoesNotExistException.class,() -> userService.deleteById(idUser));
+            verify(userService,times(1)).getUserById(idUser);
+            verify(userRepository,times(0)).deleteById(idUser);
+        }catch (ResourceDoesNotExistException e){
+            deleteUserDenied();
+        }
+    }
+
     @SneakyThrows
     @Test
     public void addressToClientDenied(){
         User user = aUser();
         Address address = aAddress();
         Assert.assertThrows(ResourceDoesNotExistException.class, ()->userService.addAddressToClient(user.getId(),address.getId()));
+    }
+
+    @SneakyThrows
+    @Test
+    public void deleteUserDenied(){
+        Integer idUser = anyInt();
+        Assert.assertThrows(ResourceDoesNotExistException.class, ()->userService.deleteById(idUser));
     }
 }

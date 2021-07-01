@@ -1,8 +1,10 @@
 package com.utn.UDEE.service;
 
+import com.utn.UDEE.exception.DeleteException;
 import com.utn.UDEE.exception.ResourceAlreadyExistException;
 import com.utn.UDEE.exception.ResourceDoesNotExistException;
 import com.utn.UDEE.models.Address;
+import com.utn.UDEE.models.Invoice;
 import com.utn.UDEE.models.User;
 import com.utn.UDEE.models.UserType;
 import com.utn.UDEE.repository.UserRepository;
@@ -14,6 +16,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
+import static java.util.Objects.isNull;
 
 @Service
 public class UserService {
@@ -32,8 +36,8 @@ public class UserService {
         return userRepository.findByUsernameAndPassword(username,password);
     }
 
-    public User getUserById(Integer idUser) throws ResourceDoesNotExistException {
-        return userRepository.findById(idUser).orElseThrow(() -> new ResourceDoesNotExistException("User doesn't exist"));
+    public User getUserById(Integer id) throws ResourceDoesNotExistException {
+        return userRepository.findById(id).orElseThrow(() -> new ResourceDoesNotExistException("User doesn't exist"));
     }
 
     public Page<User> getAllUsers(Pageable pageable){
@@ -69,6 +73,18 @@ public class UserService {
     public Page<User> getAllSorted(Integer page, Integer size, List<Sort.Order> orderParams) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(orderParams));
         return userRepository.findAll(pageable);
+    }
+
+    public void deleteById(Integer id) throws ResourceDoesNotExistException, DeleteException {
+        User user = getUserById(id);
+        if(user == null){
+            throw new ResourceDoesNotExistException("User doesn't exist");
+        }
+        if(isNull(user.getAddressList())) {
+            userRepository.deleteById(id);
+        } else {
+            throw new DeleteException("It cannot be deleted because another object depends on it");
+        }
     }
     /*public Page<User> getTopTenConsumers(Integer size, Sort.Order topten) {
         Pageable pageable = PageRequest.of(0,size);

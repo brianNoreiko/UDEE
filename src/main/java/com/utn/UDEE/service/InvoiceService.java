@@ -1,5 +1,6 @@
 package com.utn.UDEE.service;
 
+import com.utn.UDEE.exception.AccessNotAllowedException;
 import com.utn.UDEE.exception.DeleteException;
 import com.utn.UDEE.exception.ResourceAlreadyExistException;
 import com.utn.UDEE.exception.ResourceDoesNotExistException;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import javax.persistence.NamedStoredProcedureQuery;
 import java.time.LocalDateTime;
 
+import static com.utn.UDEE.utils.Utils.userPermissionCheck;
 import static java.util.Objects.isNull;
 
 @Service
@@ -36,21 +38,20 @@ public class InvoiceService {
         this.meterService = meterService;
     }
 
-    public Page<Invoice> getInvoiceBetweenDateByUser(Integer idUser, LocalDateTime since, LocalDateTime until, Pageable pageable) throws ResourceDoesNotExistException {
+    public Page<Invoice> getAllInvoicesByUserAndBetweenDate(Integer idQueryUser, Integer idUser, LocalDateTime since, LocalDateTime until, Pageable pageable)
+            throws ResourceDoesNotExistException, AccessNotAllowedException {
+
+        User queryUser = userService.getUserById(idQueryUser);
         User user = userService.getUserById(idUser);
-        if (user == null) {
-            throw new ResourceDoesNotExistException("User doesn't exist");
-        } else {
-            return invoiceRepository.findAllByUserAndDateBetween(user, since, until, pageable);
-        }
+        userPermissionCheck(queryUser,user);
+        return invoiceRepository.findAllByUserAndDateBetween(user ,since,until, pageable);
     }
-    public Page<Invoice> getUnpaidByUser(Integer idUser, Pageable pageable) throws ResourceDoesNotExistException {
+
+    public Page<Invoice> getUnpaidByUser(Integer idQueryUser, Integer idUser, Pageable pageable) throws ResourceDoesNotExistException, AccessNotAllowedException{
+        User queryUser = userService.getUserById(idQueryUser);
         User user = userService.getUserById(idUser);
-        if(user == null){
-            throw new ResourceDoesNotExistException("User doesn't exist");
-        }else{
-            return invoiceRepository.findAllByUserAndPayed(user, false, pageable);
-        }
+        userPermissionCheck(queryUser,user);
+        return invoiceRepository.findAllByUserAndPayed(user,false, pageable);
     }
 
     public Invoice addNewInvoice(Invoice invoice) throws ResourceAlreadyExistException {
