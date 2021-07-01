@@ -80,7 +80,7 @@ public class UserService {
         if (user == null) {
             throw new ResourceDoesNotExistException("User doesn't exist");
         }
-        if (isNull(user.getAddressList())) {
+        if (user.getAddressList().isEmpty()) {
             userRepository.deleteById(id);
         } else {
             throw new DeleteException("It cannot be deleted because another object depends on it");

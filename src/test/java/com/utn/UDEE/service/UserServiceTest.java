@@ -16,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 import static com.utn.UDEE.utils.AddressUtilsTest.aAddress;
@@ -192,21 +193,21 @@ public class UserServiceTest {
     }
 
     @Test
-    public void deleteUserByIdOK() throws ResourceDoesNotExistException, DeleteException {
-        //Given
-        Integer idUser = 1;
-        //When
+    public void deleteById(){
+        User user = aUser();
+        user.setInvoiceList(new ArrayList<>());
         try {
-            when(userService.getUserById(idUser)).thenReturn(aUser());
-            when(aUser().getAddressList()).thenReturn(null);
-            doNothing().when(userService).deleteById(idUser);
+        //When
+            when(userRepository.findById(any())).thenReturn(Optional.of(user));
+            doNothing().when(userRepository).deleteById(user.getId());
 
-            userService.deleteById(idUser);
-            //Then
-            verify(userService, times(1)).getUserById(idUser);
-            verify(userService, times(1)).deleteById(idUser);
-        }catch (ResourceDoesNotExistException | DeleteException e){
-            deleteUserDenied();
+            userService.deleteById(user.getId());
+        //Then
+            verify(userRepository, times(1)).findById(user.getId());
+            verify(userRepository, times(1)).deleteById(user.getId());
+
+        } catch (ResourceDoesNotExistException | DeleteException e) {
+            fail(e);
         }
     }
 

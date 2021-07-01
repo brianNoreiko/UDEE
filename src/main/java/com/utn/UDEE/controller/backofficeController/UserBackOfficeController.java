@@ -96,7 +96,7 @@ public class UserBackOfficeController {
     }
 
     @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{idUser}")
     public ResponseEntity<Response> deleteUserById(@PathVariable Integer idUser) throws ResourceDoesNotExistException, DeleteException {
         userService.deleteById(idUser);
         return ResponseEntity.accepted().build();
