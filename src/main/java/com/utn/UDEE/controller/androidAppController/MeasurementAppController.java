@@ -67,7 +67,7 @@ public class MeasurementAppController {
     }
 
     //Consulta de mediciones por rango de fechas
-    @GetMapping("/meters/{id}")
+    @GetMapping("/meters/{idMeter}")
     public ResponseEntity<List<MeasurementDto>> getMeasurementsBetweenDate(@PathVariable Integer idMeter,
                                                                            @RequestParam(value = "page", defaultValue = "0") Integer page,
                                                                            @RequestParam(value = "size", defaultValue = "10") Integer size,

@@ -76,9 +76,9 @@ public class MeterBackOfficeController {
 
     @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @PutMapping("/{id}")
-    public ResponseEntity<Response> updateMeter(@PathVariable Integer idToUp,
+    public ResponseEntity<Response> updateMeter(@PathVariable Integer id,
                                                   @RequestBody Meter meter) throws PrimaryKeyViolationException, ResourceAlreadyExistException, ResourceDoesNotExistException {
-        Meter meterUpdated = meterService.updateMeter(idToUp,meter);
+        Meter meterUpdated = meterService.updateMeter(id,meter);
         return ResponseEntity
                 .status(HttpStatus.ACCEPTED)
                 .contentType(MediaType.APPLICATION_JSON)

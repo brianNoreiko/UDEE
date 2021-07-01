@@ -48,7 +48,7 @@ public class RateBackOfficeController {
     }
 
     @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
-    @GetMapping("/{id}")
+    @GetMapping("/{idRate}")
     public ResponseEntity<RateDto> getRateById(@PathVariable Integer idRate) throws HttpClientErrorException, ResourceDoesNotExistException {
         Rate rate = rateService.getRateById(idRate);
         RateDto rateDto = conversionService.convert(rate, RateDto.class);
@@ -69,9 +69,9 @@ public class RateBackOfficeController {
 
     @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @PutMapping("/{id}")
-    public ResponseEntity<Response> updateRate(@PathVariable Integer idToUp,
+    public ResponseEntity<Response> updateRate(@PathVariable Integer id,
                                                @RequestBody Rate newRate) throws ResourceDoesNotExistException, ResourceAlreadyExistException, PrimaryKeyViolationException {
-        Rate rateSaved = rateService.updateRate(idToUp, newRate);
+        Rate rateSaved = rateService.updateRate(id, newRate);
         return ResponseEntity
                 .status(HttpStatus.ACCEPTED)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -79,7 +79,7 @@ public class RateBackOfficeController {
     }
 
     @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{idRate}")
     public ResponseEntity<Response> deleteRateById(@PathVariable Integer idRate) throws ResourceDoesNotExistException, DeleteException {
         rateService.deleteRateById(idRate);
         return ResponseEntity.accepted().build();

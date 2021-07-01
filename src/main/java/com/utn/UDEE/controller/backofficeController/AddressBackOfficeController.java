@@ -70,9 +70,9 @@ public class AddressBackOfficeController {
 
     @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @PutMapping("/{id}")
-    public ResponseEntity<Response> updateAddress(@PathVariable Integer idToUp,
+    public ResponseEntity<Response> updateAddress(@PathVariable Integer id,
                                                   @RequestBody Address address) throws PrimaryKeyViolationException, ResourceAlreadyExistException, ResourceDoesNotExistException {
-        Address addressUpdated = addressService.updateAddress(idToUp,address);
+        Address addressUpdated = addressService.updateAddress(id,address);
         return ResponseEntity
                 .status(HttpStatus.ACCEPTED)
                 .contentType(MediaType.APPLICATION_JSON)

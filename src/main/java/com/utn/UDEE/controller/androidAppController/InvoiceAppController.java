@@ -39,8 +39,8 @@ public class InvoiceAppController {
 
     //Consulta de facturas por rango de fechas
     @PreAuthorize(value = "hasAuthority('EMPLOYEE') OR hasAuthority('CLIENT')")
-    @GetMapping("/users/{idClient}")
-    public ResponseEntity<List<InvoiceDto>> getAllByUserAndBetweenDate(@PathVariable Integer idUser,
+    @GetMapping("/users/{idUser}/")
+    public ResponseEntity<List<InvoiceDto>> getAllByUserAndBetweenDate(@RequestParam(value = "idUser") Integer idUser,
                                                                           @RequestParam(value = "page", defaultValue = "0") Integer page,
                                                                           @RequestParam(value = "size", defaultValue = "10") Integer size,
                                                                           @RequestParam(value = "since", defaultValue = "2021-06-01 00:00:00") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime since,
@@ -56,7 +56,7 @@ public class InvoiceAppController {
 
     //Consulta de deuda (Facturas impagas)
     @PreAuthorize(value = "hasAuthority('EMPLOYEE') OR hasAuthority('CLIENT')")
-    @GetMapping("/users/{idClient}/unpaid")
+    @GetMapping("/users/{idUser}/unpaid")
     public ResponseEntity<List<InvoiceDto>> getUnpaidByUser(@PathVariable Integer idUser,
                                                             @RequestParam(value = "page", defaultValue = "0") Integer page,
                                                             @RequestParam(value = "size", defaultValue = "10") Integer size,

@@ -86,9 +86,9 @@ public class UserBackOfficeController {
     }
 
     @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
-    @PutMapping("/{id}/addresses/{id}")
+    @PutMapping("/{idUser}/addresses/{idAddress}")
     public ResponseEntity<Response> addAddressToClient(@PathVariable Integer idUser,
-                                                        @PathVariable Integer idAddress) throws ResourceDoesNotExistException {
+                                                       @PathVariable Integer idAddress) throws ResourceDoesNotExistException {
         userService.addAddressToClient(idUser, idAddress);
         return ResponseEntity
                 .status(HttpStatus.ACCEPTED)
