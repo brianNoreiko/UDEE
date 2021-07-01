@@ -45,8 +45,8 @@ CREATE TABLE IF NOT EXISTS rates(
 
 CREATE TABLE IF NOT EXISTS addresses(
                                         addres_id INT NOT NULL AUTO_INCREMENT,
-                                        meter_id INT NOT NULL,
-                                        user_id INT NOT NULL,
+                                        meter_id INT,
+                                        user_id INT,
                                         id_rate INT NULL,
                                         street VARCHAR(40) NOT NULL,
                                         number INT NOT NULL,
