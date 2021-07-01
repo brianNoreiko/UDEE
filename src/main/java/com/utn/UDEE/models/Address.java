@@ -33,15 +33,15 @@ public class Address {
     private String apartment;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "userId", nullable = false, updatable = false)
+    @JoinColumn(name = "userId")
     private User user;
 
     @OneToOne
-    @JoinColumn(name = "meterId",nullable = false)
+    @JoinColumn(name = "meterId")
     private Meter meter;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_rate", nullable = false, updatable = false)
+    @JoinColumn(name = "id_rate")
     private Rate rate;
 
 

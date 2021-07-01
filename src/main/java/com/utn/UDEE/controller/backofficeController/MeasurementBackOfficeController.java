@@ -53,7 +53,7 @@ public class MeasurementBackOfficeController {
     }
 
     @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
-    @GetMapping("/{id}")
+    @GetMapping(value = "/{id}")
     public ResponseEntity<MeasurementDto> getMeasurementById(@PathVariable Integer id) throws ResourceDoesNotExistException {
         MeasurementDto measurementDto = conversionService.convert(measurementService.getMeasurementById(id), MeasurementDto.class);
         return ResponseEntity.ok(measurementDto);
@@ -71,7 +71,7 @@ public class MeasurementBackOfficeController {
 
     //Consulta de mediciones de un domicilio por rango de fechas
     @PreAuthorize(value ="hasAuthority('EMPLOYEE')")
-    @GetMapping("/addresses/{idAddress}")
+    @GetMapping(value = "/addresses/{idAddress}",params = {"since","until"})
     public ResponseEntity<List<MeasurementDto>> getMeasurementByAddressBetweenDate(@PathVariable Integer idAddress,
                                                                                    @RequestParam(value = "page", defaultValue = "0") Integer page,
                                                                                    @RequestParam(value = "size", defaultValue = "10") Integer size,
