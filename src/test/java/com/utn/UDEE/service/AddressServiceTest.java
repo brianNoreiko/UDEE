@@ -131,24 +131,23 @@ public class AddressServiceTest {
         verify(addressRepository,times(0)).save(aAddress);
     }
 
-   @Test
-    public void updateAddressOK() {
+    @Test
+    public void updateAddressOk() {
         //Given
-         Integer idAddressToUp = anyInt();
-         Address aAddress = aAddress();
-         //When
+        Address address = aAddress();
         try {
-            when(addressService.getAddressById(idAddressToUp)).thenReturn(aAddress());
-            when(addressRepository.save(aAddress)).thenReturn(aAddress);
+            //When
+            when(addressRepository.findById(1)).thenReturn(Optional.of(aAddress()));
+            when(addressRepository.save(aAddress())).thenReturn(aAddress());
 
-            Address address = addressService.updateAddress(idAddressToUp,aAddress);
-            //Then
-            assertEquals(aAddress(),address);
-            verify(addressService, times(1)).getAddressById(idAddressToUp);
+            Address address1 = addressService.updateAddress(address.getId(),address);
+
+            assertEquals(address,address1);
+
             verify(addressRepository, times(1)).save(address);
         }
-        catch (ResourceDoesNotExistException | PrimaryKeyViolationException | ResourceAlreadyExistException e){
-            updateAddressDenied();
+        catch (ResourceDoesNotExistException | PrimaryKeyViolationException e){
+            fail(e);
         }
     }
 
