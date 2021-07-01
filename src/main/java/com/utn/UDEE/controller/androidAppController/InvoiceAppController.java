@@ -68,8 +68,5 @@ public class InvoiceAppController {
         return EntityResponse.listResponse(invoiceDtoPage);
     }
 
-    @GetMapping("/updateAllRates")
-    public void UpdateAllRates(){
-        invoiceService.InvoicingUpdateRate();
-    }
+
 }

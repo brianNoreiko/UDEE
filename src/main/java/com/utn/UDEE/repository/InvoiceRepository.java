@@ -23,6 +23,6 @@ public interface InvoiceRepository extends JpaRepository<Invoice,Integer> {
 
     Page<Invoice> findAllByUser(User user, Pageable pageable);
 
-    @Procedure
+    @Procedure(value = "p_all_clients_invoice")
     void p_invoicing_update_rate();
 }
