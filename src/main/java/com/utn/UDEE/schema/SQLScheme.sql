@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS models(
 
 CREATE TABLE IF NOT EXISTS meters (
                                       serial_number int NOT NULL AUTO_INCREMENT,
-                                      model_id INT NOT NULL,
+                                      model_id INT,
                                       `password` VARCHAR(30) NOT NULL,
                                       CONSTRAINT pk_meter PRIMARY KEY (serial_number),
                                       CONSTRAINT fk_meter_model FOREIGN KEY (model_id) REFERENCES models(model_id)
