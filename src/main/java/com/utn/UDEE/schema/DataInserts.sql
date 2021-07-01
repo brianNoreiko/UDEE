@@ -34,7 +34,7 @@ INSERT INTO `rates`(`value`,`type_rate`) VALUES
 (200,"B")
 ;
 
-INSERT INTO `addresses`(`meter_id`,`user_id`,`rate_id`,street,number,apartment) VALUES
+INSERT INTO `addresses`(`meter_id`,`user_id`,`id_rate`,street,number,apartment) VALUES
 (1,1,1,"San Lorenzo",2371,""),
 (2,1,2,"Independencia",1456,"6°A"),
 (3,3,2,"Santiago Del Estero",1233,"3°B")
