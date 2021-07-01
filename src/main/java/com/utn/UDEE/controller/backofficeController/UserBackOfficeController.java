@@ -1,5 +1,6 @@
 package com.utn.UDEE.controller.backofficeController;
 
+import com.utn.UDEE.exception.DeleteException;
 import com.utn.UDEE.exception.ResourceAlreadyExistException;
 import com.utn.UDEE.exception.ResourceDoesNotExistException;
 import com.utn.UDEE.models.User;
@@ -55,8 +56,7 @@ public class UserBackOfficeController {
     @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
     @GetMapping("/{id}")
     public ResponseEntity<UserDto> getUserById(@PathVariable Integer id) throws ResourceDoesNotExistException {
-        User user = userService.getUserById(id);
-        UserDto userDto = conversionService.convert(user,UserDto.class);
+        UserDto userDto = conversionService.convert(userService.getUserById(id),UserDto.class);
         return ResponseEntity.ok(userDto);
     }
 
@@ -93,6 +93,13 @@ public class UserBackOfficeController {
         return ResponseEntity
                 .status(HttpStatus.ACCEPTED)
                 .body(EntityResponse.messageResponse("Address added to user"));
+    }
+
+    @PreAuthorize(value = "hasAuthority('EMPLOYEE')")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Response> deleteUserById(@PathVariable Integer idUser) throws ResourceDoesNotExistException, DeleteException {
+        userService.deleteById(idUser);
+        return ResponseEntity.accepted().build();
     }
 
      /*//Consulta 10 clientes más consumidores en un rango de fechas.

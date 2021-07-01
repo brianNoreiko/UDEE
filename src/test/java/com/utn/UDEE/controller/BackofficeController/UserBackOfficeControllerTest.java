@@ -2,6 +2,7 @@ package com.utn.UDEE.controller.BackofficeController;
 
 import com.utn.UDEE.AbstractController;
 import com.utn.UDEE.controller.backofficeController.UserBackOfficeController;
+import com.utn.UDEE.exception.DeleteException;
 import com.utn.UDEE.exception.ResourceAlreadyExistException;
 import com.utn.UDEE.exception.ResourceDoesNotExistException;
 import com.utn.UDEE.models.User;
@@ -133,5 +134,17 @@ public class UserBackOfficeControllerTest extends AbstractController {
         assertEquals(aUserDto(), responseEntity.getBody());
         verify(userService,times(1)).getUserById(idUser);
         verify(conversionService,times(1)).convert(aUser(),UserDto.class);
+    }
+
+    @Test
+    public void deleteUserByIdOK() throws ResourceDoesNotExistException, DeleteException {
+        //Given
+        Integer idUser = 1;
+        //When
+        doNothing().when(userService).deleteById(idUser);
+        ResponseEntity<Response> responseEntity = userBackOfficeController.deleteUserById(idUser);
+        //Then
+        assertEquals(HttpStatus.ACCEPTED, responseEntity.getStatusCode());
+        verify(userService,times(1)).deleteById(idUser);
     }
 }

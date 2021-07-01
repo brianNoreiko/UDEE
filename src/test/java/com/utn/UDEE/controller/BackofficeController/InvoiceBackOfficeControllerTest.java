@@ -127,7 +127,7 @@ public class InvoiceBackOfficeControllerTest {
         //When
         doNothing().when(invoiceService).deleteInvoiceById(idInvoice);
 
-        ResponseEntity<Object> responseEntity = invoiceBackOfficeController.deleteInvoiceById(idInvoice);
+        ResponseEntity<Response> responseEntity = invoiceBackOfficeController.deleteInvoiceById(idInvoice);
         //Then
         assertEquals(HttpStatus.ACCEPTED, responseEntity.getStatusCode());
         verify(invoiceService,times(1)).deleteInvoiceById(idInvoice);
